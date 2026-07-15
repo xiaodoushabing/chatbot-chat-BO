@@ -128,7 +128,7 @@ export function PageHeader({
   return (
     <header className="mb-6">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <h1 className="text-xl font-semibold tracking-tight text-ink text-balance">{title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-ink text-balance">{title}</h1>
         {context}
         {actions && <div className="ml-auto flex items-center gap-2">{actions}</div>}
       </div>

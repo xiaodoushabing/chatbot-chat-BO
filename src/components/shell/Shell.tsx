@@ -58,11 +58,11 @@ function ProjectSwitcher() {
         onClick={() => setOpen(v => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex h-8 items-center gap-2 rounded-(--radius-field) border border-line px-2.5 text-sm font-semibold text-ink transition-colors hover:bg-surface-2"
+        className="flex h-8 items-baseline gap-1.5 rounded-(--radius-field) px-2.5 transition-colors hover:bg-surface-2"
       >
-        <span className="h-2 w-2 rounded-full bg-accent" aria-hidden />
-        {current.name}
-        <ChevronsUpDown size={13} className="text-ink-3" aria-hidden />
+        <span className="text-sm font-medium text-ink-3">Project:</span>
+        <span className="border-b-2 border-accent pb-px text-[15px] font-bold text-ink">{current.name}</span>
+        <ChevronsUpDown size={13} className="self-center text-ink-3" aria-hidden />
       </button>
       {open && (
         <div
@@ -170,6 +170,7 @@ export default function Shell() {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <div className="flex h-screen flex-col">
+      <div className="h-[3px] shrink-0 bg-accent" aria-hidden />
       <header className="flex h-14 shrink-0 items-center gap-4 border-b border-line bg-bg px-4">
         <span className="flex items-center gap-2 text-sm font-bold tracking-tight text-ink">
           <span className="flex h-6 w-6 items-center justify-center rounded-(--radius-ctl) bg-accent text-on-accent">

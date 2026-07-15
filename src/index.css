@@ -3,44 +3,46 @@
 @import '@fontsource-variable/jetbrains-mono';
 
 /* ── Theme tokens: Gallery (light) / Deep Harbor (dark) — see DESIGN.md ── */
+/* Light — "Proof Room": paper-white, warm graphite ink, deep carmine stamp */
 :root {
   --bg: oklch(1 0 0);
-  --surface-2: oklch(0.966 0.003 250);
-  --surface-3: oklch(0.947 0.004 250);
-  --ink: oklch(0.215 0.01 250);
-  --ink-2: oklch(0.4 0.012 250);
-  --ink-3: oklch(0.5 0.012 250);
-  --border: oklch(0.905 0.005 250);
-  --accent: oklch(0.46 0.21 264);
-  --accent-press: oklch(0.4 0.2 264);
+  --surface-2: oklch(0.965 0.005 20);
+  --surface-3: oklch(0.945 0.006 20);
+  --ink: oklch(0.24 0.012 20);
+  --ink-2: oklch(0.4 0.012 20);
+  --ink-3: oklch(0.5 0.012 20);
+  --border: oklch(0.905 0.006 20);
+  --accent: oklch(0.5 0.195 20);
+  --accent-press: oklch(0.43 0.18 20);
   --on-accent: oklch(1 0 0);
-  --accent-wash: oklch(0.955 0.018 264);
+  --accent-wash: oklch(0.962 0.018 20);
   --ok: oklch(0.5 0.13 155);
   --warn: oklch(0.52 0.12 80);
   --err: oklch(0.5 0.19 27);
-  --info: oklch(0.48 0.11 255);
-  --shadow-soft: 0 1px 2px oklch(0.2 0.01 250 / 0.06), 0 4px 16px oklch(0.2 0.01 250 / 0.07);
-  --shadow-pop: 0 4px 12px oklch(0.2 0.01 250 / 0.1), 0 12px 40px oklch(0.2 0.01 250 / 0.14);
+  --info: oklch(0.48 0.1 250);
+  --shadow-soft: 0 1px 2px oklch(0.2 0.01 20 / 0.06), 0 4px 16px oklch(0.2 0.01 20 / 0.07);
+  --shadow-pop: 0 4px 12px oklch(0.2 0.01 20 / 0.1), 0 12px 40px oklch(0.2 0.01 20 / 0.14);
 }
 
+/* Dark — "Night Desk": warm graphite-black, luminous carmine-rose signal */
 .dark {
-  --bg: oklch(0.205 0.015 235);
-  --surface-2: oklch(0.17 0.014 235);
-  --surface-3: oklch(0.245 0.016 235);
-  --ink: oklch(0.93 0.008 230);
-  --ink-2: oklch(0.76 0.015 230);
-  --ink-3: oklch(0.64 0.015 230);
-  --border: oklch(0.3 0.018 235);
-  --accent: oklch(0.76 0.115 210);
-  --accent-press: oklch(0.7 0.115 210);
-  --on-accent: oklch(0.17 0.04 225);
-  --accent-wash: oklch(0.29 0.05 220);
-  --ok: oklch(0.76 0.14 155);
+  --bg: oklch(0.205 0.008 20);
+  --surface-2: oklch(0.17 0.007 20);
+  --surface-3: oklch(0.245 0.009 20);
+  --ink: oklch(0.93 0.005 20);
+  --ink-2: oklch(0.76 0.008 20);
+  --ink-3: oklch(0.64 0.008 20);
+  --border: oklch(0.3 0.009 20);
+  --accent: oklch(0.68 0.17 16);
+  --accent-press: oklch(0.62 0.17 16);
+  --on-accent: oklch(0.18 0.03 16);
+  --accent-wash: oklch(0.28 0.045 16);
+  --ok: oklch(0.75 0.14 155);
   --warn: oklch(0.8 0.13 85);
-  --err: oklch(0.72 0.16 22);
-  --info: oklch(0.76 0.115 210);
-  --shadow-soft: 0 1px 2px oklch(0.1 0.02 235 / 0.4), 0 4px 16px oklch(0.1 0.02 235 / 0.45);
-  --shadow-pop: 0 4px 12px oklch(0.08 0.02 235 / 0.5), 0 16px 48px oklch(0.08 0.02 235 / 0.55);
+  --err: oklch(0.72 0.17 22);
+  --info: oklch(0.76 0.1 250);
+  --shadow-soft: 0 1px 2px oklch(0.1 0.01 20 / 0.4), 0 4px 16px oklch(0.1 0.01 20 / 0.45);
+  --shadow-pop: 0 4px 12px oklch(0.08 0.01 20 / 0.5), 0 16px 48px oklch(0.08 0.01 20 / 0.55);
 }
 
 @theme inline {
