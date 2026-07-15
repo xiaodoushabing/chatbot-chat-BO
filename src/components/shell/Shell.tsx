@@ -58,11 +58,11 @@ function ProjectSwitcher() {
         onClick={() => setOpen(v => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex h-10 items-center gap-2 rounded-(--radius-field) px-2.5 transition-colors hover:bg-surface-2"
+        className="flex h-9 items-center gap-2 rounded-(--radius-field) border border-transparent px-2.5 transition-colors hover:border-line hover:bg-surface-2"
       >
-        <span className="text-base font-medium text-ink-3">Project:</span>
-        <span className="border-b-[1.5px] border-accent pb-px text-lg font-bold text-ink">{current.name}</span>
-        <ChevronsUpDown size={16} className="text-ink-3" aria-hidden />
+        <span className="text-sm font-medium text-ink-3">Project</span>
+        <span className="text-md font-bold text-ink">{current.name}</span>
+        <ChevronsUpDown size={15} className="text-ink-3" aria-hidden />
       </button>
       {open && (
         <div
@@ -170,26 +170,24 @@ export default function Shell() {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <div className="flex h-screen flex-col">
-      <div className="h-[3px] shrink-0 bg-accent" aria-hidden />
-
-      <header className="flex h-20 shrink-0 items-center gap-4 border-b border-line bg-bg px-5">
+      <header className="flex h-16 shrink-0 items-center gap-4 border-b border-line bg-bg px-5">
         <span className="flex items-center gap-2.5 text-md font-bold tracking-tight text-ink">
-          <span className="flex h-9 w-9 items-center justify-center rounded-(--radius-ctl) bg-accent text-on-accent">
-            <Sparkles size={18} aria-hidden />
+          <span className="flex h-8 w-8 items-center justify-center rounded-(--radius-field) bg-accent text-on-accent">
+            <Sparkles size={16} aria-hidden />
           </span>
           <span className={cn(collapsed && 'sr-only')}>Intent Studio</span>
         </span>
         <ProjectSwitcher />
-        <div className="ml-auto flex items-center gap-2.5">
-          <span className="rounded-full bg-accent-wash px-3 py-1.5 text-2xs font-bold tracking-wide text-accent uppercase">
+        <div className="ml-auto flex items-center gap-2">
+          <span className="rounded-full bg-accent-wash px-2.5 py-1 text-2xs font-semibold tracking-wide text-accent uppercase">
             {ROLE_LABEL[user.role]}
           </span>
           <button
             onClick={toggleTheme}
             aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
-            className="flex h-9 w-9 items-center justify-center rounded-(--radius-ctl) text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+            className="flex h-8 w-8 items-center justify-center rounded-(--radius-field) text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
           >
-            {theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}
+            {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
           </button>
           <UserMenu />
         </div>
@@ -199,8 +197,8 @@ export default function Shell() {
         <nav
           aria-label="Primary"
           className={cn(
-            'flex shrink-0 flex-col border-r border-line bg-surface-2 py-3 transition-[width] duration-200 ease-(--ease-out)',
-            collapsed ? 'w-16 px-2' : 'w-58 px-3',
+            'flex shrink-0 flex-col border-r border-line bg-surface-2 py-4 transition-[width] duration-200 ease-(--ease-out)',
+            collapsed ? 'w-16 px-2.5' : 'w-60 px-3',
           )}
         >
           {NAV.map(item => (
@@ -211,7 +209,7 @@ export default function Shell() {
               title={item.label}
               className={({ isActive }) =>
                 cn(
-                  'mb-0.5 flex items-center gap-2.5 rounded-(--radius-ctl) px-2.5 py-2 text-sm font-medium transition-colors duration-150',
+                  'mb-0.5 flex items-center gap-3 rounded-(--radius-field) px-3 py-2.5 text-sm font-medium transition-colors duration-150',
                   isActive
                     ? 'bg-accent-wash font-semibold text-accent'
                     : 'text-ink-2 hover:bg-surface-3 hover:text-ink',
@@ -219,7 +217,7 @@ export default function Shell() {
                 )
               }
             >
-              <item.icon size={16} className="shrink-0" aria-hidden />
+              <item.icon size={17} className="shrink-0" aria-hidden />
               <span className={cn(collapsed && 'sr-only')}>{item.label}</span>
             </NavLink>
           ))}
@@ -227,16 +225,16 @@ export default function Shell() {
             onClick={() => setCollapsed(v => !v)}
             aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
             className={cn(
-              'mt-auto flex items-center gap-2.5 rounded-(--radius-ctl) px-2.5 py-2 text-sm font-medium text-ink-3 transition-colors hover:bg-surface-3 hover:text-ink',
+              'mt-auto flex items-center gap-3 rounded-(--radius-field) px-3 py-2.5 text-sm font-medium text-ink-3 transition-colors hover:bg-surface-3 hover:text-ink',
               collapsed && 'justify-center px-0',
             )}
           >
-            {collapsed ? <PanelLeftOpen size={16} aria-hidden /> : <PanelLeftClose size={16} aria-hidden />}
+            {collapsed ? <PanelLeftOpen size={17} aria-hidden /> : <PanelLeftClose size={17} aria-hidden />}
             <span className={cn(collapsed && 'sr-only')}>Collapse</span>
           </button>
         </nav>
         <main className="min-w-0 flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[1440px] px-8 py-7">
+          <div className="mx-auto max-w-[1440px] px-10 py-9">
             <Outlet />
           </div>
         </main>

@@ -11,7 +11,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const buttonStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-on-accent border-accent hover:bg-accent-press hover:border-accent-press',
+  primary: 'bg-accent text-on-accent border-accent hover:bg-accent-press hover:border-accent-press shadow-(--shadow-soft)',
   secondary: 'bg-bg text-ink border-line hover:bg-surface-2',
   ghost: 'bg-transparent text-ink-2 border-transparent hover:bg-surface-2 hover:text-ink',
   danger: 'bg-bg text-err border-line hover:bg-err/8 hover:border-err/40',
@@ -26,16 +26,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex items-center justify-center gap-1.5 rounded-(--radius-ctl) border font-semibold',
+        'inline-flex items-center justify-center gap-1.5 rounded-(--radius-field) border font-semibold',
         'transition-colors duration-150 select-none',
         'disabled:opacity-45 disabled:pointer-events-none',
-        size === 'sm' ? 'h-7 px-2.5 text-xs' : 'h-8 px-3 text-sm',
+        size === 'sm' ? 'h-8 px-3 text-xs' : 'h-9 px-3.5 text-sm',
         buttonStyles[variant],
         className,
       )}
       {...rest}
     >
-      {loading && <Loader2 size={13} className="animate-spin" aria-hidden />}
+      {loading && <Loader2 size={14} className="animate-spin" aria-hidden />}
       {children}
     </button>
   );
@@ -55,7 +55,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       aria-label={label}
       title={label}
       className={cn(
-        'inline-flex h-8 w-8 items-center justify-center rounded-(--radius-ctl) border border-transparent',
+        'inline-flex h-9 w-9 items-center justify-center rounded-(--radius-field) border border-transparent',
         'text-ink-2 transition-colors duration-150 hover:bg-surface-2 hover:text-ink',
         'disabled:opacity-45 disabled:pointer-events-none',
         className,
@@ -100,13 +100,13 @@ const fieldBase =
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className, ...rest }, ref) {
-    return <input ref={ref} className={cn(fieldBase, 'h-8', className)} {...rest} />;
+    return <input ref={ref} className={cn(fieldBase, 'h-9', className)} {...rest} />;
   },
 );
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
   function Textarea({ className, ...rest }, ref) {
-    return <textarea ref={ref} className={cn(fieldBase, 'min-h-20 py-2 leading-relaxed', className)} {...rest} />;
+    return <textarea ref={ref} className={cn(fieldBase, 'min-h-24 py-2.5 leading-relaxed', className)} {...rest} />;
   },
 );
 
@@ -114,10 +114,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
   function Select({ className, children, ...rest }, ref) {
     return (
       <div className="relative">
-        <select ref={ref} className={cn(fieldBase, 'h-8 appearance-none pr-8', className)} {...rest}>
+        <select ref={ref} className={cn(fieldBase, 'h-9 appearance-none pr-8', className)} {...rest}>
           {children}
         </select>
-        <ChevronDown size={13} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-3" aria-hidden />
+        <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-3" aria-hidden />
       </div>
     );
   },
@@ -139,7 +139,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
         if (typeof ref === 'function') ref(el);
         else if (ref) ref.current = el;
       }}
-      className={cn('h-3.5 w-3.5 shrink-0 cursor-pointer rounded-[3px] border-line accent-(--accent)', className)}
+      className={cn('h-4 w-4 shrink-0 cursor-pointer rounded-[4px] border-line accent-(--accent)', className)}
       {...rest}
     />
   );
@@ -158,7 +158,7 @@ export function SearchField({
 }) {
   return (
     <div className={cn('relative', className)}>
-      <Search size={13} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-3" aria-hidden />
+      <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-3" aria-hidden />
       <input
         type="search"
         role="searchbox"
@@ -166,7 +166,7 @@ export function SearchField({
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         aria-label={placeholder}
-        className={cn(fieldBase, 'h-8 pl-8')}
+        className={cn(fieldBase, 'h-9 pl-9')}
       />
     </div>
   );
@@ -184,17 +184,16 @@ export function SegmentedControl<T extends string>({
   className?: string;
 }) {
   return (
-    <div role="tablist" className={cn('flex overflow-hidden rounded-(--radius-field) border border-line', className)}>
-      {options.map((o, i) => (
+    <div role="tablist" className={cn('flex gap-0.5 rounded-(--radius-field) border border-line bg-surface-2 p-0.5', className)}>
+      {options.map(o => (
         <button
           key={o.value}
           role="tab"
           aria-selected={o.value === value}
           onClick={() => onChange(o.value)}
           className={cn(
-            'flex-1 px-3 py-1.5 text-xs font-semibold transition-colors duration-150',
-            i > 0 && 'border-l border-line',
-            o.value === value ? 'bg-accent-wash text-accent' : 'bg-bg text-ink-2 hover:bg-surface-2 hover:text-ink',
+            'flex-1 rounded-[6px] px-3 py-1.5 text-xs font-semibold transition-colors duration-150',
+            o.value === value ? 'bg-bg text-accent shadow-(--shadow-soft)' : 'text-ink-2 hover:text-ink',
           )}
         >
           {o.label}

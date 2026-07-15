@@ -11,7 +11,7 @@
   --ink: oklch(0.24 0.012 20);
   --ink-2: oklch(0.4 0.012 20);
   --ink-3: oklch(0.5 0.012 20);
-  --border: oklch(0.905 0.006 20);
+  --border: oklch(0.922 0.005 20);
   --accent: oklch(0.5 0.195 20);
   --accent-press: oklch(0.43 0.18 20);
   --on-accent: oklch(1 0 0);
@@ -20,8 +20,8 @@
   --warn: oklch(0.52 0.12 80);
   --err: oklch(0.5 0.19 27);
   --info: oklch(0.48 0.1 250);
-  --shadow-soft: 0 1px 2px oklch(0.2 0.01 20 / 0.06), 0 4px 16px oklch(0.2 0.01 20 / 0.07);
-  --shadow-pop: 0 4px 12px oklch(0.2 0.01 20 / 0.1), 0 12px 40px oklch(0.2 0.01 20 / 0.14);
+  --shadow-soft: 0 1px 2px oklch(0.2 0.01 20 / 0.04), 0 2px 10px oklch(0.2 0.01 20 / 0.05);
+  --shadow-pop: 0 4px 20px oklch(0.2 0.01 20 / 0.08), 0 18px 50px oklch(0.2 0.01 20 / 0.12);
 }
 
 /* Dark — "Night Desk": warm graphite-black, luminous carmine-rose signal */
@@ -41,8 +41,8 @@
   --warn: oklch(0.8 0.13 85);
   --err: oklch(0.72 0.17 22);
   --info: oklch(0.76 0.1 250);
-  --shadow-soft: 0 1px 2px oklch(0.1 0.01 20 / 0.4), 0 4px 16px oklch(0.1 0.01 20 / 0.45);
-  --shadow-pop: 0 4px 12px oklch(0.08 0.01 20 / 0.5), 0 16px 48px oklch(0.08 0.01 20 / 0.55);
+  --shadow-soft: 0 1px 2px oklch(0.1 0.01 20 / 0.35), 0 2px 10px oklch(0.1 0.01 20 / 0.4);
+  --shadow-pop: 0 4px 20px oklch(0.06 0.01 20 / 0.5), 0 18px 50px oklch(0.06 0.01 20 / 0.55);
 }
 
 @theme inline {
@@ -65,19 +65,19 @@
   --font-sans: 'Instrument Sans Variable', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', monospace;
 
-  /* fixed rem scale, ratio ≈1.2, scaled 1.5x per client request (see DESIGN.md) */
-  --text-2xs: 1.03125rem; /* 11 → 16.5 — pills, badges */
-  --text-xs: 1.125rem; /* 12 → 18 — meta, column headers */
-  --text-sm: 1.21875rem; /* 13 → 19.5 — table cells, secondary */
-  --text-base: 1.3125rem; /* 14 → 21 — body, controls */
-  --text-md: 1.5rem; /* 16 → 24 — section heads */
-  --text-lg: 1.78125rem; /* 19 → 28.5 — panel titles */
-  --text-xl: 2.15625rem; /* 23 → 34.5 — page titles */
-  --text-2xl: 2.625rem; /* 28 → 42 — login only */
+  /* refined modern scale — readable, roomy, hierarchy via weight+space not raw size */
+  --text-2xs: 0.75rem; /* 12 — pills, badges, tiny labels */
+  --text-xs: 0.8125rem; /* 13 — meta, column headers */
+  --text-sm: 0.875rem; /* 14 — table cells, secondary */
+  --text-base: 0.9375rem; /* 15 — body, controls */
+  --text-md: 1.125rem; /* 18 — section heads */
+  --text-lg: 1.375rem; /* 22 — panel titles */
+  --text-xl: 1.625rem; /* 26 — page titles */
+  --text-2xl: 2rem; /* 32 — login only */
 
-  --radius-ctl: 4px;
-  --radius-field: 6px;
-  --radius-card: 10px;
+  --radius-ctl: 6px;
+  --radius-field: 8px;
+  --radius-card: 14px;
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 

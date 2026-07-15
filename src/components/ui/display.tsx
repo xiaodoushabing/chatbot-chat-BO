@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import { CheckCircle2, Circle, CircleDashed, Clock3, FileQuestion, Loader2, MinusCircle, XCircle, type LucideIcon } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
+import { CheckCircle2, ChevronRight, Circle, CircleDashed, Clock3, FileQuestion, Loader2, MinusCircle, XCircle, type LucideIcon } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import type { ApprovalStatus, IndexStatus, IntentState, RunStatus } from '../../data/types';
 
@@ -31,12 +31,12 @@ export function Pill({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-bold whitespace-nowrap',
+        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-semibold whitespace-nowrap',
         toneClass[tone],
         className,
       )}
     >
-      {Icon && <Icon size={11} className={cn(pulse && 'animate-pulse')} aria-hidden />}
+      {Icon && <Icon size={12} className={cn(pulse && 'animate-pulse')} aria-hidden />}
       {children}
     </span>
   );
@@ -126,9 +126,9 @@ export function PageHeader({
   context?: ReactNode;
 }) {
   return (
-    <header className="mb-6">
+    <header className="mb-8">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <h1 className="text-2xl font-bold tracking-tight text-ink text-balance">{title}</h1>
+        <h1 className="text-xl font-bold tracking-tight text-ink text-balance">{title}</h1>
         {context}
         {actions && <div className="ml-auto flex items-center gap-2">{actions}</div>}
       </div>
@@ -137,15 +137,74 @@ export function PageHeader({
   );
 }
 
-export function SectionHeader({ title, meta, actions }: { title: string; meta?: ReactNode; actions?: ReactNode }) {
+/* Section header with the signature accent underline. Pass `plain` to drop the
+   underline when the header sits INSIDE a card/container (avoids the boxed-in look). */
+export function SectionHeader({
+  title,
+  meta,
+  actions,
+  plain,
+}: {
+  title: string;
+  meta?: ReactNode;
+  actions?: ReactNode;
+  plain?: boolean;
+}) {
   return (
-    <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
-      <h2 className="inline-block border-b-[3px] border-accent pb-2 text-md font-bold tracking-[-0.005em] text-ink">
+    <div className="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
+      <h2
+        className={cn(
+          'text-md font-semibold tracking-[-0.005em] text-ink',
+          !plain && 'border-b-2 border-accent pb-2',
+        )}
+      >
         {title}
       </h2>
-      {meta && <span className="font-mono text-xs text-ink-2">{meta}</span>}
-      {actions && <div className="ml-auto flex items-center gap-2">{actions}</div>}
+      {meta && <span className="font-mono text-xs text-ink-3">{meta}</span>}
+      {actions && <div className="ml-auto flex items-center gap-2 self-center">{actions}</div>}
     </div>
+  );
+}
+
+/* Collapsible section — for less-critical content that should fold away by default.
+   Header stays visible and clickable; body expands/collapses. */
+export function Collapsible({
+  title,
+  meta,
+  actions,
+  defaultOpen = false,
+  children,
+  className,
+}: {
+  title: string;
+  meta?: ReactNode;
+  actions?: ReactNode;
+  defaultOpen?: boolean;
+  children: ReactNode;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className={className}>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <button
+          type="button"
+          onClick={() => setOpen(v => !v)}
+          aria-expanded={open}
+          className="group -ml-1 flex items-center gap-2 rounded-(--radius-ctl) px-1 py-0.5 text-md font-semibold tracking-[-0.005em] text-ink transition-colors hover:text-accent"
+        >
+          <ChevronRight
+            size={17}
+            aria-hidden
+            className={cn('shrink-0 text-ink-3 transition-transform duration-200 ease-(--ease-out) group-hover:text-accent', open && 'rotate-90')}
+          />
+          {title}
+        </button>
+        {meta && <span className="font-mono text-xs text-ink-3">{meta}</span>}
+        {actions && <div className="ml-auto flex items-center gap-2">{actions}</div>}
+      </div>
+      {open && <div className="mt-4">{children}</div>}
+    </section>
   );
 }
 
@@ -161,28 +220,30 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-(--radius-card) border border-dashed border-line px-6 py-12 text-center">
-      <Icon size={22} className="text-ink-3" aria-hidden />
-      <p className="text-sm font-semibold text-ink">{title}</p>
-      <p className="max-w-sm text-sm text-ink-2">{body}</p>
-      {action && <div className="mt-2">{action}</div>}
+    <div className="flex flex-col items-center gap-3 rounded-(--radius-card) border border-line/70 bg-surface-2/40 px-6 py-16 text-center">
+      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-surface-3 text-ink-3">
+        <Icon size={20} aria-hidden />
+      </span>
+      <p className="text-base font-semibold text-ink">{title}</p>
+      <p className="max-w-sm text-sm text-ink-2 text-pretty">{body}</p>
+      {action && <div className="mt-1">{action}</div>}
     </div>
   );
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn('animate-pulse rounded bg-surface-3', className)} aria-hidden />;
+  return <div className={cn('animate-pulse rounded-(--radius-ctl) bg-surface-3', className)} aria-hidden />;
 }
 
 export function TableSkeleton({ rows = 6 }: { rows?: number }) {
   return (
-    <div className="flex flex-col gap-2 py-2" role="status" aria-label="Loading">
+    <div className="flex flex-col gap-3 py-3" role="status" aria-label="Loading">
       {Array.from({ length: rows }, (_, i) => (
         <div key={i} className="flex items-center gap-3 px-2">
-          <Skeleton className="h-3.5 w-3.5" />
-          <Skeleton className="h-3.5 flex-1" />
-          <Skeleton className="h-3.5 w-20" />
-          <Skeleton className="h-3.5 w-24" />
+          <Skeleton className="h-4 w-4" />
+          <Skeleton className="h-4 flex-1" />
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-24" />
         </div>
       ))}
     </div>
@@ -197,7 +258,7 @@ export function ProgressBar({ value, max, className }: { value: number; max: num
       aria-valuenow={value}
       aria-valuemin={0}
       aria-valuemax={max}
-      className={cn('h-1.5 overflow-hidden rounded-full bg-ink/12', className)}
+      className={cn('h-1.5 overflow-hidden rounded-full bg-ink/10', className)}
     >
       <div
         className="h-full rounded-full bg-accent transition-[width] duration-300 ease-(--ease-out)"
@@ -209,11 +270,11 @@ export function ProgressBar({ value, max, className }: { value: number; max: num
 
 export function KeyValue({ items }: { items: Array<[string, ReactNode]> }) {
   return (
-    <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-1.5 text-sm">
+    <dl className="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-2.5 text-sm">
       {items.map(([k, v]) => (
         <div key={k} className="contents">
-          <dt className="text-xs font-semibold tracking-wide text-ink-3 uppercase self-center">{k}</dt>
-          <dd className="text-ink min-w-0">{v}</dd>
+          <dt className="self-center text-xs font-medium text-ink-3">{k}</dt>
+          <dd className="min-w-0 text-ink">{v}</dd>
         </div>
       ))}
     </dl>
@@ -242,7 +303,7 @@ export function Tabs<T extends string>({
           aria-selected={t.value === value}
           onClick={() => onChange(t.value)}
           className={cn(
-            'relative px-3 pb-2 pt-1 text-sm font-semibold transition-colors duration-150',
+            'relative px-3.5 pb-2.5 pt-1 text-sm font-semibold transition-colors duration-150',
             t.value === value ? 'text-ink' : 'text-ink-2 hover:text-ink',
           )}
         >
