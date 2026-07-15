@@ -1,15 +1,8 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-import {
-  ArrowRight,
-  CheckCircle2,
-  ChevronRight,
-  ClipboardCheck,
-  Inbox,
-  Sparkles,
-} from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, ClipboardCheck, Inbox, Sparkles, TrendingUp } from 'lucide-react';
 import { useStore } from '../../state/store';
-import { fmtDateTime, fmtDuration, plural } from '../../lib/format';
+import { fmtDateTime, plural } from '../../lib/format';
 import { cn } from '../../lib/cn';
 import { Button } from '../../components/ui/controls';
 import {
@@ -31,44 +24,75 @@ function isStale(iso: string | null): boolean {
   return iso !== null && Date.now() - new Date(iso).getTime() > STALE_MS;
 }
 
-/* ── Pipeline flow strip: draft → staged → pending approval → live ── */
+/* Shared card shell for the dashboard's summary cards — white, 22px radius, soft shadow. */
+const CARD = 'rounded-(--radius-card) border border-line bg-bg p-6 shadow-(--shadow-soft) sm:p-7';
+
+/* ── Pipeline flow: draft → staged → pending approval → live ──
+   Big Fraunces numerals in lifecycle colors, each a link into the stage's home
+   screen, with a thin gradient connector that fills on first paint. */
+
+const STAGE_TONE = {
+  draft: { text: 'text-draft', dot: 'bg-draft' },
+  staged: { text: 'text-staged', dot: 'bg-staged' },
+  pending: { text: 'text-pending', dot: 'bg-pending' },
+  live: { text: 'text-live', dot: 'bg-live' },
+} as const;
 
 function FlowStrip({ intents }: { intents: Intent[] }) {
+  const [go, setGo] = useState(false);
+  useEffect(() => {
+    setGo(true);
+  }, []);
+
   const count = (state: Intent['state']) => intents.filter(i => i.state === state).length;
-  const stages = [
+  const stages: Array<{ key: keyof typeof STAGE_TONE; label: string; count: number; to: string; hint: string }> = [
     { key: 'draft', label: 'Draft', count: count('draft'), to: '/studio', hint: 'awaiting staging in Studio' },
     { key: 'staged', label: 'Staged', count: count('staged'), to: '/review', hint: 'in Review' },
     { key: 'pending', label: 'Pending approval', count: count('pending_approval'), to: '/approvals', hint: 'with checkers' },
     { key: 'live', label: 'Live', count: count('live'), to: '/library', hint: 'in the Intent Library' },
   ];
+
   return (
-    <div
-      role="navigation"
-      aria-label="Intent pipeline"
-      className="flex items-stretch overflow-x-auto rounded-(--radius-ctl) border border-line"
-    >
-      {stages.map((s, i) => (
-        <div key={s.key} className="flex min-w-0 flex-1 items-stretch">
-          {i > 0 && (
-            <span className="flex items-center border-l border-line px-1 text-ink-3" aria-hidden>
-              <ChevronRight size={13} />
-            </span>
-          )}
-          <Link
-            to={s.to}
-            aria-label={`${plural(s.count, `${s.label.toLowerCase()} intent`)} — ${s.hint}`}
-            className="group min-w-0 flex-1 px-4 py-3 transition-colors duration-150 hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
-          >
-            <span className="block text-2xs font-bold tracking-wider text-ink-3 uppercase">{s.label}</span>
-            <span className="mt-0.5 flex items-baseline gap-2">
-              <span className="font-mono text-lg font-semibold text-ink tabular-nums">{s.count}</span>
-              <span className="text-xs text-ink-2 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 max-lg:hidden">
-                {s.hint}
-              </span>
-            </span>
-          </Link>
-        </div>
-      ))}
+    <div>
+      <div role="navigation" aria-label="Intent pipeline" className="flex items-stretch">
+        {stages.map((s, i) => {
+          const tone = STAGE_TONE[s.key];
+          return (
+            <div key={s.key} className="flex min-w-0 flex-1 items-stretch">
+              {i > 0 && <span className="my-2 w-px shrink-0 bg-line-soft" aria-hidden />}
+              <Link
+                to={s.to}
+                aria-label={`${plural(s.count, `${s.label.toLowerCase()} intent`)} — ${s.hint}`}
+                className="group min-w-0 flex-1 rounded-(--radius-ctl) px-2 py-2 text-center transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
+              >
+                <span
+                  className={cn(
+                    'block font-display text-2xl leading-none font-medium tracking-[-0.02em] tabular-nums transition-transform duration-200 ease-(--ease-out) group-hover:scale-[1.05]',
+                    tone.text,
+                  )}
+                >
+                  {s.count}
+                </span>
+                <span className="mt-2 block text-2xs font-semibold tracking-wide text-ink-2 uppercase">{s.label}</span>
+                <span className={cn('mx-auto mt-3 block h-2.5 w-2.5 rounded-full shadow-[0_0_0_4px_var(--bg)]', tone.dot)} aria-hidden />
+                <span className="mt-1.5 block h-3.5 text-2xs text-ink-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 max-lg:hidden">
+                  {s.hint}
+                </span>
+              </Link>
+            </div>
+          );
+        })}
+      </div>
+      <div className="relative mx-[6%] mt-1 h-[3px] overflow-hidden rounded-full bg-line-soft">
+        <div
+          aria-hidden
+          className="absolute inset-0 origin-left rounded-full transition-transform duration-[1100ms] ease-(--ease-out)"
+          style={{
+            background: 'linear-gradient(90deg, var(--draft), var(--staged), var(--pending), var(--live))',
+            transform: go ? 'scaleX(1)' : 'scaleX(0)',
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -87,28 +111,28 @@ interface AttentionItem {
 function AttentionList({ items }: { items: AttentionItem[] }) {
   if (items.length === 0) {
     return (
-      <p className="flex items-center gap-2 rounded-(--radius-ctl) border border-dashed border-line px-4 py-3.5 text-sm text-ink-2">
-        <CheckCircle2 size={14} className="shrink-0 text-ok" aria-hidden />
+      <p className="flex items-center gap-2.5 rounded-(--radius-field) border border-dashed border-line px-4 py-4 text-sm text-ink-2">
+        <CheckCircle2 size={15} className="shrink-0 text-ok" aria-hidden />
         Nothing needs your attention right now.
       </p>
     );
   }
   return (
-    <ul className="overflow-hidden rounded-(--radius-ctl) border border-line">
+    <ul className="flex flex-col gap-0.5">
       {items.map(item => (
-        <li key={item.id} className="border-b border-line last:border-b-0">
+        <li key={item.id}>
           <Link
             to={item.to}
-            className="flex items-center gap-3 px-4 py-3 transition-colors duration-150 hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
+            className="group flex items-center gap-3 rounded-(--radius-field) px-3 py-3 transition-[background-color,transform] duration-200 ease-(--ease-out) hover:translate-x-0.5 hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
           >
             {item.pill}
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium text-ink">{item.title}</span>
-              <span className="block truncate text-xs text-ink-2">{item.meta}</span>
+              <span className="block truncate text-sm font-semibold text-ink">{item.title}</span>
+              <span className="block truncate text-xs text-ink-3">{item.meta}</span>
             </span>
             <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-accent">
               {item.action}
-              <ArrowRight size={12} aria-hidden />
+              <ArrowRight size={12} className="transition-transform duration-150 ease-(--ease-out) group-hover:translate-x-0.5" aria-hidden />
             </span>
           </Link>
         </li>
@@ -136,57 +160,48 @@ function RecentRuns({ runs, topics }: { runs: Run[]; topics: Topic[] }) {
     );
   }
   return (
-    <TableShell>
-      <thead>
-        <tr>
-          <Th>Run</Th>
-          <Th>Type</Th>
-          <Th>Topic</Th>
-          <Th>Status</Th>
-          <Th className="text-right">Drafted</Th>
-          <Th className="text-right">OK / Skip / Fail</Th>
-          <Th className="text-right">Duration</Th>
-          <Th>Started</Th>
-        </tr>
-      </thead>
-      <tbody>
+    <div className="overflow-hidden rounded-(--radius-card) border border-line bg-bg shadow-(--shadow-soft)">
+      <ul>
         {runs.map(run => {
           const topic = topics.find(t => t.id === run.topicId);
-          const p = run.progress;
           return (
-            <Tr key={run.id} onClick={() => navigate(`/studio/runs/${run.id}`)}>
-              <Td mono>
-                <Link
-                  to={`/studio/runs/${run.id}`}
-                  onClick={e => e.stopPropagation()}
-                  className="text-accent hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--accent)"
-                >
-                  {run.id}
-                </Link>
-              </Td>
-              <Td className="text-sm text-ink-2 capitalize">{run.type}</Td>
-              <Td className="text-sm text-ink">{topic?.name ?? '—'}</Td>
-              <Td>
-                <RunStatusPill status={run.status} />
-              </Td>
-              <Td mono className="text-right tabular-nums">
-                {p.intentsDrafted}
-              </Td>
-              <Td mono className="text-right tabular-nums">
-                {p.succeeded} / {p.skipped} / {p.failed}
-              </Td>
-              <Td mono className="text-right tabular-nums">
-                {run.durationSec !== null ? fmtDuration(run.durationSec) : '—'}
-              </Td>
-              <Td>
-                <span className="block text-sm text-ink">{run.startedBy}</span>
-                <Mono className="text-2xs">{fmtDateTime(run.startedAt)}</Mono>
-              </Td>
-            </Tr>
+            <li key={run.id} className="border-b border-line-soft last:border-b-0">
+              <Link
+                to={`/studio/runs/${run.id}`}
+                className="group flex items-center gap-4 px-5 py-4 transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
+              >
+                <span className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-(--radius-ctl) bg-accent-wash text-accent transition-transform duration-200 ease-(--ease-out) group-hover:scale-105">
+                  <Sparkles size={16} aria-hidden />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="truncate text-sm font-semibold text-ink">
+                      {topic?.name ?? 'Unknown topic'}
+                      <span className="font-normal text-ink-3"> · {run.type === 'batch' ? 'Batch' : 'Single'}</span>
+                    </span>
+                    <RunStatusPill status={run.status} />
+                  </span>
+                  <span className="mt-0.5 block truncate text-xs text-ink-3">
+                    {run.startedBy} · {fmtDateTime(run.startedAt)} · {plural(run.sourceIds.length, 'source')}
+                  </span>
+                </span>
+                <span className="shrink-0 text-right">
+                  <span className="block font-display text-lg leading-none font-medium tabular-nums text-ink">
+                    {run.progress.intentsDrafted}
+                  </span>
+                  <span className="mt-1 block text-2xs font-semibold tracking-wide text-ink-3 uppercase">Intents</span>
+                </span>
+                <ArrowRight
+                  size={15}
+                  className="shrink-0 text-ink-3 transition-[transform,color] duration-150 ease-(--ease-out) group-hover:translate-x-0.5 group-hover:text-accent"
+                  aria-hidden
+                />
+              </Link>
+            </li>
           );
         })}
-      </tbody>
-    </TableShell>
+      </ul>
+    </div>
   );
 }
 
@@ -301,6 +316,14 @@ export default function Dashboard() {
   const recentRuns = projectRuns.slice(0, 5);
   const projectApprovals = useMemo(() => approvals.filter(a => topicIds.has(a.topicId)), [approvals, topicIds]);
 
+  // Calm, factual pulse for the pipeline card — intents touched in the last 7 days.
+  const recentlyTouched = useMemo(
+    () =>
+      projectIntents.filter(i => i.state !== 'deleted' && Date.now() - new Date(i.updatedAt).getTime() <= STALE_MS)
+        .length,
+    [projectIntents],
+  );
+
   const topicName = (id: string) => projectTopics.find(t => t.id === id)?.name ?? '—';
 
   const attention = useMemo<AttentionItem[]>(() => {
@@ -343,6 +366,12 @@ export default function Dashboard() {
   }, [user.role, user.name, projectApprovals, projectIntents, projectTopics]);
 
   const pendingCount = projectApprovals.filter(a => a.status === 'pending').length;
+  const attentionMeta =
+    user.role === 'checker'
+      ? `${plural(pendingCount, 'pending request')} in project`
+      : attention.length > 0
+        ? plural(attention.length, 'item')
+        : undefined;
 
   return (
     <div>
@@ -368,27 +397,30 @@ export default function Dashboard() {
       />
 
       <div className="flex flex-col gap-10">
-        <section aria-label="Intent pipeline">
-          <SectionHeader
-            title="Pipeline"
-            meta={`${plural(projectIntents.filter(i => i.state !== 'deleted').length, 'intent')} in flow`}
-          />
-          <FlowStrip intents={projectIntents} />
-        </section>
+        <div className="grid grid-cols-1 items-start gap-[22px] lg:grid-cols-[1.55fr_1fr]">
+          <section aria-label="Intent pipeline" className={CARD}>
+            <SectionHeader title="Pipeline" plain />
+            <p className="mb-6 text-xs text-ink-3">Every intent, from first draft to live in the chatbot.</p>
+            <FlowStrip intents={projectIntents} />
+            {recentlyTouched > 0 && (
+              <div className="mt-6 flex items-center gap-2.5 rounded-(--radius-field) bg-accent-wash px-4 py-3 text-xs font-semibold text-accent">
+                <TrendingUp size={15} className="shrink-0" aria-hidden />
+                {plural(recentlyTouched, 'intent')} touched in the past 7 days.
+              </div>
+            )}
+          </section>
 
-        <section aria-label="Needs my attention">
-          <SectionHeader
-            title="Needs my attention"
-            meta={
-              user.role === 'checker'
-                ? `${plural(pendingCount, 'pending request')} in project`
-                : attention.length > 0
-                  ? plural(attention.length, 'item')
-                  : undefined
-            }
-          />
-          <AttentionList items={attention} />
-        </section>
+          <section aria-label="Needs my attention" className={CARD}>
+            <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
+              <h2 className="flex items-center gap-2 text-md font-semibold tracking-[-0.005em] text-ink">
+                <AlertTriangle size={16} className="text-staged" aria-hidden />
+                Needs your attention
+              </h2>
+              {attentionMeta && <span className="font-mono text-xs text-ink-3">{attentionMeta}</span>}
+            </div>
+            <AttentionList items={attention} />
+          </section>
+        </div>
 
         <section aria-label="Recent runs">
           <SectionHeader

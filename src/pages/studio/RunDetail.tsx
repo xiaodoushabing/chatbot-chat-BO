@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
-import { AnimatePresence, motion } from 'motion/react';
-import { ArrowLeft, FileX2, Layers, Pencil, X } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { ArrowLeft, FileX2, Layers, Pencil, SlidersHorizontal, X } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
 import type { Intent, Run } from '../../data/types';
@@ -22,7 +22,7 @@ import {
 import { TableShell, Td, Th, Tr } from '../../components/ui/table';
 import { Drawer } from '../../components/ui/overlay';
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+const EASE = [0.22, 0.61, 0.36, 1] as const;
 
 /* ── Inline edit drawer (question / response / utterances) ── */
 
@@ -98,9 +98,26 @@ function EditIntentDrawer({ intent, onClose }: { intent: Intent | null; onClose:
   );
 }
 
-/* ── One intent card (adopted structure: header row → labeled sections → chips → meta) ── */
+/* ── One intent card — white, soft-shadow card: header row → labeled
+   sections (Fraunces question, response, utterance chips, source chips) →
+   created-by meta. Mirrors the structure used across Review/Library so the
+   governance vocabulary reads the same everywhere. ── */
 
 const LONG_RESPONSE = 260;
+
+function ChipRow({ label, count, empty, children }: { label: string; count?: number; empty?: boolean; children: ReactNode }) {
+  return (
+    <div className="mt-3">
+      <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">
+        {label}
+        {typeof count === 'number' && <span className="ml-1 normal-case tracking-normal text-ink-3">({count})</span>}
+      </p>
+      <div className="mt-1.5 flex flex-wrap gap-1.5">
+        {empty ? <span className="text-xs text-ink-3">None recorded</span> : children}
+      </div>
+    </div>
+  );
+}
 
 function IntentCard({
   intent,
@@ -123,6 +140,7 @@ function IntentCard({
   onToggleExpand: () => void;
   onEdit: () => void;
 }) {
+  const reduce = useReducedMotion();
   const stageable = canAct && intent.state === 'draft';
   const editable = canAct && (intent.state === 'draft' || intent.state === 'staged');
   const isLong = intent.response.length > LONG_RESPONSE;
@@ -130,8 +148,8 @@ function IntentCard({
     <article
       aria-label={`Intent: ${intent.question}`}
       className={cn(
-        'rounded-(--radius-card) border bg-surface-2 px-4 py-3.5 transition-colors duration-150',
-        selected ? 'border-accent/60' : 'border-line',
+        'rounded-(--radius-card) border bg-bg px-4 py-3.5 shadow-(--shadow-soft) transition-[box-shadow,border-color,background-color] duration-150 ease-(--ease-out) hover:shadow-(--shadow-2)',
+        selected ? 'border-accent/60 bg-accent/4' : 'border-line',
       )}
     >
       {/* Header row: checkbox (draft only) · topic tag · state pill · edit */}
@@ -143,25 +161,27 @@ function IntentCard({
             aria-label={`Select intent: ${intent.question}`}
           />
         )}
-        <span className="rounded-full border border-line bg-bg px-2 py-0.5 text-2xs font-semibold text-ink-2">
+        <span className="rounded-full border border-line bg-surface-2 px-2 py-0.5 text-2xs font-semibold text-ink-2">
           {topicName}
         </span>
         <IntentStatePill state={intent.state} />
         <div className="ml-auto flex items-center gap-1">
           {editable && (
-            <IconButton label={`Edit intent: ${intent.question}`} onClick={onEdit}>
+            <IconButton label={`Edit intent: ${intent.question}`} className="h-7 w-7" onClick={onEdit}>
               <Pencil size={13} aria-hidden />
             </IconButton>
           )}
         </div>
       </div>
 
-      {/* Intent question */}
+      {/* Intent question — Fraunces, the one flourish inside the card */}
       <div className="mt-3">
         <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">
           Intent question (user query)
         </p>
-        <p className="mt-1 text-sm font-semibold text-ink text-balance">{intent.question}</p>
+        <p className="mt-1 font-display text-md leading-snug font-medium text-ink text-balance">
+          {intent.question}
+        </p>
       </div>
 
       <div className="my-3 h-px bg-line" aria-hidden />
@@ -169,14 +189,16 @@ function IntentCard({
       {/* Expected response */}
       <div>
         <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">Expected response</p>
-        <p
+        <motion.p
+          layout={!reduce}
+          transition={{ duration: 0.28, ease: EASE }}
           className={cn(
             'mt-1 max-w-prose text-sm leading-relaxed text-ink-2',
             isLong && !expanded && 'line-clamp-3',
           )}
         >
           {intent.response}
-        </p>
+        </motion.p>
         {isLong && (
           <button
             onClick={onToggleExpand}
@@ -188,30 +210,29 @@ function IntentCard({
         )}
       </div>
 
-      {/* Source references */}
-      <div className="mt-3">
-        <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">Source references</p>
-        <div className="mt-1.5 flex flex-wrap gap-1.5">
-          {sourceNames.length > 0 ? (
-            sourceNames.map(n => (
-              <span
-                key={n}
-                className="rounded-full border border-line bg-bg px-2 py-0.5 font-mono text-xs text-ink-2"
-              >
-                {n}
-              </span>
-            ))
-          ) : (
-            <span className="text-xs text-ink-3">None recorded</span>
-          )}
-        </div>
-      </div>
+      {/* Utterances */}
+      <ChipRow label="Utterances" count={intent.utterances.length} empty={intent.utterances.length === 0}>
+        {intent.utterances.map((u, i) => (
+          <span key={i} className="max-w-full truncate rounded-full border border-line bg-surface-2 px-2 py-0.5 text-xs text-ink-2">
+            {u}
+          </span>
+        ))}
+      </ChipRow>
 
-      {/* Footer meta: utterances left, created-by right-aligned */}
-      <div className="mt-3 flex items-baseline gap-3">
-        <span className="font-mono text-xs text-ink-3">{plural(intent.utterances.length, 'utterance')}</span>
-        <span className="ml-auto text-right text-xs text-ink-3">
-          Created by {intent.createdBy} · {fmtDateTime(intent.createdAt)}
+      {/* Source references */}
+      <ChipRow label="Source references" empty={sourceNames.length === 0}>
+        {sourceNames.map(n => (
+          <span key={n} className="max-w-full truncate rounded-full border border-line bg-surface-2 px-2 py-0.5 font-mono text-xs text-ink-2">
+            {n}
+          </span>
+        ))}
+      </ChipRow>
+
+      {/* Footer meta */}
+      <div className="mt-3 flex items-baseline gap-3 border-t border-line pt-2.5">
+        <span className="text-xs text-ink-2">Created by {intent.createdBy}</span>
+        <span className="ml-auto text-right">
+          <Mono>{fmtDateTime(intent.createdAt)}</Mono>
         </span>
       </div>
     </article>
@@ -224,6 +245,7 @@ export default function RunDetail() {
   const { runId } = useParams<{ runId: string }>();
   const store = useStore();
   const { runs, topics, sources, intents, projectId, user, stageIntents } = store;
+  const reduce = useReducedMotion();
 
   const run: Run | undefined = runs.find(r => r.id === runId);
   const topic = run ? topics.find(t => t.id === run.topicId) : undefined;
@@ -325,19 +347,17 @@ export default function RunDetail() {
     setSelected(new Set());
   };
 
-  const paramItems: Array<[string, React.ReactNode]> = [
+  const paramItems: Array<[string, ReactNode]> = [
     ['Type', <span className="text-sm capitalize">{run.type === 'batch' ? 'GenAI · Batch' : 'GenAI · Single'}</span>],
     ['Topic', topic.name],
     ['Max intents', <Mono className="text-ink">{run.params.maxIntents}</Mono>],
     ['Tonality', run.params.tonality],
     ...(run.type === 'batch'
-      ? ([['Batch file', <Mono className="text-ink">{run.params.batchFile ?? '—'}</Mono>]] as Array<
-          [string, React.ReactNode]
-        >)
+      ? ([['Batch file', <Mono className="text-ink">{run.params.batchFile ?? '—'}</Mono>]] as Array<[string, ReactNode]>)
       : ([
           ['Intent question', run.params.intentQuestion ?? '—'],
           ['Content requirements', <span className="text-sm text-ink-2">{run.params.contentRequirements ?? '—'}</span>],
-        ] as Array<[string, React.ReactNode]>)),
+        ] as Array<[string, ReactNode]>)),
     [
       'Sources used',
       <span className="flex flex-wrap gap-x-2 gap-y-0.5">
@@ -354,18 +374,19 @@ export default function RunDetail() {
         <span className="text-warn">{p.skipped} skipped</span>
         <span className="text-ink-3"> · </span>
         <span className="text-err">{p.failed} failed</span>
-        <span className="text-ink-3"> · </span>
-        <span className="text-ink-2">{p.intentsDrafted} intents drafted</span>
       </span>,
     ],
     [
       'Duration',
-      <Mono className="text-ink">{elapsedSec != null ? fmtDuration(elapsedSec) : '—'}{running && ' elapsed'}</Mono>,
+      <Mono className="text-ink">
+        {elapsedSec != null ? fmtDuration(elapsedSec) : '—'}
+        {running && ' elapsed'}
+      </Mono>,
     ],
   ];
 
   const intentTable = (
-    <>
+    <section aria-label="Generated intents">
       <SectionHeader
         title={activeChild ? `Intents from row ${activeChild.row}` : 'Generated intents'}
         meta={plural(visibleIntents.length, 'intent')}
@@ -438,10 +459,10 @@ export default function RunDetail() {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.18, ease: EASE }}
+                transition={{ duration: reduce ? 0.01 : 0.18, ease: EASE }}
                 role="region"
                 aria-label="Staging actions"
-                className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-(--radius-card) border border-line bg-bg px-4 py-2.5"
+                className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-(--radius-card) border border-line bg-bg px-4 py-2.5 shadow-(--shadow-soft)"
               >
                 <Checkbox
                   checked={allChecked}
@@ -478,33 +499,40 @@ export default function RunDetail() {
             )}
           </AnimatePresence>
           <div className="flex flex-col gap-3">
-            {visibleIntents.map(intent => (
-              <IntentCard
+            {visibleIntents.map((intent, i) => (
+              <motion.div
                 key={intent.id}
-                intent={intent}
-                topicName={topic.name}
-                sourceNames={intent.sourceIds.map(sourceName)}
-                canAct={canAct}
-                selected={selected.has(intent.id)}
-                onToggleSelect={() => toggleOne(intent.id)}
-                expanded={expanded.has(intent.id)}
-                onToggleExpand={() => toggleExpand(intent.id)}
-                onEdit={() => setEditing(intent)}
-              />
+                initial={reduce ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: reduce ? 0.01 : 0.22, ease: EASE, delay: reduce ? 0 : Math.min(i, 8) * 0.03 }}
+              >
+                <IntentCard
+                  intent={intent}
+                  topicName={topic.name}
+                  sourceNames={intent.sourceIds.map(sourceName)}
+                  canAct={canAct}
+                  selected={selected.has(intent.id)}
+                  onToggleSelect={() => toggleOne(intent.id)}
+                  expanded={expanded.has(intent.id)}
+                  onToggleExpand={() => toggleExpand(intent.id)}
+                  onEdit={() => setEditing(intent)}
+                />
+              </motion.div>
             ))}
           </div>
         </>
       )}
-    </>
+    </section>
   );
 
   return (
     <div className="pb-20">
       <Link
         to="/studio"
-        className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-ink-2 transition-colors duration-150 hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+        className="group mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-ink-2 transition-colors duration-150 hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
       >
-        <ArrowLeft size={13} aria-hidden /> Intent Studio
+        <ArrowLeft size={13} className="transition-transform duration-150 ease-(--ease-out) group-hover:-translate-x-0.5" aria-hidden />
+        Intent Studio
       </Link>
       <PageHeader
         title={run.type === 'batch' ? 'Batch run' : 'Generation run'}
@@ -522,98 +550,115 @@ export default function RunDetail() {
         }
       />
 
-      <section
-        aria-label="Run metadata"
-        className="mb-8 rounded-(--radius-card) border border-line bg-surface-2 px-5 py-4"
-      >
-        {running && (
-          <div className="mb-4">
-            <div className="mb-1.5 flex items-baseline justify-between">
-              <span className="text-xs font-semibold text-ink-2">Progress</span>
-              <span className="font-mono text-xs tabular-nums text-ink-2">
-                {p.done} / {p.total} items · {p.intentsDrafted} drafted
+      <div className="flex flex-col gap-8">
+        <section
+          aria-label="Run metadata"
+          className="rounded-(--radius-card) border border-line bg-surface-2 px-5 py-4 shadow-(--shadow-soft)"
+        >
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <SlidersHorizontal size={14} className="text-accent" aria-hidden />
+            <h2 className="text-md font-semibold text-ink">Run parameters</h2>
+            <div
+              className="ml-auto flex shrink-0 flex-col items-center rounded-(--radius-field) border border-line bg-bg px-4 py-2 shadow-(--shadow-soft)"
+              aria-label={`${p.intentsDrafted} intents drafted`}
+            >
+              <span className="font-display text-lg leading-none font-semibold tabular-nums text-ink">
+                {p.intentsDrafted}
+              </span>
+              <span className="mt-1 text-2xs font-semibold tracking-wide text-ink-3 uppercase">
+                Intents drafted
               </span>
             </div>
-            <ProgressBar value={p.done} max={p.total} />
           </div>
-        )}
-        <KeyValue items={paramItems} />
-      </section>
-
-      {run.type === 'batch' ? (
-        <>
-          <div className="mb-4">
-            <Tabs
-              tabs={[
-                { value: 'all' as const, label: 'All intents', count: runIntents.length },
-                { value: 'rows' as const, label: 'By row', count: run.children.length },
-              ]}
-              value={tab}
-              onChange={v => {
-                setTab(v);
-                if (v === 'all') setChildFilter(null);
-              }}
-            />
-          </div>
-          {tab === 'rows' && (
-            <div className="mb-8">
-              <SectionHeader
-                title="Spreadsheet rows"
-                meta={plural(run.children.length, 'row')}
-                actions={
-                  <span className="text-xs text-ink-2">Click a row to filter the intent list below</span>
-                }
-              />
-              <TableShell>
-                <thead>
-                  <tr>
-                    <Th className="w-16">Row</Th>
-                    <Th>Intent question</Th>
-                    <Th>Status</Th>
-                    <Th>Duration</Th>
-                    <Th>Note</Th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {run.children.map(c => (
-                    <Tr
-                      key={c.id}
-                      selected={childFilter === c.id}
-                      onClick={() => setChildFilter(f => (f === c.id ? null : c.id))}
-                    >
-                      <Td mono>{c.row}</Td>
-                      <Td>
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            setChildFilter(f => (f === c.id ? null : c.id));
-                          }}
-                          aria-pressed={childFilter === c.id}
-                          className="text-left text-sm font-medium text-ink transition-colors duration-150 hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
-                        >
-                          {c.intentQuestion}
-                        </button>
-                      </Td>
-                      <Td>
-                        <BatchChildPill status={c.status} />
-                      </Td>
-                      <Td mono>{c.durationSec != null ? fmtDuration(c.durationSec) : '—'}</Td>
-                      <Td className="max-w-72">
-                        <span className="block truncate text-xs text-ink-2" title={c.note}>
-                          {c.note ?? ''}
-                        </span>
-                      </Td>
-                    </Tr>
-                  ))}
-                </tbody>
-              </TableShell>
+          {running && (
+            <div className="mb-4">
+              <div className="mb-1.5 flex items-baseline justify-between">
+                <span className="text-xs font-semibold text-ink-2">Progress</span>
+                <span className="font-mono text-xs tabular-nums text-ink-2">
+                  {p.done} / {p.total} items
+                </span>
+              </div>
+              <ProgressBar value={p.done} max={p.total} />
             </div>
           )}
-          {intentTable}
-        </>
-      ) : (
-        intentTable
-      )}
+          <KeyValue items={paramItems} />
+        </section>
+
+        {run.type === 'batch' ? (
+          <>
+            <div>
+              <Tabs
+                tabs={[
+                  { value: 'all' as const, label: 'All intents', count: runIntents.length },
+                  { value: 'rows' as const, label: 'By row', count: run.children.length },
+                ]}
+                value={tab}
+                onChange={v => {
+                  setTab(v);
+                  if (v === 'all') setChildFilter(null);
+                }}
+              />
+            </div>
+            {tab === 'rows' && (
+              <section aria-label="Spreadsheet rows">
+                <SectionHeader
+                  title="Spreadsheet rows"
+                  meta={plural(run.children.length, 'row')}
+                  actions={
+                    <span className="text-xs text-ink-2">Click a row to filter the intent list below</span>
+                  }
+                />
+                <TableShell>
+                  <thead>
+                    <tr>
+                      <Th className="w-16">Row</Th>
+                      <Th>Intent question</Th>
+                      <Th>Status</Th>
+                      <Th>Duration</Th>
+                      <Th>Note</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {run.children.map(c => (
+                      <Tr
+                        key={c.id}
+                        selected={childFilter === c.id}
+                        onClick={() => setChildFilter(f => (f === c.id ? null : c.id))}
+                      >
+                        <Td mono>{c.row}</Td>
+                        <Td>
+                          <button
+                            onClick={e => {
+                              e.stopPropagation();
+                              setChildFilter(f => (f === c.id ? null : c.id));
+                            }}
+                            aria-pressed={childFilter === c.id}
+                            className="text-left text-sm font-medium text-ink transition-colors duration-150 hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+                          >
+                            {c.intentQuestion}
+                          </button>
+                        </Td>
+                        <Td>
+                          <BatchChildPill status={c.status} />
+                        </Td>
+                        <Td mono>{c.durationSec != null ? fmtDuration(c.durationSec) : '—'}</Td>
+                        <Td className="max-w-72">
+                          <span className="block truncate text-xs text-ink-2" title={c.note}>
+                            {c.note ?? ''}
+                          </span>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </tbody>
+                </TableShell>
+              </section>
+            )}
+            {intentTable}
+          </>
+        ) : (
+          intentTable
+        )}
+      </div>
 
       <EditIntentDrawer key={editing?.id ?? 'none'} intent={editing} onClose={() => setEditing(null)} />
     </div>

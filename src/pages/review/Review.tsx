@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import {
   ClipboardCheck,
   Lock,
@@ -36,6 +37,8 @@ import { Drawer, Modal } from '../../components/ui/overlay';
 /* Review — the maker's staging area. Staged intents gather here (across the
    project's topics) until the maker submits them for checker approval. */
 
+const EASE = [0.22, 0.61, 0.36, 1] as const;
+
 function OriginCell({ intent }: { intent: Intent }) {
   if (intent.origin.kind === 'manual') {
     return <span className="text-xs font-medium text-ink-2">Manual</span>;
@@ -62,6 +65,7 @@ function IntentCard({
   sourceNames,
   readOnly,
   selected,
+  reduceMotion,
   onToggleSelect,
   onEdit,
   onUnstage,
@@ -71,16 +75,29 @@ function IntentCard({
   sourceNames: string[];
   readOnly: boolean;
   selected: boolean;
+  reduceMotion: boolean;
   onToggleSelect: () => void;
   onEdit: () => void;
   onUnstage: () => void;
 }) {
   return (
-    <article
+    <motion.article
+      layout={!reduceMotion}
+      initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={
+        reduceMotion
+          ? { opacity: 0 }
+          : { opacity: 0, y: 46, scale: 0.94, transition: { duration: 0.3, ease: EASE } }
+      }
+      whileHover={reduceMotion ? undefined : { y: -3 }}
+      transition={{ duration: reduceMotion ? 0.01 : 0.3, ease: EASE }}
       aria-label={intent.question}
       className={cn(
-        'rounded-(--radius-card) border bg-bg px-4 py-3.5 transition-colors duration-150',
-        selected ? 'border-accent/60 bg-accent/4' : 'border-line',
+        'rounded-(--radius-card) border bg-bg px-5 py-4 shadow-(--shadow-soft)',
+        'transition-[box-shadow,background-color,border-color] duration-200 ease-(--ease-out)',
+        'hover:shadow-(--shadow-2)',
+        selected ? 'border-accent/60 bg-accent-wash/40' : 'border-line',
       )}
     >
       {/* Card header */}
@@ -113,7 +130,9 @@ function IntentCard({
         <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">
           Intent question (user query)
         </p>
-        <p className="mt-1 text-sm font-semibold text-ink text-balance">{intent.question}</p>
+        <p className="mt-1 font-display text-md font-medium tracking-[-0.01em] text-ink text-balance">
+          {intent.question}
+        </p>
       </div>
 
       <div className="my-3 h-px bg-line" aria-hidden />
@@ -161,7 +180,7 @@ function IntentCard({
           {plural(intent.utterances.length, 'utterance')}
         </span>
       </div>
-    </article>
+    </motion.article>
   );
 }
 
@@ -281,6 +300,7 @@ export default function Review() {
     withdrawRequest,
   } = useStore();
 
+  const reduceMotion = !!useReducedMotion();
   const isChecker = user.role === 'checker';
   const projectTopics = useMemo(
     () => topics.filter(t => t.projectId === projectId),
@@ -489,28 +509,31 @@ export default function Review() {
               </div>
             )}
 
-            {/* Intent cards */}
+            {/* Intent cards — leaving cards (submitted or unstaged) fly out toward the toast. */}
             <div className="flex flex-col gap-3">
-              {visible.map(intent => (
-                <IntentCard
-                  key={intent.id}
-                  intent={intent}
-                  topicName={topicName(intent.topicId)}
-                  sourceNames={intent.sourceIds.map(sourceName)}
-                  readOnly={isChecker}
-                  selected={!isChecker && selected.has(intent.id)}
-                  onToggleSelect={() => toggleOne(intent.id)}
-                  onEdit={() => setEditingId(intent.id)}
-                  onUnstage={() => {
-                    unstageIntents([intent.id]);
-                    setSelected(prev => {
-                      const next = new Set(prev);
-                      next.delete(intent.id);
-                      return next;
-                    });
-                  }}
-                />
-              ))}
+              <AnimatePresence mode="popLayout" initial={false}>
+                {visible.map(intent => (
+                  <IntentCard
+                    key={intent.id}
+                    intent={intent}
+                    topicName={topicName(intent.topicId)}
+                    sourceNames={intent.sourceIds.map(sourceName)}
+                    readOnly={isChecker}
+                    selected={!isChecker && selected.has(intent.id)}
+                    reduceMotion={reduceMotion}
+                    onToggleSelect={() => toggleOne(intent.id)}
+                    onEdit={() => setEditingId(intent.id)}
+                    onUnstage={() => {
+                      unstageIntents([intent.id]);
+                      setSelected(prev => {
+                        const next = new Set(prev);
+                        next.delete(intent.id);
+                        return next;
+                      });
+                    }}
+                  />
+                ))}
+              </AnimatePresence>
             </div>
           </>
         )}

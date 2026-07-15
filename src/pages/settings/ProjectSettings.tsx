@@ -120,62 +120,62 @@ function SettingsBody() {
         {/* ── SharePoint root ── (header outside the card, consistent with the sections below) */}
         <section aria-labelledby="root-heading">
           <SectionHeader title="SharePoint root" meta={<span id="root-heading">created {fmtDateTime(project.createdAt)} by {project.createdBy}</span>} />
-          <div className="rounded-(--radius-card) border border-line p-6">
-          <Field label="Root folder URL" htmlFor={rootInputId}>
-            <div className="flex items-start gap-2">
-              <Input
-                id={rootInputId}
-                value={rootUrl}
-                readOnly={!rootEditable}
-                aria-readonly={!rootEditable}
-                disabled={!isOwner}
-                onChange={e => {
-                  setRootUrl(e.target.value);
-                  setTest({ status: 'idle' });
-                }}
-                className="max-w-2xl font-mono text-xs"
-                placeholder="https://…sharepoint.com/sites/…"
-              />
-              <Button
-                onClick={runTest}
-                loading={test.status === 'loading'}
-                disabled={!rootUrl.trim()}
-                className="shrink-0"
-              >
-                {test.status === 'loading' ? 'Testing…' : 'Test URL'}
-              </Button>
-              {isOwner && rootLockedByTopics && (
-                <Button variant="ghost" className="shrink-0" onClick={() => setUnlockOpen(true)}>
-                  <Pencil size={13} aria-hidden /> Edit root
+          <div className="rounded-(--radius-card) border border-line bg-bg p-6 shadow-(--shadow-soft)">
+            <Field label="Root folder URL" htmlFor={rootInputId}>
+              <div className="flex items-start gap-2">
+                <Input
+                  id={rootInputId}
+                  value={rootUrl}
+                  readOnly={!rootEditable}
+                  aria-readonly={!rootEditable}
+                  disabled={!isOwner}
+                  onChange={e => {
+                    setRootUrl(e.target.value);
+                    setTest({ status: 'idle' });
+                  }}
+                  className="max-w-2xl font-mono text-xs"
+                  placeholder="https://…sharepoint.com/sites/…"
+                />
+                <Button
+                  onClick={runTest}
+                  loading={test.status === 'loading'}
+                  disabled={!rootUrl.trim()}
+                  className="shrink-0"
+                >
+                  {test.status === 'loading' ? 'Testing…' : 'Test URL'}
                 </Button>
-              )}
-            </div>
-          </Field>
+                {isOwner && rootLockedByTopics && (
+                  <Button variant="ghost" className="shrink-0" onClick={() => setUnlockOpen(true)}>
+                    <Pencil size={13} aria-hidden /> Edit root
+                  </Button>
+                )}
+              </div>
+            </Field>
 
-          {test.status === 'ok' && (
-            <p role="status" className="mt-2 flex items-center gap-1.5 text-xs font-medium text-ok">
-              <CheckCircle2 size={13} aria-hidden />
-              Reachable — resolved site: {test.siteName}
-            </p>
-          )}
-          {test.status === 'err' && (
-            <p role="alert" className="mt-2 flex items-center gap-1.5 text-xs font-medium text-err">
-              <XCircle size={13} aria-hidden />
-              {test.error}
-            </p>
-          )}
+            {test.status === 'ok' && (
+              <p role="status" className="mt-2 flex items-center gap-1.5 text-xs font-medium text-ok">
+                <CheckCircle2 size={13} aria-hidden />
+                Reachable — resolved site: {test.siteName}
+              </p>
+            )}
+            {test.status === 'err' && (
+              <p role="alert" className="mt-2 flex items-center gap-1.5 text-xs font-medium text-err">
+                <XCircle size={13} aria-hidden />
+                {test.error}
+              </p>
+            )}
 
-          {isOwner && rootLockedByTopics && (
-            <p className="mt-3 flex items-center gap-1.5 text-xs text-ink-2">
-              <Lock size={12} className="shrink-0 text-ink-3" aria-hidden />
-              Locked — {plural(projectTopics.length, 'topic')} depend on this root.
-            </p>
-          )}
-          {isOwner && rootUnlocked && projectTopics.length > 0 && (
-            <p className="mt-3 text-xs font-medium text-warn">
-              Unlocked. Existing topic paths won't move with it.
-            </p>
-          )}
+            {isOwner && rootLockedByTopics && (
+              <p className="mt-3 flex items-center gap-1.5 text-xs text-ink-2">
+                <Lock size={12} className="shrink-0 text-ink-3" aria-hidden />
+                Locked — {plural(projectTopics.length, 'topic')} depend on this root.
+              </p>
+            )}
+            {isOwner && rootUnlocked && projectTopics.length > 0 && (
+              <p className="mt-3 text-xs font-medium text-warn">
+                Unlocked. Existing topic paths won't move with it.
+              </p>
+            )}
           </div>
         </section>
 
@@ -438,7 +438,7 @@ function EnumeratePanel({
   };
 
   return (
-    <div className="flex flex-col rounded-(--radius-card) border border-line p-5">
+    <div className="flex flex-col rounded-(--radius-card) border border-line bg-bg p-5 shadow-(--shadow-soft)">
       <div className="mb-1 flex items-center justify-between gap-3">
         <h3 className="text-sm font-semibold text-ink">Auto-enumerate SharePoint subfolders</h3>
         <Button
@@ -471,8 +471,10 @@ function EnumeratePanel({
           <p className="mt-1 text-xs text-ink-3">Enumerating subfolders of the root…</p>
         </div>
       ) : folders === null ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-(--radius-card) border border-dashed border-line px-6 py-10 text-center">
-          <FolderSearch size={20} className="text-ink-3" aria-hidden />
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-(--radius-card) border border-dashed border-line px-6 py-10 text-center">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent-wash text-accent">
+            <FolderSearch size={18} aria-hidden />
+          </span>
           <p className="text-sm font-semibold text-ink">Nothing scanned yet</p>
           <p className="max-w-xs text-xs text-ink-2">Discovered subfolders will appear here.</p>
         </div>
@@ -485,7 +487,7 @@ function EnumeratePanel({
       ) : (
         <>
           <div role="group" aria-label="Discovered folders">
-            <label className="mb-1 flex cursor-pointer items-center gap-3 border-b border-line px-3 pb-2 text-2xs font-bold tracking-wider text-ink-3 uppercase">
+            <label className="mb-1 flex cursor-pointer items-center gap-3 border-b border-line px-3 pb-2 text-2xs font-semibold tracking-wide text-ink-3 uppercase">
               <Checkbox
                 checked={allSelected}
                 indeterminate={!allSelected && someSelected}
@@ -571,7 +573,7 @@ function ManualCreatePanel({ rootUrl }: { rootUrl: string }) {
   };
 
   return (
-    <div className="flex flex-col rounded-(--radius-card) border border-line p-5">
+    <div className="flex flex-col rounded-(--radius-card) border border-line bg-bg p-5 shadow-(--shadow-soft)">
       <h3 className="mb-4 text-sm font-semibold text-ink">Create topic manually</h3>
       <form
         className="flex flex-col gap-4"

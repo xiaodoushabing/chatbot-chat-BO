@@ -1,39 +1,41 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence } from 'motion/react';
-import {
-  Check,
-  ChevronDown,
-  ChevronsUpDown,
-  DatabaseZap,
-  FileSpreadsheet,
-  FileText,
-  FolderOpen,
-  Link2,
-  Lock,
-  RefreshCw,
-} from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { ArrowLeft, ArrowRight, Check, ChevronsUpDown, FolderOpen } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
-import type { IndexStatus, Source, Topic } from '../../data/types';
-import { fmtDate, fmtDateTime, plural } from '../../lib/format';
-import { Button, Checkbox, SearchField, SegmentedControl, Select } from '../../components/ui/controls';
-import {
-  EmptyState,
-  IndexStatusPill,
-  PageHeader,
-  Pill,
-  SectionHeader,
-  TableSkeleton,
-  Tabs,
-} from '../../components/ui/display';
-import { TableShell, Td, Th, Tr } from '../../components/ui/table';
-import GenerationEngine from './GenerationEngine';
+import type { Topic } from '../../data/types';
+import { fmtDateTime } from '../../lib/format';
+import { Button } from '../../components/ui/controls';
+import { Collapsible, EmptyState, PageHeader, Pill } from '../../components/ui/display';
+import WizardRail from './WizardRail';
+import StepSources from './StepSources';
+import StepConfigure, { type GenConfig } from './StepConfigure';
+import StepGenerate from './StepGenerate';
+import StepReview from './StepReview';
 import RunRail from './RunRail';
-import { LiveRunCard } from './LiveRunCard';
+
+const EASE = [0.22, 0.61, 0.36, 1] as const;
+
+/* Directional slide for the step stage. `custom` (the advance direction) is
+   forwarded by AnimatePresence to the exiting step so Back exits rightward.
+   Reduced motion: a plain crossfade, no horizontal travel. */
+const stepVariants = (reduce: boolean) => ({
+  enter: (dir: number) => (reduce ? { opacity: 0 } : { opacity: 0, x: dir > 0 ? 46 : -46 }),
+  center: { opacity: 1, x: 0 },
+  exit: (dir: number) => (reduce ? { opacity: 0 } : { opacity: 0, x: dir > 0 ? -46 : 46 }),
+});
 
 /* ── Topic dropdown (header context) ── */
 
-function TopicSelect({ topics, value, onChange }: { topics: Topic[]; value: string; onChange: (id: string) => void }) {
+function TopicSelect({
+  topics,
+  value,
+  onChange,
+}: {
+  topics: Topic[];
+  value: string;
+  onChange: (id: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -96,366 +98,40 @@ function TopicSelect({ topics, value, onChange }: { topics: Topic[]; value: stri
   );
 }
 
-/* ── Two-axis sync control (popover off the sources toolbar) ──
-   Axis 1: source category. Axis 2: sync level — shallow file listing
-   (re-enumerate the cache) vs vector DB ingestion (embed for GenAI). */
+/* ── The Intent Studio wizard ── */
 
-type SyncCategory = 'all' | 'sharepoint' | 'url';
-type SyncLevel = 'shallow' | 'vector';
-
-function SyncControl({
-  topicId,
-  topicSources,
-  selected,
-  isContributor,
-}: {
-  topicId: string;
-  topicSources: Source[];
-  selected: Set<string>;
-  isContributor: boolean;
-}) {
-  const { refreshSources, syncToIndex } = useStore();
-  const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState<SyncCategory>('all');
-  const [level, setLevel] = useState<SyncLevel>('shallow');
-  const [busy, setBusy] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
-    document.addEventListener('mousedown', onDown);
-    window.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [open]);
-
-  // Vector targets: not-indexed/stale sources in the chosen category, narrowed
-  // to the table selection when it intersects.
-  const candidates = topicSources.filter(
-    s =>
-      (category === 'all' || s.kind === category) &&
-      (!isContributor || s.accessible) &&
-      (s.indexStatus === 'not_indexed' || s.indexStatus === 'stale'),
-  );
-  const selectedCandidates = candidates.filter(s => selected.has(s.id));
-  const vectorTargets = selectedCandidates.length > 0 ? selectedCandidates : candidates;
-  const scopeNote =
-    selectedCandidates.length > 0 ? 'from your table selection' : 'across the whole category';
-
-  const execute = async () => {
-    if (level === 'shallow') {
-      setBusy(true);
-      await refreshSources(topicId);
-      setBusy(false);
-    } else {
-      syncToIndex(vectorTargets.map(s => s.id));
-    }
-    setOpen(false);
-  };
-
-  return (
-    <div ref={ref} className="relative">
-      <Button size="sm" onClick={() => setOpen(v => !v)} aria-haspopup="dialog" aria-expanded={open}>
-        <DatabaseZap size={12} aria-hidden />
-        Sync
-        <ChevronDown size={12} className={cn('transition-transform duration-150', open && 'rotate-180')} aria-hidden />
-      </Button>
-      {open && (
-        <div
-          role="dialog"
-          aria-label="Sync sources"
-          className="absolute right-0 top-8.5 z-(--z-dropdown) w-84 rounded-(--radius-card) border border-line bg-bg p-4 shadow-(--shadow-pop)"
-        >
-          <div className="flex flex-col gap-4">
-            <fieldset className="flex flex-col gap-1.5">
-              <legend className="text-2xs font-bold tracking-wider text-ink-3 uppercase">
-                1 · Source category
-              </legend>
-              <SegmentedControl<SyncCategory>
-                options={[
-                  { value: 'all', label: 'All sources' },
-                  { value: 'sharepoint', label: 'SharePoint files' },
-                  { value: 'url', label: 'URLs' },
-                ]}
-                value={category}
-                onChange={setCategory}
-              />
-            </fieldset>
-            <fieldset className="flex flex-col gap-1.5">
-              <legend className="text-2xs font-bold tracking-wider text-ink-3 uppercase">
-                2 · Sync level
-              </legend>
-              <SegmentedControl<SyncLevel>
-                options={[
-                  { value: 'shallow', label: 'Shallow file listing' },
-                  { value: 'vector', label: 'Vector DB ingestion' },
-                ]}
-                value={level}
-                onChange={setLevel}
-              />
-              <p className="text-xs text-ink-2">
-                {level === 'shallow'
-                  ? 'Re-enumerates names and paths from SharePoint into the cache. Fast; does not touch the vector index.'
-                  : `Embeds content for GenAI matching. Targets the not-indexed and stale sources ${scopeNote}.`}
-              </p>
-            </fieldset>
-            <Button
-              variant="primary"
-              className="w-full"
-              loading={busy}
-              disabled={level === 'vector' && vectorTargets.length === 0}
-              onClick={execute}
-            >
-              {level === 'shallow'
-                ? 'Refresh file listing'
-                : vectorTargets.length === 0
-                  ? 'Nothing to ingest'
-                  : `Ingest ${plural(vectorTargets.length, 'source')}`}
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ── Sources panel ── */
-
-function SourceIcon({ source }: { source: Source }) {
-  const Icon = source.kind === 'url' ? Link2 : source.isSpreadsheet ? FileSpreadsheet : FileText;
-  return <Icon size={14} className="shrink-0 text-ink-3" aria-hidden />;
-}
-
-type TypeFilter = 'all' | 'sharepoint' | 'url';
-type StatusFilter = 'all' | IndexStatus;
-
-function SourcesPanel({
-  topicId,
-  topicSources,
-  selected,
-  setSelected,
-}: {
-  topicId: string;
-  topicSources: Source[];
-  selected: Set<string>;
-  setSelected: (next: Set<string>) => void;
-}) {
-  const { user, enumeratedTopics, markEnumerated, refreshSources } = useStore();
-  const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [refreshing, setRefreshing] = useState(false);
-  const enumerating = !enumeratedTopics[topicId];
-
-  useEffect(() => {
-    setSearch('');
-    setTypeFilter('all');
-    setStatusFilter('all');
-  }, [topicId]);
-
-  // First visit to a topic: simulated SharePoint enumeration
-  useEffect(() => {
-    if (enumeratedTopics[topicId]) return;
-    const t = window.setTimeout(() => markEnumerated(topicId), 1400);
-    return () => clearTimeout(t);
-  }, [topicId, enumeratedTopics, markEnumerated]);
-
-  const isContributor = user.role === 'contributor';
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return topicSources.filter(s => {
-      if (typeFilter !== 'all' && s.kind !== typeFilter) return false;
-      if (statusFilter !== 'all' && s.indexStatus !== statusFilter) return false;
-      if (q && !s.name.toLowerCase().includes(q) && !s.path.toLowerCase().includes(q)) return false;
-      return true;
-    });
-  }, [topicSources, search, typeFilter, statusFilter]);
-
-  const selectable = filtered.filter(s => !isContributor || s.accessible);
-  const selectedCount = selectable.filter(s => selected.has(s.id)).length;
-  const allSelected = selectable.length > 0 && selectedCount === selectable.length;
-  const someSelected = selectedCount > 0;
-
-  const toggleAll = () => {
-    const next = new Set(selected);
-    if (allSelected) selectable.forEach(s => next.delete(s.id));
-    else selectable.forEach(s => next.add(s.id));
-    setSelected(next);
-  };
-
-  const toggleOne = (id: string, on: boolean) => {
-    const next = new Set(selected);
-    if (on) next.add(id);
-    else next.delete(id);
-    setSelected(next);
-  };
-
-  const doRefresh = async () => {
-    setRefreshing(true);
-    await refreshSources(topicId);
-    setRefreshing(false);
-  };
-
-  return (
-    <section aria-label="Sources">
-      <SectionHeader
-        title={`Sources (${topicSources.length})`}
-        actions={
-          <>
-            <Button size="sm" loading={refreshing} onClick={doRefresh}>
-              {!refreshing && <RefreshCw size={12} aria-hidden />}
-              Refresh SharePoint cache
-            </Button>
-            <SyncControl
-              topicId={topicId}
-              topicSources={topicSources}
-              selected={selected}
-              isContributor={isContributor}
-            />
-          </>
-        }
-      />
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <SearchField value={search} onChange={setSearch} placeholder="Search sources" className="w-64" />
-        <Select
-          aria-label="Filter by format"
-          value={typeFilter}
-          onChange={e => setTypeFilter(e.target.value as TypeFilter)}
-          className="w-40"
-        >
-          <option value="all">All formats</option>
-          <option value="sharepoint">SharePoint files</option>
-          <option value="url">URLs</option>
-        </Select>
-        <Select
-          aria-label="Filter by ingestion state"
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value as StatusFilter)}
-          className="w-40"
-        >
-          <option value="all">All states</option>
-          <option value="indexed">Indexed</option>
-          <option value="not_indexed">Not indexed</option>
-          <option value="indexing">Indexing</option>
-          <option value="stale">Stale</option>
-        </Select>
-      </div>
-
-      {enumerating ? (
-        <div className="rounded-(--radius-ctl) border border-line px-3 py-2">
-          <p className="px-2 pt-2 text-xs text-ink-2" role="status">
-            Enumerating SharePoint folder…
-          </p>
-          <TableSkeleton rows={7} />
-        </div>
-      ) : topicSources.length === 0 ? (
-        <EmptyState
-          icon={FolderOpen}
-          title="No sources in this topic yet"
-          body="Drop documents into the topic's SharePoint folder, or add URLs to its manifest, then refresh the cache to pull them in."
-          action={
-            <Button size="sm" onClick={doRefresh} loading={refreshing}>
-              Refresh SharePoint cache
-            </Button>
-          }
-        />
-      ) : (
-        <>
-          <div className="mb-2 flex flex-wrap items-center gap-3 rounded-(--radius-ctl) border border-line bg-surface-2 px-3 py-2">
-            <Checkbox
-              aria-label={allSelected ? 'Deselect all sources' : 'Select all sources'}
-              checked={allSelected}
-              indeterminate={someSelected && !allSelected}
-              onChange={toggleAll}
-              disabled={selectable.length === 0}
-            />
-            <span className="text-xs font-semibold text-ink" aria-live="polite">
-              Selected {selectedCount} of {selectable.length}
-            </span>
-            <span className="hidden text-xs text-ink-3 sm:inline">— feeds the generation module below</span>
-            {someSelected && (
-              <Button size="sm" variant="ghost" className="ml-auto" onClick={() => setSelected(new Set())}>
-                Clear selection
-              </Button>
-            )}
-          </div>
-          <TableShell>
-            <thead>
-              <tr>
-                <Th className="w-9">
-                  <span className="sr-only">Select</span>
-                </Th>
-                <Th>Name</Th>
-                <Th>Format</Th>
-                <Th>Modified</Th>
-                <Th>Ingestion state</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="px-3 py-8 text-center text-sm text-ink-2">
-                    No sources match the current filters.
-                  </td>
-                </tr>
-              )}
-              {filtered.map(s => {
-                const locked = isContributor && !s.accessible;
-                return (
-                  <Tr key={s.id} selected={selected.has(s.id)} disabled={locked}>
-                    <Td>
-                      {locked ? (
-                        <span title="You don't have access to this document in SharePoint">
-                          <Lock size={13} className="text-ink-3" aria-label="No access" />
-                        </span>
-                      ) : (
-                        <Checkbox
-                          aria-label={`Select ${s.name}`}
-                          checked={selected.has(s.id)}
-                          onChange={e => toggleOne(s.id, e.target.checked)}
-                        />
-                      )}
-                    </Td>
-                    <Td className="max-w-90">
-                      <span
-                        className="flex items-center gap-2"
-                        title={locked ? "You don't have access to this document in SharePoint" : s.path}
-                      >
-                        <SourceIcon source={s} />
-                        <span className="truncate text-ink">{s.name}</span>
-                      </span>
-                    </Td>
-                    <Td className="whitespace-nowrap text-ink-2">
-                      {s.kind === 'url' ? 'URL' : 'SharePoint'}
-                    </Td>
-                    <Td mono className="whitespace-nowrap">
-                      {fmtDate(s.modifiedAt)}
-                    </Td>
-                    <Td>
-                      <IndexStatusPill status={s.indexStatus} />
-                    </Td>
-                  </Tr>
-                );
-              })}
-            </tbody>
-          </TableShell>
-        </>
-      )}
-    </section>
-  );
-}
-
-/* ── Page ── */
+const INITIAL_CONFIG = (tonality: string): GenConfig => ({
+  mode: 'single',
+  question: '',
+  requirements: '',
+  tonality,
+  maxIntents: 5,
+  batchFileId: '',
+  manualQuestion: '',
+  manualResponse: '',
+  manualUtterances: [''],
+});
 
 export default function IntentStudio() {
-  const { projectId, topics, sources, runs, topicId, setTopic } = useStore();
-  const projectTopics = useMemo(() => topics.filter(t => t.projectId === projectId), [topics, projectId]);
+  const {
+    projectId,
+    topics,
+    sources,
+    runs,
+    intents,
+    topicId,
+    setTopic,
+    tonalities,
+    startRun,
+    createManualIntent,
+    stageIntents,
+  } = useStore();
+  const reduce = !!useReducedMotion();
+
+  const projectTopics = useMemo(
+    () => topics.filter(t => t.projectId === projectId),
+    [topics, projectId],
+  );
   const topic = projectTopics.find(t => t.id === topicId) ?? null;
 
   // Topic is required context: auto-select the project's first topic when unset.
@@ -467,21 +143,109 @@ export default function IntentStudio() {
     () => (topic ? sources.filter(s => s.topicId === topic.id) : []),
     [sources, topic],
   );
-  const topicRuns = useMemo(() => (topic ? runs.filter(r => r.topicId === topic.id) : []), [runs, topic]);
+  const topicRuns = useMemo(
+    () => (topic ? runs.filter(r => r.topicId === topic.id) : []),
+    [runs, topic],
+  );
   const notIndexed = topicSources.filter(s => s.indexStatus === 'not_indexed').length;
   const stale = topicSources.filter(s => s.indexStatus === 'stale').length;
 
+  // Wizard state.
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(1);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [config, setConfig] = useState<GenConfig>(() => INITIAL_CONFIG(tonalities[0]));
   const [activeRunId, setActiveRunId] = useState<string | null>(null);
-  const [tab, setTab] = useState<'engine' | 'history'>('engine');
+  const [reviewSel, setReviewSel] = useState<Set<string>>(new Set());
+  const patch = (p: Partial<GenConfig>) => setConfig(c => ({ ...c, ...p }));
+
   const topicKey = topic?.id;
   useEffect(() => {
+    setStep(0);
+    setDirection(1);
     setSelected(new Set());
+    setConfig(INITIAL_CONFIG(tonalities[0]));
     setActiveRunId(null);
-    setTab('engine');
-  }, [topicKey]);
+    setReviewSel(new Set());
+  }, [topicKey, tonalities]);
 
   const activeRun = runs.find(r => r.id === activeRunId && r.topicId === topicKey) ?? null;
+  const draftIntents = useMemo(
+    () =>
+      activeRunId
+        ? intents.filter(
+            i =>
+              i.state === 'draft' &&
+              i.origin.kind === 'run' &&
+              i.origin.runId === activeRunId,
+          )
+        : [],
+    [intents, activeRunId],
+  );
+  const sourceName = (id: string) => sources.find(s => s.id === id)?.name ?? id;
+
+  const goto = (next: number, dir: number) => {
+    setDirection(dir);
+    setStep(next);
+  };
+
+  const launchRun = (): boolean => {
+    if (!topic) return false;
+    if (config.mode === 'single') {
+      const id = startRun({
+        topicId: topic.id,
+        type: 'single',
+        params: {
+          maxIntents: config.maxIntents,
+          tonality: config.tonality,
+          intentQuestion: config.question.trim() || undefined,
+          contentRequirements: config.requirements.trim() || undefined,
+        },
+        sourceIds: [...selected],
+      });
+      setActiveRunId(id);
+      setReviewSel(new Set());
+      return true;
+    }
+    if (config.mode === 'batch') {
+      const file = topicSources.find(s => s.id === config.batchFileId);
+      if (!file) return false;
+      const id = startRun({
+        topicId: topic.id,
+        type: 'batch',
+        params: { maxIntents: config.maxIntents, tonality: config.tonality, batchFile: file.name },
+        sourceIds: [file.id],
+      });
+      setActiveRunId(id);
+      setReviewSel(new Set());
+      return true;
+    }
+    return false;
+  };
+
+  const createManual = () => {
+    if (!topic) return;
+    createManualIntent({
+      topicId: topic.id,
+      question: config.manualQuestion.trim(),
+      response: config.manualResponse.trim(),
+      utterances: config.manualUtterances.map(u => u.trim()).filter(Boolean),
+      sourceIds: [...selected],
+    });
+    patch({ manualQuestion: '', manualResponse: '', manualUtterances: [''] });
+  };
+
+  const resetWizard = () => {
+    setActiveRunId(null);
+    setReviewSel(new Set());
+    goto(0, -1);
+  };
+
+  const handleStage = (ids: string[]) => {
+    if (ids.length === 0) return;
+    stageIntents(ids);
+    setReviewSel(new Set());
+  };
 
   if (projectTopics.length === 0) {
     return (
@@ -499,11 +263,16 @@ export default function IntentStudio() {
     );
   }
 
+  const manualValid =
+    config.manualQuestion.trim().length > 0 && config.manualResponse.trim().length > 0;
+  const runFinished = !!activeRun && activeRun.status !== 'running';
+  const draftedCount = activeRun?.progress.intentsDrafted ?? draftIntents.length;
+
   return (
     <>
       <PageHeader
         title="Intent Studio"
-        sub="Pick a topic, sync its sources, and generate intent–response drafts."
+        sub="Turn your working folder into approved chatbot answers, one guided step at a time."
         context={
           topic && (
             <div className="flex flex-wrap items-center gap-3">
@@ -517,50 +286,123 @@ export default function IntentStudio() {
           )
         }
       />
-      {topic && (
-        <>
-          <Tabs<'engine' | 'history'>
-            tabs={[
-              { value: 'engine', label: 'Generation engine' },
-              { value: 'history', label: 'Run output & history', count: topicRuns.length },
-            ]}
-            value={tab}
-            onChange={setTab}
-          />
 
-          {tab === 'engine' ? (
-            <div role="tabpanel" aria-label="Generation engine" className="mt-8 flex flex-col gap-8">
-              {/* Signature moment: a launched run stays visible here without leaving the tab. */}
-              <AnimatePresence initial={false}>
-                {activeRun && (
-                  <LiveRunCard run={activeRun} onDismiss={() => setActiveRunId(null)} />
+      {topic && (
+        <div className="mx-auto max-w-4xl">
+          <WizardRail current={step} />
+
+          <div className="relative">
+            <AnimatePresence mode="wait" custom={direction} initial={false}>
+              <motion.div
+                key={step}
+                custom={direction}
+                variants={stepVariants(reduce)}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: reduce ? 0.15 : 0.42, ease: EASE }}
+              >
+                {step === 0 && (
+                  <StepSources
+                    topicId={topic.id}
+                    topicSources={topicSources}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
                 )}
-              </AnimatePresence>
-              {/* One cohesive flow: select sources (top), then generate (directly below). */}
-              <SourcesPanel
-                topicId={topic.id}
-                topicSources={topicSources}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <GenerationEngine
-                topicId={topic.id}
-                topicSources={topicSources}
-                selectedSourceIds={[...selected]}
-                running={activeRun?.status === 'running'}
-                onLaunched={setActiveRunId}
-              />
+                {step === 1 && (
+                  <StepConfigure
+                    config={config}
+                    patch={patch}
+                    topicSources={topicSources}
+                    sourceCount={selected.size}
+                  />
+                )}
+                {step === 2 &&
+                  (activeRun ? (
+                    <StepGenerate run={activeRun} topicSources={topicSources} />
+                  ) : (
+                    <div className="rounded-(--radius-card) border border-line bg-bg p-8 text-center text-sm text-ink-2 shadow-(--shadow-2)">
+                      Preparing run…
+                    </div>
+                  ))}
+                {step === 3 && (
+                  <StepReview
+                    draftIntents={draftIntents}
+                    selected={reviewSel}
+                    setSelected={setReviewSel}
+                    sourceName={sourceName}
+                    onStage={handleStage}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Wizard footer */}
+          <div className="mt-6 flex items-center justify-between gap-3">
+            <div>
+              {step > 0 && (
+                <Button
+                  variant="ghost"
+                  onClick={() => goto(step - 1, -1)}
+                  disabled={step === 2 && !runFinished}
+                >
+                  <ArrowLeft size={15} aria-hidden />
+                  {step === 3 ? 'Back to run' : 'Back'}
+                </Button>
+              )}
             </div>
-          ) : (
-            <div role="tabpanel" aria-label="Run output & history" className="mt-8">
-              <RunRail
-                topicRuns={topicRuns}
-                activeRun={activeRun}
-                onDismiss={() => setActiveRunId(null)}
-              />
+
+            <div className="flex items-center gap-2">
+              {step === 0 && (
+                <Button variant="primary" disabled={selected.size === 0} onClick={() => goto(1, 1)}>
+                  Configure generation
+                  <ArrowRight size={15} aria-hidden />
+                </Button>
+              )}
+              {step === 1 && config.mode === 'manual' && (
+                <Button variant="primary" disabled={!manualValid} onClick={createManual}>
+                  Create &amp; stage intent
+                  <Check size={15} aria-hidden />
+                </Button>
+              )}
+              {step === 1 && config.mode !== 'manual' && (
+                <Button
+                  variant="primary"
+                  disabled={config.mode === 'batch' && !config.batchFileId}
+                  onClick={() => {
+                    if (launchRun()) goto(2, 1);
+                  }}
+                >
+                  {config.mode === 'batch' ? 'Run batch' : 'Start generation'}
+                  <ArrowRight size={15} aria-hidden />
+                </Button>
+              )}
+              {step === 2 && (
+                <Button variant="primary" disabled={!runFinished} onClick={() => goto(3, 1)}>
+                  Review {draftedCount} intents
+                  <ArrowRight size={15} aria-hidden />
+                </Button>
+              )}
+              {step === 3 && (
+                <Button variant="primary" onClick={resetWizard}>
+                  Start another run
+                </Button>
+              )}
             </div>
-          )}
-        </>
+          </div>
+
+          {/* Run output & history stays reachable throughout the flow. */}
+          <div className="mt-12 border-t border-line pt-8">
+            <Collapsible
+              title="Run output & history"
+              meta={topicRuns.length > 0 ? `${topicRuns.length} in this topic` : undefined}
+            >
+              <RunRail topicRuns={topicRuns} activeRun={null} onDismiss={() => {}} />
+            </Collapsible>
+          </div>
+        </div>
       )}
     </>
   );

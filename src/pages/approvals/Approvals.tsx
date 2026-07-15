@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { CheckCircle2, ChevronDown, Inbox, ShieldCheck, Undo2, XCircle } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
@@ -27,6 +27,7 @@ type Decision = 'approved' | 'rejected' | 'withdrawn';
 
 function IntentItem({ intent }: { intent: Intent }) {
   const [open, setOpen] = useState(false);
+  const reduce = useReducedMotion();
   return (
     <li className="border-b border-line last:border-b-0">
       <button
@@ -39,7 +40,9 @@ function IntentItem({ intent }: { intent: Intent }) {
           aria-hidden
           className={cn('shrink-0 text-ink-3 transition-transform duration-200', open && 'rotate-180')}
         />
-        <span className="min-w-0 flex-1 text-sm font-medium text-ink">{intent.question}</span>
+        <span className="min-w-0 flex-1 font-display text-[15px] font-medium text-ink text-balance">
+          {intent.question}
+        </span>
         <IntentStatePill state={intent.state} />
       </button>
       <AnimatePresence initial={false}>
@@ -48,7 +51,7 @@ function IntentItem({ intent }: { intent: Intent }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: EASE }}
+            transition={reduce ? { duration: 0.01 } : { duration: 0.2, ease: EASE }}
             className="overflow-hidden"
           >
             <div className="space-y-3 border-t border-line bg-surface-2 px-3 py-3 pl-8">
@@ -100,6 +103,9 @@ function RequestDrawer({
   const [rejecting, setRejecting] = useState(false);
   const [rejectNote, setRejectNote] = useState('');
   const [justDecided, setJustDecided] = useState<Decision | null>(null);
+  const reduce = useReducedMotion();
+  const footerY = reduce ? 0 : 8;
+  const footerTransition = reduce ? { duration: 0.01 } : { duration: 0.2, ease: EASE };
 
   const topic = topics.find(t => t.id === request?.topicId);
   const reqIntents = useMemo(
@@ -143,9 +149,9 @@ function RequestDrawer({
     footer = (
       <motion.p
         key="decided"
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: footerY }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: EASE }}
+        transition={footerTransition}
         className="flex w-full items-center gap-2 text-sm font-semibold text-ink"
         role="status"
       >
@@ -157,9 +163,9 @@ function RequestDrawer({
     footer = (
       <motion.div
         key="reject-form"
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: footerY }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: EASE }}
+        transition={footerTransition}
         className="flex w-full flex-col gap-3"
       >
         <Field
@@ -189,9 +195,9 @@ function RequestDrawer({
     footer = (
       <motion.div
         key="decide"
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: footerY }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: EASE }}
+        transition={footerTransition}
         className="flex w-full items-center gap-2"
       >
         <p className="mr-auto flex items-center gap-1.5 text-xs text-ink-2">

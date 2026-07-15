@@ -10,11 +10,19 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md';
 }
 
+/* Guided Canvas buttons: primary = accent fill + accent shadow that lifts on
+   hover; secondary/danger = white card + soft shadow that lifts; ghost = quiet. */
 const buttonStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-on-accent border-accent hover:bg-accent-press hover:border-accent-press shadow-(--shadow-soft)',
-  secondary: 'bg-bg text-ink border-line hover:bg-surface-2',
+  primary:
+    'bg-accent text-on-accent border-transparent shadow-(--shadow-accent) ' +
+    'hover:-translate-y-0.5 hover:bg-accent-press active:translate-y-0',
+  secondary:
+    'bg-bg text-ink border-line shadow-(--shadow-soft) ' +
+    'hover:-translate-y-0.5 hover:shadow-(--shadow-2) active:translate-y-0',
   ghost: 'bg-transparent text-ink-2 border-transparent hover:bg-surface-2 hover:text-ink',
-  danger: 'bg-bg text-err border-line hover:bg-err/8 hover:border-err/40',
+  danger:
+    'bg-bg text-err border-line shadow-(--shadow-soft) ' +
+    'hover:-translate-y-0.5 hover:border-err/40 hover:bg-err-bg active:translate-y-0',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -27,9 +35,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       disabled={disabled || loading}
       className={cn(
         'inline-flex items-center justify-center gap-1.5 rounded-(--radius-field) border font-semibold',
-        'transition-colors duration-150 select-none',
-        'disabled:opacity-45 disabled:pointer-events-none',
-        size === 'sm' ? 'h-8 px-3 text-xs' : 'h-9 px-3.5 text-sm',
+        'transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-(--ease-out) select-none',
+        'disabled:opacity-45 disabled:pointer-events-none disabled:shadow-none disabled:translate-y-0',
+        size === 'sm' ? 'h-8 px-3 text-xs' : 'h-9.5 px-4 text-sm',
         buttonStyles[variant],
         className,
       )}
@@ -56,7 +64,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       title={label}
       className={cn(
         'inline-flex h-9 w-9 items-center justify-center rounded-(--radius-field) border border-transparent',
-        'text-ink-2 transition-colors duration-150 hover:bg-surface-2 hover:text-ink',
+        'text-ink-2 transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 hover:text-ink',
         'disabled:opacity-45 disabled:pointer-events-none',
         className,
       )}
@@ -95,12 +103,12 @@ export function Field({ label, htmlFor, hint, error, children, className }: Fiel
 
 const fieldBase =
   'w-full rounded-(--radius-field) border border-line bg-bg px-3 text-sm text-ink placeholder:text-ink-3 ' +
-  'transition-colors duration-150 hover:border-ink-3/50 focus:border-accent focus:outline-none ' +
-  'focus:ring-2 focus:ring-accent/25 disabled:opacity-50 disabled:pointer-events-none';
+  'transition-colors duration-150 ease-(--ease-out) hover:border-ink-3/45 focus:border-accent focus:outline-none ' +
+  'focus:ring-2 focus:ring-accent/30 disabled:opacity-50 disabled:pointer-events-none';
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className, ...rest }, ref) {
-    return <input ref={ref} className={cn(fieldBase, 'h-9', className)} {...rest} />;
+    return <input ref={ref} className={cn(fieldBase, 'h-9.5', className)} {...rest} />;
   },
 );
 
@@ -114,7 +122,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
   function Select({ className, children, ...rest }, ref) {
     return (
       <div className="relative">
-        <select ref={ref} className={cn(fieldBase, 'h-9 appearance-none pr-8', className)} {...rest}>
+        <select ref={ref} className={cn(fieldBase, 'h-9.5 appearance-none pr-8', className)} {...rest}>
           {children}
         </select>
         <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-3" aria-hidden />
@@ -139,7 +147,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
         if (typeof ref === 'function') ref(el);
         else if (ref) ref.current = el;
       }}
-      className={cn('h-4 w-4 shrink-0 cursor-pointer rounded-[4px] border-line accent-(--accent)', className)}
+      className={cn(
+        'h-4.5 w-4.5 shrink-0 cursor-pointer rounded-[5px] border-line accent-(--accent)',
+        'focus-visible:ring-2 focus-visible:ring-accent/30',
+        className,
+      )}
       {...rest}
     />
   );
@@ -158,7 +170,7 @@ export function SearchField({
 }) {
   return (
     <div className={cn('relative', className)}>
-      <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-3" aria-hidden />
+      <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-3" aria-hidden />
       <input
         type="search"
         role="searchbox"
@@ -166,7 +178,11 @@ export function SearchField({
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         aria-label={placeholder}
-        className={cn(fieldBase, 'h-9 pl-9')}
+        className={cn(
+          'h-9.5 w-full rounded-full border border-line bg-bg pl-10 pr-4 text-sm text-ink placeholder:text-ink-3 shadow-(--shadow-soft)',
+          'transition-colors duration-150 ease-(--ease-out) hover:border-ink-3/45',
+          'focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30',
+        )}
       />
     </div>
   );
@@ -184,7 +200,7 @@ export function SegmentedControl<T extends string>({
   className?: string;
 }) {
   return (
-    <div role="tablist" className={cn('flex gap-0.5 rounded-(--radius-field) border border-line bg-surface-2 p-0.5', className)}>
+    <div role="tablist" className={cn('inline-flex gap-1 rounded-(--radius-field) bg-surface-2 p-1', className)}>
       {options.map(o => (
         <button
           key={o.value}
@@ -192,7 +208,7 @@ export function SegmentedControl<T extends string>({
           aria-selected={o.value === value}
           onClick={() => onChange(o.value)}
           className={cn(
-            'flex-1 rounded-[6px] px-3 py-1.5 text-xs font-semibold transition-colors duration-150',
+            'flex-1 rounded-[8px] px-3 py-1.5 text-xs font-semibold transition-[background-color,color,box-shadow] duration-200 ease-(--ease-out)',
             o.value === value ? 'bg-bg text-accent shadow-(--shadow-soft)' : 'text-ink-2 hover:text-ink',
           )}
         >

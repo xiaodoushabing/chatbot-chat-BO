@@ -5,9 +5,9 @@ import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
 import { IconButton } from './controls';
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+const EASE = [0.22, 0.61, 0.36, 1] as const;
 
-/* ── Modal on native <dialog> ── */
+/* ── Modal on native <dialog> — white 22px card, warm blurred backdrop ── */
 
 export function Modal({
   open,
@@ -40,7 +40,7 @@ export function Modal({
       }}
       className={cn(
         'm-auto w-full rounded-(--radius-card) border border-line bg-bg p-0 text-ink shadow-(--shadow-pop)',
-        'backdrop:bg-ink/40 backdrop:backdrop-blur-[2px]',
+        'backdrop:bg-ink/45 backdrop:backdrop-blur-[3px]',
         wide ? 'max-w-2xl' : 'max-w-md',
       )}
     >
@@ -56,7 +56,7 @@ export function Modal({
   );
 }
 
-/* ── Drawer (right side) ── */
+/* ── Drawer (right side) — white card, soft-pop shadow, warm backdrop ── */
 
 export function Drawer({
   open,
@@ -84,7 +84,7 @@ export function Drawer({
       {open && (
         <>
           <motion.div
-            className="fixed inset-0 z-(--z-overlay) bg-ink/35"
+            className="fixed inset-0 z-(--z-overlay) bg-ink/40 backdrop-blur-[2px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -99,7 +99,7 @@ export function Drawer({
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ duration: 0.24, ease: EASE }}
+            transition={{ duration: 0.28, ease: EASE }}
           >
             <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-4">
               <div className="min-w-0">
@@ -119,28 +119,35 @@ export function Drawer({
   );
 }
 
-/* ── Toast host (render once in the shell) ── */
+/* ── Toast host — dark warm pills rising from the bottom (render once) ── */
 
 export function ToastHost() {
   const { toasts, dismissToast } = useStore();
   return (
-    <div className="pointer-events-none fixed bottom-5 right-5 z-(--z-toast) flex w-80 flex-col gap-2" aria-live="polite">
+    <div
+      className="pointer-events-none fixed inset-x-0 bottom-6 z-(--z-toast) flex flex-col items-center gap-2 px-4"
+      aria-live="polite"
+    >
       <AnimatePresence>
         {toasts.map(t => (
           <motion.div
             key={t.id}
             layout
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 6 }}
-            transition={{ duration: 0.2, ease: EASE }}
-            className="pointer-events-auto flex items-start gap-2.5 rounded-(--radius-card) border border-line bg-bg px-3.5 py-2.5 shadow-(--shadow-soft)"
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.34, ease: EASE }}
+            className="pointer-events-auto flex max-w-md items-center gap-2.5 rounded-full bg-ink px-4 py-2.5 text-canvas shadow-(--shadow-pop)"
           >
-            {t.kind === 'ok' && <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-ok" aria-hidden />}
-            {t.kind === 'err' && <XCircle size={15} className="mt-0.5 shrink-0 text-err" aria-hidden />}
-            {t.kind === 'info' && <Info size={15} className="mt-0.5 shrink-0 text-info" aria-hidden />}
-            <p className="flex-1 text-sm text-ink">{t.message}</p>
-            <IconButton label="Dismiss" onClick={() => dismissToast(t.id)} className="-mr-1.5 -mt-1 h-6 w-6">
+            {t.kind === 'ok' && <CheckCircle2 size={16} className="shrink-0 text-live" aria-hidden />}
+            {t.kind === 'err' && <XCircle size={16} className="shrink-0 text-err" aria-hidden />}
+            {t.kind === 'info' && <Info size={16} className="shrink-0 text-info" aria-hidden />}
+            <p className="text-sm font-semibold">{t.message}</p>
+            <IconButton
+              label="Dismiss"
+              onClick={() => dismissToast(t.id)}
+              className="-mr-1.5 h-6 w-6 text-canvas/70 hover:bg-canvas/15 hover:text-canvas"
+            >
               <X size={12} />
             </IconButton>
           </motion.div>

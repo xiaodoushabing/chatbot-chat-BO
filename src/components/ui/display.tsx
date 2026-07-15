@@ -3,15 +3,17 @@ import { CheckCircle2, ChevronRight, Circle, CircleDashed, Clock3, FileQuestion,
 import { cn } from '../../lib/cn';
 import type { ApprovalStatus, IndexStatus, IntentState, RunStatus } from '../../data/types';
 
-/* ── StatusPill: the single governance vocabulary (DESIGN.md) ── */
+/* ── Pill: the single governance vocabulary (DESIGN.md) ──
+   Lifecycle-tinted: a colored text on its own warm tint, with either a leading
+   dot (default) or a status icon. Always paired with a label; never color alone. */
 
 type Tone = 'ok' | 'warn' | 'err' | 'info' | 'neutral';
 
 const toneClass: Record<Tone, string> = {
-  ok: 'text-ok bg-ok/12',
-  warn: 'text-warn bg-warn/13',
-  err: 'text-err bg-err/12',
-  info: 'text-info bg-info/12',
+  ok: 'text-ok bg-ok-bg',
+  warn: 'text-warn bg-warn-bg',
+  err: 'text-err bg-err-bg',
+  info: 'text-info bg-info-bg',
   neutral: 'text-ink-2 bg-surface-3',
 };
 
@@ -31,12 +33,16 @@ export function Pill({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-semibold whitespace-nowrap',
+        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-2xs font-semibold whitespace-nowrap',
         toneClass[tone],
         className,
       )}
     >
-      {Icon && <Icon size={12} className={cn(pulse && 'animate-pulse')} aria-hidden />}
+      {Icon ? (
+        <Icon size={12} className={cn(pulse && 'animate-spin')} aria-hidden />
+      ) : (
+        <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />
+      )}
       {children}
     </span>
   );
@@ -128,7 +134,7 @@ export function PageHeader({
   return (
     <header className="mb-8">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <h1 className="text-xl font-bold tracking-tight text-ink text-balance">{title}</h1>
+        <h1 className="font-display text-xl font-medium tracking-[-0.02em] text-ink text-balance">{title}</h1>
         {context}
         {actions && <div className="ml-auto flex items-center gap-2">{actions}</div>}
       </div>
@@ -137,8 +143,8 @@ export function PageHeader({
   );
 }
 
-/* Section header with the signature accent underline. Pass `plain` to drop the
-   underline when the header sits INSIDE a card/container (avoids the boxed-in look). */
+/* Section header — Guided Canvas: a calm semibold title with the count as a
+   violet accent-wash pill. `plain` drops the bottom margin for tight containers. */
 export function SectionHeader({
   title,
   count,
@@ -153,17 +159,10 @@ export function SectionHeader({
   plain?: boolean;
 }) {
   return (
-    <div className="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
-      <h2
-        className={cn(
-          'text-md font-semibold tracking-[-0.005em] text-ink',
-          !plain && 'border-b-2 border-accent pb-2',
-        )}
-      >
-        {title}
-      </h2>
+    <div className={cn('flex flex-wrap items-baseline gap-x-3 gap-y-1.5', plain ? 'mb-3' : 'mb-5')}>
+      <h2 className="text-md font-semibold tracking-[-0.005em] text-ink">{title}</h2>
       {typeof count === 'number' && (
-        <span className="self-center rounded-full bg-surface-3 px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-ink-2">
+        <span className="self-center rounded-full bg-accent-wash px-2 py-0.5 text-2xs font-semibold tabular-nums text-accent">
           {count}
         </span>
       )}
@@ -227,9 +226,9 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-(--radius-card) border border-line/70 bg-surface-2/40 px-6 py-16 text-center">
-      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-surface-3 text-ink-3">
-        <Icon size={20} aria-hidden />
+    <div className="flex flex-col items-center gap-3 rounded-(--radius-card) border border-line bg-bg px-6 py-16 text-center shadow-(--shadow-soft)">
+      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-wash text-accent">
+        <Icon size={21} aria-hidden />
       </span>
       <p className="text-base font-semibold text-ink">{title}</p>
       <p className="max-w-sm text-sm text-ink-2 text-pretty">{body}</p>
@@ -265,7 +264,7 @@ export function ProgressBar({ value, max, className }: { value: number; max: num
       aria-valuenow={value}
       aria-valuemin={0}
       aria-valuemax={max}
-      className={cn('h-1.5 overflow-hidden rounded-full bg-ink/10', className)}
+      className={cn('h-1.5 overflow-hidden rounded-full bg-surface-3', className)}
     >
       <div
         className="h-full rounded-full bg-accent transition-[width] duration-300 ease-(--ease-out)"
@@ -301,8 +300,8 @@ export function Tabs<T extends string>({
   value: T;
   onChange: (v: T) => void;
 }) {
-  // Pill tabs (matches active-nav language). Distinct from SectionHeader's
-  // carmine underline so tabs and section titles never read as the same thing.
+  /* Soft pill tabs — reserved for true view-switching. Active = accent-wash chip
+     with accent text, echoing the active-nav language. */
   return (
     <div role="tablist" className="flex flex-wrap items-center gap-1">
       {tabs.map(t => {
@@ -314,7 +313,7 @@ export function Tabs<T extends string>({
             aria-selected={active}
             onClick={() => onChange(t.value)}
             className={cn(
-              'flex items-center gap-2 rounded-(--radius-field) px-3.5 py-2 text-sm font-semibold transition-colors duration-150',
+              'flex items-center gap-2 rounded-(--radius-field) px-3.5 py-2 text-sm font-semibold transition-colors duration-150 ease-(--ease-out)',
               active ? 'bg-accent-wash text-accent' : 'text-ink-2 hover:bg-surface-2 hover:text-ink',
             )}
           >
@@ -322,7 +321,7 @@ export function Tabs<T extends string>({
             {typeof t.count === 'number' && (
               <span
                 className={cn(
-                  'rounded-full px-1.5 py-0.5 font-mono text-2xs font-semibold tabular-nums',
+                  'rounded-full px-1.5 py-0.5 text-2xs font-semibold tabular-nums',
                   active ? 'bg-accent/15 text-accent' : 'bg-surface-3 text-ink-3',
                 )}
               >

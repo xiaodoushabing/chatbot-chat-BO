@@ -178,9 +178,14 @@ export default function IntentLibrary() {
                 {rows.map(i => (
                   <Tr key={i.id} selected={i.id === openId} onClick={() => setOpenId(i.id)}>
                     <Td className="max-w-0">
-                      <span className="block truncate font-medium text-ink" title={i.question}>
+                      <button
+                        type="button"
+                        onClick={() => setOpenId(i.id)}
+                        title={i.question}
+                        className="block w-full truncate rounded-(--radius-ctl) text-left font-medium text-ink transition-colors duration-150 ease-(--ease-out) hover:text-accent"
+                      >
                         {i.question}
-                      </span>
+                      </button>
                     </Td>
                     <Td className="whitespace-nowrap text-ink-2">{topicName(i.topicId)}</Td>
                     <Td mono className="text-right tabular-nums">{i.utterances.length}</Td>
@@ -366,7 +371,9 @@ function IntentDrawer({
             <h3 className="mb-2 text-xs font-semibold tracking-wide text-ink-3 uppercase">
               Intent question (user query)
             </h3>
-            <p className="max-w-prose text-sm leading-relaxed font-medium text-ink">{intent.question}</p>
+            <p className="max-w-prose font-display text-lg leading-snug font-medium text-ink text-balance">
+              {intent.question}
+            </p>
           </section>
 
           <section>

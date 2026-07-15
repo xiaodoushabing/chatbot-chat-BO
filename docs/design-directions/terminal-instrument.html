@@ -1,0 +1,1395 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    /* deep blue-graphite ink surfaces */
+    --ink-0:#0a0d12;      /* app backdrop */
+    --ink-1:#0e1218;      /* panel */
+    --ink-2:#12171f;      /* raised panel */
+    --ink-3:#171d27;      /* input / rows */
+    --line:#1e2631;       /* hairline */
+    --line-2:#2a3542;     /* stronger hairline */
+    --txt-0:#e8edf3;      /* primary prose */
+    --txt-1:#9fb0c2;      /* secondary */
+    --txt-2:#8496a9;      /* tertiary / labels — 6.25:1 on --ink-1 (AA) */
+    --txt-3:#6d8195;      /* faint            — 4.72:1 on --ink-1 (AA) */
+    /* one luminous signal: electric amber */
+    --sig:#ffb020;
+    --sig-dim:#c8871a;
+    --sig-glow:rgba(255,176,32,.16);
+    --sig-line:rgba(255,176,32,.38);
+    /* muted status hues (kept quiet) */
+    --ok:#4fd1a5;
+    --warn:#e0a23a;
+    --wait:#6f8bb0;
+    --live:#ffb020;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --grot:"Schibsted Grotesk",system-ui,-apple-system,sans-serif;
+    --shell-t:44px;   /* top bar */
+    --shell-l:216px;  /* side nav */
+    --shell-b:30px;   /* command bar */
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--ink-0);color:var(--txt-0);
+    font-family:var(--grot);font-size:14px;line-height:1.45;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overflow:hidden;
+  }
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"zero" 1}
+  ::selection{background:var(--sig-glow);color:var(--txt-0)}
+
+  /* focus */
+  a,button,input,[tabindex]{outline:none}
+  :focus-visible{outline:2px solid var(--sig);outline-offset:2px;border-radius:2px}
+
+  /* ---------- direction chip ---------- */
+  .dir-chip{
+    position:fixed;left:12px;bottom:calc(var(--shell-b) + 12px);z-index:120;
+    display:flex;align-items:center;gap:7px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;
+    color:var(--txt-1);background:rgba(14,18,24,.86);backdrop-filter:blur(6px);
+    border:1px solid var(--line-2);border-radius:5px;padding:5px 9px;
+    box-shadow:0 6px 22px rgba(0,0,0,.5);
+  }
+  .dir-chip b{color:var(--sig);font-weight:600}
+  .dir-chip .k{color:var(--txt-3)}
+
+  /* ================= SHELL ================= */
+  .app{
+    display:grid;height:100vh;
+    grid-template-columns:var(--shell-l) 1fr;
+    grid-template-rows:var(--shell-t) 1fr var(--shell-b);
+    grid-template-areas:"top top" "nav main" "cmd cmd";
+  }
+
+  /* top bar */
+  .topbar{
+    grid-area:top;display:flex;align-items:center;gap:16px;
+    padding:0 14px;background:var(--ink-1);border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:9px;min-width:calc(var(--shell-l) - 14px)}
+  .brand .mark{
+    width:19px;height:19px;border:1.5px solid var(--sig);border-radius:3px;position:relative;flex:none;
+  }
+  .brand .mark::before{content:"";position:absolute;inset:3px;border-left:1.5px solid var(--sig);}
+  .brand .mark::after{content:"";position:absolute;left:3px;right:3px;top:50%;height:1.5px;background:var(--sig);}
+  .brand .name{font-weight:700;font-size:13px;letter-spacing:-.01em}
+  .brand .name span{color:var(--txt-2);font-weight:500}
+
+  .proj{
+    display:flex;align-items:center;gap:9px;padding:4px 9px;border:1px solid var(--line-2);
+    border-radius:5px;background:var(--ink-2);cursor:pointer;font-size:12.5px;
+  }
+  .proj:hover{border-color:var(--line-2);background:var(--ink-3)}
+  .proj .dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+  .proj .car{color:var(--txt-2);font-size:11px}
+  .top-spacer{flex:1}
+  .top-meta{display:flex;align-items:center;gap:14px;color:var(--txt-2);font-size:11px}
+  .top-meta .kv b{color:var(--txt-1);font-weight:500}
+  .usr{
+    width:24px;height:24px;border-radius:5px;background:var(--ink-3);border:1px solid var(--line-2);
+    display:grid;place-items:center;font-size:10px;color:var(--sig);font-weight:600;
+  }
+
+  /* side nav */
+  .nav{
+    grid-area:nav;background:var(--ink-1);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;padding:9px 8px;gap:1px;
+  }
+  .nav-sec{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--txt-3);
+    padding:12px 8px 5px;text-transform:uppercase}
+  .nav-btn{
+    display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+    background:none;border:0;color:var(--txt-1);font-family:var(--grot);font-size:13px;
+    padding:7px 9px;border-radius:6px;cursor:pointer;position:relative;
+    transition:background .12s,color .12s;
+  }
+  .nav-btn .ico{width:15px;height:15px;flex:none;color:var(--txt-2);transition:color .12s}
+  .nav-btn:hover{background:var(--ink-2);color:var(--txt-0)}
+  .nav-btn:hover .ico{color:var(--txt-1)}
+  .nav-btn[aria-current="page"]{background:var(--ink-3);color:var(--txt-0);font-weight:500}
+  .nav-btn[aria-current="page"] .ico{color:var(--sig)}
+  .nav-btn[aria-current="page"]::before{
+    content:"";position:absolute;left:-8px;top:7px;bottom:7px;width:2px;background:var(--sig);border-radius:0 2px 2px 0;
+  }
+  .nav-btn .kbd{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--txt-3)}
+  .nav-foot{margin-top:auto;padding:8px;border-top:1px solid var(--line);color:var(--txt-3);
+    font-family:var(--mono);font-size:10px;line-height:1.6}
+  .nav-foot b{color:var(--txt-2);font-weight:500}
+
+  /* main */
+  .main{grid-area:main;position:relative;overflow:hidden;background:var(--ink-0)}
+  .screen{
+    position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+    padding:18px 20px 26px;
+    opacity:0;visibility:hidden;transform:translateX(14px);
+    transition:opacity .22s ease,transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s .3s;
+  }
+  .screen.active{opacity:1;visibility:visible;transform:none;transition:opacity .26s ease,transform .3s cubic-bezier(.2,.8,.2,1)}
+  .screen.leave-left{transform:translateX(-14px)}
+
+  /* command bar */
+  .cmdbar{
+    grid-area:cmd;display:flex;align-items:center;gap:0;background:var(--ink-1);
+    border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--txt-2);
+    padding:0 12px;overflow:hidden;
+  }
+  .cmdbar .seg{display:flex;align-items:center;gap:7px;padding:0 12px;height:100%;border-right:1px solid var(--line)}
+  .cmdbar .seg:first-child{padding-left:0}
+  .cmdbar .prompt{color:var(--sig)}
+  .cmdbar .pdot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(79,209,165,.14)}
+  .cmdbar .grow{flex:1}
+  .cmdbar .hint{color:var(--txt-3)}
+  .cmdbar .hint b{color:var(--txt-1);font-weight:500}
+  .cmdbar kbd{
+    font-family:var(--mono);font-size:10px;color:var(--txt-1);background:var(--ink-3);
+    border:1px solid var(--line-2);border-radius:3px;padding:0 4px;margin:0 1px;
+  }
+
+  /* ============ typography / shared ============ */
+  .page-head{display:flex;align-items:flex-end;gap:16px;margin-bottom:16px}
+  .page-head h1{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:0;line-height:1}
+  .page-head .sub{color:var(--txt-2);font-size:12.5px;margin-bottom:1px}
+  .page-head .rt{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+  .panel{background:var(--ink-1);border:1px solid var(--line);border-radius:9px}
+  .panel-h{
+    display:flex;align-items:center;gap:9px;padding:9px 13px;border-bottom:1px solid var(--line);
+  }
+  .panel-h .t{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .panel-h .c{font-family:var(--mono);font-size:10.5px;color:var(--txt-2)}
+  .panel-h .rt{margin-left:auto;display:flex;gap:8px;align-items:center;color:var(--txt-2);font-size:11px}
+  .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-3)}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:7px;font-family:var(--grot);font-size:12.5px;font-weight:500;
+    color:var(--txt-0);background:var(--ink-3);border:1px solid var(--line-2);border-radius:6px;
+    padding:6px 12px;cursor:pointer;transition:background .12s,border-color .12s,transform .06s;
+  }
+  .btn:hover{background:#1c232e;border-color:#33414f}
+  .btn:active{transform:translateY(1px)}
+  .btn .kbd{font-family:var(--mono);font-size:10px;color:var(--txt-3)}
+  .btn.ghost{background:transparent}
+  .btn.sig{
+    background:var(--sig);color:#1a1204;border-color:var(--sig);font-weight:600;
+  }
+  .btn.sig:hover{background:#ffbf42;border-color:#ffbf42}
+  .btn.sig:disabled{background:var(--ink-3);color:var(--txt-3);border-color:var(--line);cursor:not-allowed}
+  .btn.sm{padding:4px 9px;font-size:11.5px}
+
+  .pill{
+    display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;
+    padding:2px 7px;border-radius:11px;border:1px solid var(--line-2);color:var(--txt-1);
+    letter-spacing:.02em;white-space:nowrap;
+  }
+  .pill .d{width:5px;height:5px;border-radius:50%;background:var(--txt-2)}
+  .pill.ok{color:var(--ok);border-color:rgba(79,209,165,.3)} .pill.ok .d{background:var(--ok)}
+  .pill.warn{color:var(--warn);border-color:rgba(224,162,58,.3)} .pill.warn .d{background:var(--warn)}
+  .pill.wait{color:var(--wait);border-color:rgba(111,139,176,.32)} .pill.wait .d{background:var(--wait)}
+  .pill.off{color:var(--txt-2)} .pill.off .d{background:var(--txt-3)}
+  .pill.live{color:var(--sig);border-color:var(--sig-line)} .pill.live .d{background:var(--sig)}
+
+  /* ============ DASHBOARD ============ */
+  .grid{display:grid;gap:14px}
+  .dash-top{grid-template-columns:1fr 300px}
+  @media(max-width:1100px){.dash-top{grid-template-columns:1fr}}
+
+  /* pipeline ledger */
+  .ledger{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-radius:9px;overflow:hidden;border:1px solid var(--line)}
+  .ledger .cell{background:var(--ink-1);padding:14px 15px 13px;position:relative}
+  .ledger .cell .top{display:flex;align-items:center;justify-content:space-between}
+  .ledger .cell .st{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-2)}
+  .ledger .cell .n{font-family:var(--mono);font-size:30px;font-weight:500;line-height:1.05;margin-top:9px;letter-spacing:-.02em}
+  .ledger .cell .delta{font-family:var(--mono);font-size:10.5px;margin-top:3px;color:var(--txt-3)}
+  .ledger .cell .delta b{color:var(--ok);font-weight:500}
+  .ledger .cell .bar{position:absolute;left:0;bottom:0;height:2px;background:var(--line-2)}
+  .ledger .cell[data-s="draft"] .bar{background:var(--txt-2)}
+  .ledger .cell[data-s="staged"] .bar{background:var(--wait)}
+  .ledger .cell[data-s="pending"] .bar{background:var(--warn)}
+  .ledger .cell[data-s="live"] .bar{background:var(--sig)}
+  .ledger .cell[data-s="live"] .n{color:var(--sig)}
+
+  /* flow meter row */
+  .flowmeter{display:flex;align-items:center;gap:2px;margin-top:13px;height:8px;border-radius:4px;overflow:hidden;background:var(--ink-3)}
+  .flowmeter i{height:100%;display:block}
+
+  .recent-run{
+    display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:center;
+    padding:9px 13px;border-bottom:1px solid var(--line);font-size:12.5px;
+  }
+  .recent-run:last-child{border-bottom:0}
+  .recent-run .rid{font-family:var(--mono);font-size:11px;color:var(--txt-2)}
+  .recent-run .rt-txt{color:var(--txt-1)}
+  .recent-run .rt-txt b{color:var(--txt-0);font-weight:500}
+  .recent-run .meta{font-family:var(--mono);font-size:10.5px;color:var(--txt-3)}
+
+  .attn-item{padding:11px 13px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
+  .attn-item:last-child{border-bottom:0}
+  .attn-item .ai{width:15px;height:15px;flex:none;margin-top:1px;color:var(--warn)}
+  .attn-item .txt{font-size:12.5px;color:var(--txt-1);line-height:1.4}
+  .attn-item .txt b{color:var(--txt-0);font-weight:500}
+  .attn-item .txt .fn{font-family:var(--mono);font-size:11px;color:var(--sig)}
+  .attn-item .go{margin-left:auto;color:var(--txt-3);flex:none}
+  .attn-item:hover{background:var(--ink-2);cursor:pointer}
+  .attn-item:hover .go{color:var(--sig)}
+
+  /* ============ INTENT STUDIO ============ */
+  .studio-wrap{display:grid;grid-template-rows:auto 1fr;gap:14px;height:100%}
+  .steprail{display:flex;align-items:stretch;gap:0;background:var(--ink-1);border:1px solid var(--line);border-radius:9px;overflow:hidden;position:relative}
+  .steprail .step{
+    flex:1;display:flex;align-items:center;gap:10px;padding:11px 15px;position:relative;
+    color:var(--txt-2);cursor:default;transition:color .2s,background .2s;
+  }
+  .steprail .step + .step{border-left:1px solid var(--line)}
+  .steprail .step .idx{
+    width:20px;height:20px;flex:none;border-radius:5px;border:1px solid var(--line-2);
+    display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--txt-2);
+    transition:all .2s;
+  }
+  .steprail .step .nm{font-size:12.5px;font-weight:500}
+  .steprail .step .nm .k{display:block;font-family:var(--mono);font-size:9.5px;color:var(--txt-3);letter-spacing:.05em;margin-top:1px}
+  .steprail .step[data-state="done"]{color:var(--txt-1)}
+  .steprail .step[data-state="done"] .idx{border-color:var(--sig-line);color:var(--sig);background:var(--sig-glow)}
+  .steprail .step[data-state="active"]{color:var(--txt-0);background:var(--ink-2)}
+  .steprail .step[data-state="active"] .idx{border-color:var(--sig);color:#1a1204;background:var(--sig)}
+  .steprail .step[data-state="active"]::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--sig);
+  }
+
+  .studio-body{position:relative;overflow:hidden;background:var(--ink-1);border:1px solid var(--line);border-radius:9px}
+  .studio-pane{
+    position:absolute;inset:0;overflow-y:auto;padding:0;
+    opacity:0;visibility:hidden;transform:translateX(20px);
+    transition:opacity .2s ease,transform .3s cubic-bezier(.2,.8,.2,1),visibility 0s .3s;
+  }
+  .studio-pane.active{opacity:1;visibility:visible;transform:none;transition:opacity .24s ease,transform .3s cubic-bezier(.2,.8,.2,1)}
+  .studio-pane.leave-left{transform:translateX(-20px)}
+  .pane-head{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--ink-1);z-index:2}
+  .pane-head h2{font-size:14px;font-weight:600;margin:0}
+  .pane-head p{margin:0;color:var(--txt-2);font-size:12px}
+  .pane-head .rt{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .pane-body{padding:15px 16px}
+  .pane-foot{
+    display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px solid var(--line);
+    position:sticky;bottom:0;background:var(--ink-1);
+  }
+  .pane-foot .status{font-family:var(--mono);font-size:11px;color:var(--txt-2)}
+  .pane-foot .sp{flex:1}
+
+  /* source table */
+  .src-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+  .src-tbl th{
+    text-align:left;font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--txt-3);font-weight:400;padding:6px 10px;border-bottom:1px solid var(--line);
+  }
+  .src-tbl td{padding:9px 10px;border-bottom:1px solid var(--line)}
+  .src-tbl tr:last-child td{border-bottom:0}
+  .src-tbl tr.sel td{background:var(--sig-glow)}
+  .src-tbl .chk{width:15px;height:15px;border:1px solid var(--line-2);border-radius:4px;display:inline-grid;place-items:center;cursor:pointer;transition:.12s;background:var(--ink-3)}
+  .src-tbl tr.sel .chk{background:var(--sig);border-color:var(--sig)}
+  .src-tbl .chk svg{opacity:0;color:#1a1204;transition:.12s}
+  .src-tbl tr.sel .chk svg{opacity:1}
+  .src-tbl .fn{font-family:var(--mono);font-size:12px;color:var(--txt-0)}
+  .src-tbl .path{font-family:var(--mono);font-size:10px;color:var(--txt-3);margin-top:1px}
+  .src-tbl .sz{font-family:var(--mono);font-size:11px;color:var(--txt-2)}
+  .src-tbl tr{cursor:pointer;transition:background .1s}
+  .src-tbl tbody tr:hover td{background:var(--ink-2)}
+  .src-tbl tr.sel:hover td{background:rgba(255,176,32,.12)}
+
+  /* configure */
+  .cfg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin-bottom:16px}
+  @media(max-width:1000px){.cfg-grid{grid-template-columns:1fr}}
+  .mode{
+    border:1px solid var(--line-2);border-radius:8px;padding:13px 14px;cursor:pointer;background:var(--ink-2);
+    transition:border-color .15s,background .15s;position:relative;
+  }
+  .mode:hover{border-color:#33414f}
+  .mode[aria-pressed="true"]{border-color:var(--sig);background:var(--sig-glow)}
+  .mode[aria-pressed="true"]::after{content:"";position:absolute;top:12px;right:12px;width:7px;height:7px;border-radius:50%;background:var(--sig);box-shadow:0 0 0 3px var(--sig-glow)}
+  .mode .mh{display:flex;align-items:center;gap:8px}
+  .mode .mn{font-weight:600;font-size:13px}
+  .mode .mk{font-family:var(--mono);font-size:9.5px;color:var(--txt-3)}
+  .mode .md{font-size:11.5px;color:var(--txt-2);margin-top:7px;line-height:1.45}
+  .mode .est{font-family:var(--mono);font-size:10.5px;color:var(--txt-1);margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}
+  .mode .est b{color:var(--sig)}
+
+  .cfg-rows{display:grid;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .cfg-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--ink-2)}
+  .cfg-row:last-child{border-bottom:0}
+  .cfg-row .cl{font-size:12.5px;color:var(--txt-1);min-width:180px}
+  .cfg-row .cl .h{font-family:var(--mono);font-size:10px;color:var(--txt-3);margin-top:1px}
+  .cfg-row .rt{margin-left:auto}
+  .seg{display:inline-flex;border:1px solid var(--line-2);border-radius:6px;overflow:hidden;background:var(--ink-3)}
+  .seg button{background:none;border:0;color:var(--txt-2);font-family:var(--mono);font-size:11px;padding:5px 11px;cursor:pointer;transition:.12s}
+  .seg button + button{border-left:1px solid var(--line-2)}
+  .seg button[aria-pressed="true"]{background:var(--sig);color:#1a1204;font-weight:600}
+  .slider-val{font-family:var(--mono);font-size:12px;color:var(--sig);min-width:28px;text-align:right}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:150px;height:3px;background:var(--line-2);border-radius:2px;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--sig);border:2px solid var(--ink-1);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--sig);border:2px solid var(--ink-1);cursor:pointer}
+
+  /* ============ LIVE RUN CONSOLE ============ */
+  .run-grid{display:grid;grid-template-columns:1fr 260px;gap:0;height:100%}
+  @media(max-width:1000px){.run-grid{grid-template-columns:1fr}}
+  .console{
+    background:#080b0f;font-family:var(--mono);font-size:12px;line-height:1.7;
+    padding:14px 16px;overflow-y:auto;color:var(--txt-1);position:relative;
+  }
+  .console .ln{display:flex;gap:10px;opacity:0;transform:translateY(3px);animation:lnIn .18s ease forwards}
+  @keyframes lnIn{to{opacity:1;transform:none}}
+  .console .ln .ts{color:var(--txt-3);flex:none}
+  .console .ln .tag{flex:none;width:52px}
+  .console .ln .tag.ok{color:var(--ok)}
+  .console .ln .tag.info{color:var(--wait)}
+  .console .ln .tag.sig{color:var(--sig)}
+  .console .ln .tag.warn{color:var(--warn)}
+  .console .ln .msg{color:var(--txt-1)}
+  .console .ln .msg b{color:var(--txt-0);font-weight:500}
+  .console .ln .msg .fn{color:var(--sig)}
+  .console .caret{display:inline-block;width:7px;height:14px;background:var(--sig);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  .run-side{border-left:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:16px;background:var(--ink-1)}
+  .bigcount{text-align:left}
+  .bigcount .lbl{margin-bottom:8px}
+  .bigcount .n{font-family:var(--mono);font-size:52px;font-weight:500;line-height:1;letter-spacing:-.03em;color:var(--sig)}
+  .bigcount .u{font-family:var(--mono);font-size:12px;color:var(--txt-2);margin-top:4px}
+  .runstat{display:grid;gap:9px}
+  .runstat .r{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11.5px}
+  .runstat .r .k{color:var(--txt-2)}
+  .runstat .r .v{color:var(--txt-0)}
+  .prog{height:6px;background:var(--ink-3);border-radius:3px;overflow:hidden;position:relative}
+  .prog i{display:block;height:100%;width:0;background:var(--sig);transition:width .3s linear;box-shadow:0 0 12px var(--sig-glow)}
+  .srclist{display:grid;gap:6px}
+  .srclist .s{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--txt-2)}
+  .srclist .s .tick{width:13px;height:13px;flex:none;border:1px solid var(--line-2);border-radius:3px;display:grid;place-items:center;color:var(--sig)}
+  .srclist .s .tick svg{opacity:0;transition:.2s}
+  .srclist .s.done{color:var(--txt-1)}
+  .srclist .s.done .tick{border-color:var(--sig-line);background:var(--sig-glow)}
+  .srclist .s.done .tick svg{opacity:1}
+  .srclist .s.active{color:var(--sig)}
+  .srclist .s.active .tick{border-color:var(--sig)}
+  .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--sig);position:relative}
+  .pulse-dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--sig);animation:pulse 1.4s ease-out infinite}
+  @keyframes pulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(3.4);opacity:0}}
+
+  /* completion summary overlay */
+  .summary{
+    position:absolute;inset:0;background:var(--ink-1);display:flex;flex-direction:column;
+    padding:26px 30px;opacity:0;visibility:hidden;transform:scale(.985);
+    transition:opacity .3s ease,transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s .35s;z-index:5;
+  }
+  .summary.show{opacity:1;visibility:visible;transform:none;transition:opacity .34s ease,transform .4s cubic-bezier(.2,.8,.2,1)}
+  .summary .badge{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+  .summary .badge .ring{width:34px;height:34px;border-radius:50%;border:2px solid var(--sig);display:grid;place-items:center;color:var(--sig)}
+  .summary .badge .t{font-size:16px;font-weight:700;letter-spacing:-.01em}
+  .summary .badge .k{font-family:var(--mono);font-size:11px;color:var(--txt-2)}
+  .sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:9px;overflow:hidden;max-width:640px}
+  .sum-grid .c{background:var(--ink-2);padding:15px}
+  .sum-grid .c .n{font-family:var(--mono);font-size:26px;font-weight:500;letter-spacing:-.02em}
+  .sum-grid .c .l{font-family:var(--mono);font-size:10px;color:var(--txt-2);margin-top:5px;text-transform:uppercase;letter-spacing:.06em}
+  .sum-grid .c.sig .n{color:var(--sig)}
+  .sum-note{margin-top:18px;color:var(--txt-1);font-size:13px;max-width:560px;line-height:1.6}
+  .sum-note b{color:var(--txt-0)}
+
+  /* review generated intents (studio step 4) */
+  .gen-list{display:grid;gap:11px}
+  .icard{border:1px solid var(--line);border-radius:8px;background:var(--ink-2);overflow:hidden;transition:border-color .15s}
+  .icard:hover{border-color:var(--line-2)}
+  .icard .ih{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line)}
+  .icard .ih .iid{font-family:var(--mono);font-size:10.5px;color:var(--txt-3)}
+  .icard .ih .q{font-weight:600;font-size:13.5px;flex:1}
+  .icard .conf{font-family:var(--mono);font-size:10.5px;color:var(--txt-2)}
+  .icard .conf b{color:var(--ok)}
+  .icard .ib{padding:12px 14px;display:grid;gap:10px}
+  .icard .ib .resp{font-size:12.5px;color:var(--txt-1);line-height:1.55}
+  .icard .utt{display:flex;flex-wrap:wrap;gap:6px}
+  .icard .utt .u{font-family:var(--mono);font-size:10.5px;color:var(--txt-2);background:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:2px 7px}
+  .icard .ib .metaline{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10.5px;color:var(--txt-3);border-top:1px solid var(--line);padding-top:10px}
+
+  /* ============ REVIEW (governance) ============ */
+  .rev-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+  .rev-toolbar .search{
+    display:flex;align-items:center;gap:8px;background:var(--ink-2);border:1px solid var(--line-2);
+    border-radius:6px;padding:6px 10px;flex:1;max-width:340px;color:var(--txt-2);
+  }
+  .rev-toolbar .search input{background:none;border:0;color:var(--txt-0);font-family:var(--mono);font-size:12px;flex:1;outline:none}
+  .rev-toolbar .search input::placeholder{color:var(--txt-3)}
+  .filt{display:inline-flex;border:1px solid var(--line-2);border-radius:6px;overflow:hidden}
+  .filt button{background:var(--ink-2);border:0;color:var(--txt-2);font-family:var(--mono);font-size:11px;padding:6px 11px;cursor:pointer}
+  .filt button + button{border-left:1px solid var(--line-2)}
+  .filt button[aria-pressed="true"]{background:var(--ink-3);color:var(--txt-0)}
+  .rev-count{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--txt-2)}
+
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:9px;background:var(--ink-1)}
+  .rev-tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:820px}
+  .rev-tbl thead th{
+    position:sticky;top:0;background:var(--ink-1);text-align:left;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.11em;text-transform:uppercase;color:var(--txt-3);font-weight:400;padding:9px 13px;
+    border-bottom:1px solid var(--line-2);
+  }
+  .rev-tbl td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  .rev-tbl tbody tr{transition:background .1s}
+  .rev-tbl tbody tr:hover{background:var(--ink-2)}
+  .rev-tbl tbody tr:last-child td{border-bottom:0}
+  .rev-tbl tr.checked{background:var(--sig-glow)}
+  .rev-tbl tr.checked:hover{background:rgba(255,176,32,.12)}
+  .rev-tbl .iid{font-family:var(--mono);font-size:10.5px;color:var(--txt-3);white-space:nowrap}
+  .rev-tbl .q{font-weight:500;color:var(--txt-0);max-width:360px}
+  .rev-tbl .q .a{color:var(--txt-2);font-weight:400;font-size:11.5px;margin-top:3px;line-height:1.45;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .rev-tbl .topic{font-family:var(--mono);font-size:11px;color:var(--txt-1);white-space:nowrap}
+  .rev-tbl .cx{color:var(--txt-3);white-space:nowrap;font-family:var(--mono);font-size:11px}
+  .rev-tbl .chk{width:15px;height:15px;border:1px solid var(--line-2);border-radius:4px;display:inline-grid;place-items:center;cursor:pointer;background:var(--ink-3)}
+  .rev-tbl tr.checked .chk{background:var(--sig);border-color:var(--sig)}
+  .rev-tbl .chk svg{opacity:0;color:#1a1204}
+  .rev-tbl tr.checked .chk svg{opacity:1}
+
+  .actionbar{
+    display:flex;align-items:center;gap:12px;margin-top:13px;padding:11px 15px;
+    background:var(--ink-2);border:1px solid var(--line-2);border-radius:9px;
+    opacity:0;transform:translateY(6px);pointer-events:none;transition:.2s;
+  }
+  .actionbar.show{opacity:1;transform:none;pointer-events:auto}
+  .actionbar .cnt{font-family:var(--mono);font-size:12px;color:var(--txt-1)}
+  .actionbar .cnt b{color:var(--sig)}
+  .actionbar .sp{flex:1}
+
+  /* generic placeholder screen */
+  .stub{display:grid;place-items:center;height:100%;text-align:center;color:var(--txt-2)}
+  .stub .box{max-width:420px}
+  .stub h2{font-size:16px;color:var(--txt-0);margin:0 0 8px}
+  .stub p{font-size:13px;line-height:1.6;margin:0 0 6px}
+  .stub .mono{color:var(--txt-3);font-size:11px;margin-top:14px}
+
+  /* toast */
+  .toast{
+    position:fixed;right:16px;bottom:calc(var(--shell-b) + 14px);z-index:130;
+    background:var(--ink-2);border:1px solid var(--sig-line);border-radius:8px;padding:11px 14px;
+    display:flex;align-items:center;gap:11px;font-size:12.5px;color:var(--txt-0);
+    box-shadow:0 12px 40px rgba(0,0,0,.55);
+    opacity:0;transform:translateY(10px);pointer-events:none;transition:.24s cubic-bezier(.2,.8,.2,1);max-width:340px;
+  }
+  .toast.show{opacity:1;transform:none}
+  .toast .ico{color:var(--sig);flex:none}
+  .toast .k{font-family:var(--mono);font-size:11px;color:var(--txt-2)}
+
+  @media(max-width:1024px){
+    :root{--shell-l:64px}
+    .brand .name,.nav-btn span.lab,.nav-sec,.nav-foot,.nav-btn .kbd{display:none}
+    .nav-btn{justify-content:center;padding:9px}
+    .brand{min-width:auto;justify-content:center}
+    .nav-btn[aria-current="page"]::before{left:-8px}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+    .screen,.studio-pane{transform:none!important}
+    .console .ln{opacity:1!important;transform:none!important}
+    .pulse-dot::after{display:none}
+  }
+</style>
+
+<!-- ================= DIRECTION CHIP ================= -->
+<div class="dir-chip" aria-hidden="true">
+  <span class="k">DIRECTION_A //</span> <b>Terminal Instrument</b>
+</div>
+
+<div class="app">
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark" aria-hidden="true"></div>
+      <div class="name">intentctl<span> / knowledge-ops</span></div>
+    </div>
+    <button class="proj" aria-label="Switch project">
+      <span class="dot"></span>
+      <span>Cards &amp; Payments</span>
+      <span class="car mono">PRJ-0142 ▾</span>
+    </button>
+    <div class="top-spacer"></div>
+    <div class="top-meta">
+      <span class="kv mono">env <b>prod</b></span>
+      <span class="kv mono">index <b style="color:var(--ok)">healthy</b></span>
+      <span class="kv mono" id="clock">15:42:07 SGT</span>
+    </div>
+    <div class="usr" title="road.to.md1@gmail.com">RM</div>
+  </header>
+
+  <!-- ============ SIDE NAV ============ -->
+  <nav class="nav" aria-label="Primary">
+    <div class="nav-sec">Operate</div>
+    <button class="nav-btn" data-screen="dashboard" aria-current="page">
+      <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+      <span class="lab">Dashboard</span><span class="kbd">1</span>
+    </button>
+    <button class="nav-btn" data-screen="settings">
+      <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4"/></svg>
+      <span class="lab">Project Settings</span><span class="kbd">2</span>
+    </button>
+    <div class="nav-sec">Generate</div>
+    <button class="nav-btn" data-screen="studio">
+      <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13V3l6 5-6 5z"/><path d="M11 3v10"/></svg>
+      <span class="lab">Intent Studio</span><span class="kbd">3</span>
+    </button>
+    <div class="nav-sec">Govern</div>
+    <button class="nav-btn" data-screen="review">
+      <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 4h11M2.5 8h11M2.5 12h7"/></svg>
+      <span class="lab">Review</span><span class="kbd">4</span>
+    </button>
+    <button class="nav-btn" data-screen="approvals">
+      <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8.5l3 3 7-7"/></svg>
+      <span class="lab">Approvals</span><span class="kbd">5</span>
+    </button>
+    <button class="nav-btn" data-screen="library">
+      <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><path d="M2.5 6h11M6 6v7.5"/></svg>
+      <span class="lab">Intent Library</span><span class="kbd">6</span>
+    </button>
+    <div class="nav-foot">
+      <div><b>build</b> 2026.07.16</div>
+      <div><b>node</b> sg-prod-03</div>
+    </div>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main" id="main">
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <section class="screen active" id="dashboard" role="tabpanel" aria-label="Dashboard">
+      <div class="page-head">
+        <h1>Dashboard</h1>
+        <div class="sub mono">// Cards &amp; Payments · Travel Insurance topic</div>
+        <div class="rt">
+          <button class="btn ghost sm"><span class="mono">⟲</span> Refresh</button>
+          <button class="btn sig sm" data-goto="studio">New generation run <span class="kbd" style="color:#5a4108">↵</span></button>
+        </div>
+      </div>
+
+      <!-- pipeline ledger -->
+      <div class="lbl" style="margin-bottom:8px">Intent pipeline · state ledger</div>
+      <div class="ledger" role="group" aria-label="Pipeline state counts">
+        <div class="cell" data-s="draft">
+          <div class="top"><span class="st">Draft</span><span class="pill off"><span class="d"></span>editable</span></div>
+          <div class="n">38</div>
+          <div class="delta">+12 this run</div>
+          <div class="bar" style="width:24%"></div>
+        </div>
+        <div class="cell" data-s="staged">
+          <div class="top"><span class="st">Staged</span><span class="pill wait"><span class="d"></span>ready</span></div>
+          <div class="n">27</div>
+          <div class="delta">awaiting review</div>
+          <div class="bar" style="width:38%"></div>
+        </div>
+        <div class="cell" data-s="pending">
+          <div class="top"><span class="st">Pending</span><span class="pill warn"><span class="d"></span>checker</span></div>
+          <div class="n">14</div>
+          <div class="delta">2 SLA breaching</div>
+          <div class="bar" style="width:52%"></div>
+        </div>
+        <div class="cell" data-s="live">
+          <div class="top"><span class="st">Live</span><span class="pill live"><span class="d"></span>serving</span></div>
+          <div class="n">206</div>
+          <div class="delta"><b>+9</b> vs last week</div>
+          <div class="bar" style="width:100%"></div>
+        </div>
+      </div>
+      <div class="flowmeter" aria-hidden="true">
+        <i style="width:13%;background:var(--txt-2)"></i>
+        <i style="width:9%;background:var(--wait)"></i>
+        <i style="width:5%;background:var(--warn)"></i>
+        <i style="width:73%;background:var(--sig)"></i>
+      </div>
+
+      <div class="grid dash-top" style="margin-top:18px">
+        <!-- recent runs -->
+        <div class="panel">
+          <div class="panel-h">
+            <span class="t">Recent runs</span>
+            <span class="c">last 24h</span>
+            <div class="rt"><a class="mono" style="color:var(--txt-2);text-decoration:none;font-size:11px" href="#" onclick="return false">view log →</a></div>
+          </div>
+          <div class="recent-run">
+            <span class="pill live"><span class="d"></span>RUN</span>
+            <span class="rt-txt"><b>GenAI Batch</b> · 5 sources · Travel Insurance</span>
+            <span class="meta">RUN-3391 · now</span>
+          </div>
+          <div class="recent-run">
+            <span class="pill ok"><span class="d"></span>DONE</span>
+            <span class="rt-txt"><b>GenAI Single</b> · Travel_Claims_FAQ_2026.docx</span>
+            <span class="meta">RUN-3390 · 41m · 12 intents</span>
+          </div>
+          <div class="recent-run">
+            <span class="pill ok"><span class="d"></span>DONE</span>
+            <span class="rt-txt"><b>Manual</b> · 3 authored intents · ATM limits</span>
+            <span class="meta">RUN-3388 · 2h · 3 intents</span>
+          </div>
+          <div class="recent-run">
+            <span class="pill warn"><span class="d"></span>PART</span>
+            <span class="rt-txt"><b>GenAI Batch</b> · 1 source skipped (stale)</span>
+            <span class="meta">RUN-3385 · 5h · 18 intents</span>
+          </div>
+        </div>
+
+        <!-- attention -->
+        <div class="panel">
+          <div class="panel-h"><span class="t">Needs attention</span><span class="c">4</span></div>
+          <div class="attn-item">
+            <svg class="ai" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5v4M8 11h.01M8 1.5l6.5 11.5H1.5L8 1.5z"/></svg>
+            <div class="txt"><span class="fn">Premium_Rate_Card_Q3.xlsx</span> is <b>stale</b> — re-index before next run.</div>
+            <svg class="go" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg>
+          </div>
+          <div class="attn-item">
+            <svg class="ai" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5v4M8 11h.01M8 1.5l6.5 11.5H1.5L8 1.5z"/></svg>
+            <div class="txt"><b>2 intents</b> breaching approval SLA (&gt;48h in checker queue).</div>
+            <svg class="go" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg>
+          </div>
+          <div class="attn-item">
+            <svg class="ai" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--wait)"><circle cx="8" cy="8" r="6.2"/><path d="M8 5v3.2l2 1.3"/></svg>
+            <div class="txt"><span class="fn">Cards_Dispute_Policy_v4.pdf</span> <b>not indexed</b> — queued 3m ago.</div>
+            <svg class="go" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg>
+          </div>
+          <div class="attn-item">
+            <svg class="ai" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--wait)"><circle cx="8" cy="8" r="6.2"/><path d="M8 5v3.2l2 1.3"/></svg>
+            <div class="txt"><b>27 staged intents</b> ready to submit for approval.</div>
+            <svg class="go" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- sources index panel -->
+      <div class="panel" style="margin-top:14px">
+        <div class="panel-h"><span class="t">Source index</span><span class="c">5 sources · SharePoint /KnowledgeOps/CardsPayments</span>
+          <div class="rt"><button class="btn ghost sm" data-goto="studio">Open in Studio →</button></div>
+        </div>
+        <table class="src-tbl">
+          <thead><tr><th>Source</th><th>Type</th><th>Size</th><th>Ingestion</th><th>Indexed</th></tr></thead>
+          <tbody>
+            <tr><td><div class="fn">Travel_Claims_FAQ_2026.docx</div><div class="path">/CardsPayments/Travel</div></td><td class="sz">DOCX</td><td class="sz">1.2 MB</td><td><span class="pill ok"><span class="d"></span>Indexed</span></td><td class="sz">2h ago</td></tr>
+            <tr><td><div class="fn">Premium_Rate_Card_Q3.xlsx</div><div class="path">/CardsPayments/Rates</div></td><td class="sz">XLSX</td><td class="sz">486 KB</td><td><span class="pill warn"><span class="d"></span>Stale</span></td><td class="sz">31d ago</td></tr>
+            <tr><td><div class="fn">ocbc.com/travel-insurance</div><div class="path">https · public</div></td><td class="sz">URL</td><td class="sz">—</td><td><span class="pill ok"><span class="d"></span>Indexed</span></td><td class="sz">6h ago</td></tr>
+            <tr><td><div class="fn">Cards_Dispute_Policy_v4.pdf</div><div class="path">/CardsPayments/Disputes</div></td><td class="sz">PDF</td><td class="sz">2.8 MB</td><td><span class="pill off"><span class="d"></span>Not indexed</span></td><td class="sz">—</td></tr>
+            <tr><td><div class="fn">Foreign_Transaction_Fees.docx</div><div class="path">/CardsPayments/Fees</div></td><td class="sz">DOCX</td><td class="sz">744 KB</td><td><span class="pill ok"><span class="d"></span>Indexed</span></td><td class="sz">1d ago</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------- INTENT STUDIO ---------- -->
+    <section class="screen" id="studio" role="tabpanel" aria-label="Intent Studio">
+      <div class="page-head">
+        <h1>Intent Studio</h1>
+        <div class="sub mono">// generation pipeline · Travel Insurance</div>
+        <div class="rt">
+          <span class="pill off" id="studioRunId"><span class="d"></span>RUN-DRAFT</span>
+        </div>
+      </div>
+
+      <div class="studio-wrap">
+        <!-- step rail -->
+        <div class="steprail" role="tablist" aria-label="Generation steps">
+          <div class="step" data-step="0" data-state="active" role="tab"><span class="idx">1</span><span class="nm">Select sources<span class="k mono">sources</span></span></div>
+          <div class="step" data-step="1" data-state="todo" role="tab"><span class="idx">2</span><span class="nm">Configure<span class="k mono">mode + params</span></span></div>
+          <div class="step" data-step="2" data-state="todo" role="tab"><span class="idx">3</span><span class="nm">Generate<span class="k mono">live run</span></span></div>
+          <div class="step" data-step="3" data-state="todo" role="tab"><span class="idx">4</span><span class="nm">Review output<span class="k mono">intents</span></span></div>
+        </div>
+
+        <!-- body -->
+        <div class="studio-body">
+
+          <!-- STEP 1: SELECT SOURCES -->
+          <div class="studio-pane active" data-pane="0">
+            <div class="pane-head">
+              <div><h2>Select sources</h2><p>Only indexed sources can be generated against. Stale &amp; unindexed are excluded.</p></div>
+              <div class="rt"><span class="mono" style="font-size:11px;color:var(--txt-2)" id="srcSelCount">3 of 5 selected</span></div>
+            </div>
+            <div class="pane-body" style="padding:0">
+              <table class="src-tbl" id="srcTable">
+                <thead><tr><th style="width:34px"></th><th>Source</th><th>Type</th><th>Size</th><th>Ingestion</th></tr></thead>
+                <tbody>
+                  <tr class="sel" data-idx><td><span class="chk"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span></td><td><div class="fn">Travel_Claims_FAQ_2026.docx</div><div class="path">/CardsPayments/Travel · 1.2 MB</div></td><td class="sz">DOCX</td><td class="sz">312 chunks</td><td><span class="pill ok"><span class="d"></span>Indexed</span></td></tr>
+                  <tr class="sel" data-idx><td><span class="chk"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span></td><td><div class="fn">ocbc.com/travel-insurance</div><div class="path">https · public · crawled 6h ago</div></td><td class="sz">URL</td><td class="sz">88 chunks</td><td><span class="pill ok"><span class="d"></span>Indexed</span></td></tr>
+                  <tr class="sel" data-idx><td><span class="chk"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span></td><td><div class="fn">Foreign_Transaction_Fees.docx</div><div class="path">/CardsPayments/Fees · 744 KB</div></td><td class="sz">DOCX</td><td class="sz">154 chunks</td><td><span class="pill ok"><span class="d"></span>Indexed</span></td></tr>
+                  <tr data-locked title="Stale — re-index to include"><td><span class="chk"></span></td><td><div class="fn" style="color:var(--txt-2)">Premium_Rate_Card_Q3.xlsx</div><div class="path">/CardsPayments/Rates · 486 KB</div></td><td class="sz">XLSX</td><td class="sz">—</td><td><span class="pill warn"><span class="d"></span>Stale</span></td></tr>
+                  <tr data-locked title="Not indexed — queued"><td><span class="chk"></span></td><td><div class="fn" style="color:var(--txt-2)">Cards_Dispute_Policy_v4.pdf</div><div class="path">/CardsPayments/Disputes · 2.8 MB</div></td><td class="sz">PDF</td><td class="sz">—</td><td><span class="pill off"><span class="d"></span>Not indexed</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pane-foot">
+              <span class="status">$ sources.select — <b style="color:var(--txt-0)" id="footSel">3</b> ready · 554 chunks in scope</span>
+              <span class="sp"></span>
+              <button class="btn sig" data-next>Configure generation <span class="kbd" style="color:#5a4108">→</span></button>
+            </div>
+          </div>
+
+          <!-- STEP 2: CONFIGURE -->
+          <div class="studio-pane" data-pane="1">
+            <div class="pane-head">
+              <div><h2>Configure generation</h2><p>Pick a generation mode and tune extraction parameters.</p></div>
+            </div>
+            <div class="pane-body">
+              <div class="cfg-grid" role="group" aria-label="Generation mode">
+                <div class="mode" data-mode="single" aria-pressed="false" tabindex="0" role="button">
+                  <div class="mh"><span class="mn">GenAI Single</span></div>
+                  <div class="mk mono">mode=single</div>
+                  <div class="md">One pass per source. Highest fidelity, tightest grounding. Best for a single authoritative doc.</div>
+                  <div class="est mono">est. <b>~8–14</b> intents · ~40s</div>
+                </div>
+                <div class="mode" data-mode="batch" aria-pressed="true" tabindex="0" role="button">
+                  <div class="mh"><span class="mn">GenAI Batch</span></div>
+                  <div class="mk mono">mode=batch</div>
+                  <div class="md">Cross-source synthesis across all selected sources. De-duplicates overlapping Q&amp;A.</div>
+                  <div class="est mono">est. <b>~42–58</b> intents · ~6s</div>
+                </div>
+                <div class="mode" data-mode="manual" aria-pressed="false" tabindex="0" role="button">
+                  <div class="mh"><span class="mn">Manual</span></div>
+                  <div class="mk mono">mode=manual</div>
+                  <div class="md">Author intents by hand with retrieval-assisted suggestions. No automatic generation.</div>
+                  <div class="est mono">est. <b>0</b> auto · you drive</div>
+                </div>
+              </div>
+
+              <div class="lbl" style="margin:6px 0 8px">Extraction parameters</div>
+              <div class="cfg-rows">
+                <div class="cfg-row">
+                  <div class="cl">Utterances per intent<div class="h mono">variations.count</div></div>
+                  <div class="rt" style="display:flex;align-items:center;gap:11px">
+                    <input type="range" id="uttRange" min="3" max="12" value="6" aria-label="Utterances per intent">
+                    <span class="slider-val mono" id="uttVal">6</span>
+                  </div>
+                </div>
+                <div class="cfg-row">
+                  <div class="cl">Grounding strictness<div class="h mono">grounding.mode</div></div>
+                  <div class="rt">
+                    <div class="seg" role="group" aria-label="Grounding strictness">
+                      <button type="button">Loose</button>
+                      <button type="button" aria-pressed="true">Balanced</button>
+                      <button type="button">Strict</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="cfg-row">
+                  <div class="cl">Auto-stage high confidence<div class="h mono">autostage &gt;= 0.90</div></div>
+                  <div class="rt">
+                    <div class="seg" role="group" aria-label="Auto-stage">
+                      <button type="button">Off</button>
+                      <button type="button" aria-pressed="true">On</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="cfg-row">
+                  <div class="cl">Target topic<div class="h mono">topic.bind</div></div>
+                  <div class="rt"><span class="pill live"><span class="d"></span>Travel Insurance</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="pane-foot">
+              <span class="status">$ config — mode=<b style="color:var(--sig)" id="footMode">batch</b> · 3 sources · est <b style="color:var(--txt-0)" id="footEst">~50</b> intents</span>
+              <span class="sp"></span>
+              <button class="btn ghost" data-back>← Back</button>
+              <button class="btn sig" data-next>Launch run <span class="kbd" style="color:#5a4108">↵</span></button>
+            </div>
+          </div>
+
+          <!-- STEP 3: GENERATE (LIVE RUN) -->
+          <div class="studio-pane" data-pane="2">
+            <div class="pane-head">
+              <div><h2>Generate</h2><p id="runSubtitle">Streaming generation from 3 sources · GenAI Batch</p></div>
+              <div class="rt">
+                <span class="pill live" id="runPill"><span class="d"></span>IDLE</span>
+                <span class="mono" style="font-size:11px;color:var(--txt-2)" id="runIdLabel">RUN-3391</span>
+              </div>
+            </div>
+            <div class="run-grid">
+              <!-- console -->
+              <div class="console" id="console" aria-live="polite" aria-label="Generation console">
+                <div class="ln"><span class="ts">15:42:07</span><span class="tag info">boot</span><span class="msg">awaiting launch — press <b>Launch</b> to begin</span></div>
+              </div>
+              <!-- side stats -->
+              <div class="run-side">
+                <div class="bigcount">
+                  <div class="lbl">Intents generated</div>
+                  <div class="n mono" id="bigCount">0</div>
+                  <div class="u" id="bigCountU">idle</div>
+                </div>
+                <div>
+                  <div class="lbl" style="margin-bottom:7px">Progress</div>
+                  <div class="prog"><i id="progBar"></i></div>
+                  <div class="runstat" style="margin-top:11px">
+                    <div class="r"><span class="k">elapsed</span><span class="v mono" id="statElapsed">0.0s</span></div>
+                    <div class="r"><span class="k">status</span><span class="v" id="statStatus" style="display:flex;align-items:center;gap:7px"><span class="pill off" style="border:0;padding:0"><span class="d"></span></span>idle</span></div>
+                    <div class="r"><span class="k">staged</span><span class="v mono" id="statStaged">0</span></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="lbl" style="margin-bottom:7px">Sources</div>
+                  <div class="srclist" id="srcProgress">
+                    <div class="s" data-s="0"><span class="tick"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span>Travel_Claims_FAQ.docx</div>
+                    <div class="s" data-s="1"><span class="tick"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span>ocbc.com/travel-insurance</div>
+                    <div class="s" data-s="2"><span class="tick"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span>Foreign_Transaction_Fees.docx</div>
+                  </div>
+                </div>
+                <div style="margin-top:auto">
+                  <button class="btn sig" id="launchBtn" style="width:100%;justify-content:center">Launch run</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- completion summary -->
+            <div class="summary" id="summary" role="status">
+              <div class="badge">
+                <div class="ring"><svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3 3 7-7"/></svg></div>
+                <div>
+                  <div class="t">Run complete</div>
+                  <div class="k mono">RUN-3391 · GenAI Batch · finished in <span id="sumTime">6.4s</span></div>
+                </div>
+              </div>
+              <div class="sum-grid">
+                <div class="c sig"><div class="n mono" id="sumTotal">47</div><div class="l">generated</div></div>
+                <div class="c"><div class="n mono" id="sumStaged">31</div><div class="l">auto-staged</div></div>
+                <div class="c"><div class="n mono">12</div><div class="l">need review</div></div>
+                <div class="c"><div class="n mono">4</div><div class="l">deduped</div></div>
+              </div>
+              <div class="sum-note">Generated <b>47 intents</b> across 3 sources bound to <b>Travel Insurance</b>. 31 met the auto-stage confidence threshold (≥0.90); 12 fell to draft for manual review; 4 near-duplicates were merged. Proceed to review the output before submitting for approval.</div>
+              <div style="margin-top:auto;display:flex;gap:10px;padding-top:20px">
+                <button class="btn ghost" id="rerunBtn">↺ Run again</button>
+                <button class="btn sig" data-next>Review 47 intents <span class="kbd" style="color:#5a4108">→</span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4: REVIEW OUTPUT -->
+          <div class="studio-pane" data-pane="3">
+            <div class="pane-head">
+              <div><h2>Review generated intents</h2><p>Draft &amp; auto-staged output from RUN-3391. Edit before submitting downstream.</p></div>
+              <div class="rt"><span class="mono" style="font-size:11px;color:var(--txt-2)">showing 4 of 47</span><button class="btn sig sm" data-goto="review">Open in Review →</button></div>
+            </div>
+            <div class="pane-body">
+              <div class="gen-list">
+                <div class="icard">
+                  <div class="ih"><span class="iid">INT-8841</span><span class="q">How do I claim for a delayed flight?</span><span class="pill wait"><span class="d"></span>staged</span><span class="conf">conf <b>0.94</b></span></div>
+                  <div class="ib">
+                    <div class="resp">If your flight is delayed by 6 hours or more, you can claim under Travel Insurance. Keep your boarding pass and the airline's written confirmation of the delay, then submit a claim in the app under Cards → Travel → Make a claim within 30 days. Payout is a fixed benefit per completed 6-hour block, up to the policy limit shown on your certificate.</div>
+                    <div class="utt">
+                      <span class="u">flight delayed compensation</span><span class="u">claim delayed departure</span><span class="u">what if my flight is late</span><span class="u">delay payout travel cover</span>
+                    </div>
+                    <div class="metaline"><span>src: Travel_Claims_FAQ_2026.docx</span><span>·</span><span>4 utterances</span><span>·</span><span>topic: Travel Insurance</span></div>
+                  </div>
+                </div>
+                <div class="icard">
+                  <div class="ih"><span class="iid">INT-8842</span><span class="q">Am I covered for lost baggage on a connecting flight?</span><span class="pill wait"><span class="d"></span>staged</span><span class="conf">conf <b>0.91</b></span></div>
+                  <div class="ib">
+                    <div class="resp">Yes. Checked baggage lost by the airline is covered on connecting flights as long as all segments are on a single ticket. Report the loss to the airline immediately and get a Property Irregularity Report (PIR). We reimburse the depreciated value of lost items up to your baggage limit; a single-article sub-limit applies to high-value items.</div>
+                    <div class="utt"><span class="u">lost luggage connecting flight</span><span class="u">baggage not arrived</span><span class="u">airline lost my bag</span><span class="u">missing checked baggage claim</span></div>
+                    <div class="metaline"><span>src: ocbc.com/travel-insurance</span><span>·</span><span>4 utterances</span><span>·</span><span>topic: Travel Insurance</span></div>
+                  </div>
+                </div>
+                <div class="icard">
+                  <div class="ih"><span class="iid">INT-8843</span><span class="q">What foreign transaction fee applies to online purchases?</span><span class="pill off"><span class="d"></span>draft</span><span class="conf">conf <span style="color:var(--warn)">0.78</span></span></div>
+                  <div class="ib">
+                    <div class="resp">Online purchases billed in a foreign currency incur a foreign transaction fee of 3.25% of the transaction amount (a 1.00% network fee plus a 2.25% bank administrative fee). Purchases billed in SGD from an overseas merchant may still attract the fee if the merchant processes the payment abroad.</div>
+                    <div class="utt"><span class="u">overseas online purchase fee</span><span class="u">foreign currency charge card</span><span class="u">fx fee online shopping</span></div>
+                    <div class="metaline" style="color:var(--warn)"><span>⚠ low confidence — verify fee against Premium_Rate_Card (stale)</span></div>
+                  </div>
+                </div>
+                <div class="icard">
+                  <div class="ih"><span class="iid">INT-8844</span><span class="q">How long does a card dispute take to resolve?</span><span class="pill off"><span class="d"></span>draft</span><span class="conf">conf <span style="color:var(--warn)">0.71</span></span></div>
+                  <div class="ib">
+                    <div class="resp">Most card disputes are resolved within 10–14 business days. Complex cases involving a merchant chargeback can take up to 45 days. A temporary credit may be applied to your account while we investigate. You'll get a notification at each stage in the app.</div>
+                    <div class="utt"><span class="u">dispute resolution time</span><span class="u">how long chargeback takes</span><span class="u">when will dispute be resolved</span></div>
+                    <div class="metaline" style="color:var(--warn)"><span>⚠ source Cards_Dispute_Policy_v4.pdf not indexed — grounded on general policy</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pane-foot">
+              <span class="status">$ output — 47 intents · 31 staged · 12 draft · bound to Travel Insurance</span>
+              <span class="sp"></span>
+              <button class="btn ghost" data-goto="studio-reset">↺ New run</button>
+              <button class="btn sig" data-goto="review">Send staged to Review <span class="kbd" style="color:#5a4108">→</span></button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- REVIEW (governance) ---------- -->
+    <section class="screen" id="review" role="tabpanel" aria-label="Review">
+      <div class="page-head">
+        <h1>Review</h1>
+        <div class="sub mono">// staged intents · submit for approval</div>
+        <div class="rt"><button class="btn ghost sm">Export</button></div>
+      </div>
+
+      <div class="rev-toolbar">
+        <div class="search">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          <input type="text" placeholder="filter intents… (id, question, topic)" aria-label="Filter intents">
+        </div>
+        <div class="filt" role="group" aria-label="Status filter">
+          <button type="button" aria-pressed="true">All</button>
+          <button type="button">Staged</button>
+          <button type="button">Draft</button>
+        </div>
+        <span class="rev-count mono">7 staged · <span style="color:var(--sig)" id="revSelCount">0</span> selected</span>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="rev-tbl" id="revTable">
+          <thead>
+            <tr>
+              <th style="width:36px"></th>
+              <th>Intent</th>
+              <th>Topic</th>
+              <th>Source</th>
+              <th>Conf.</th>
+              <th>State</th>
+              <th>Age</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-row><td><span class="chk"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span></td><td class="q">How do I claim for a delayed flight?<div class="a">If your flight is delayed 6h or more, claim under Travel Insurance within 30 days with the airline's written confirmation…</div></td><td class="topic">Travel Insurance</td><td class="cx">Travel_Claims_FAQ</td><td class="cx" style="color:var(--ok)">0.94</td><td><span class="pill wait"><span class="d"></span>staged</span></td><td class="cx">2m</td></tr>
+            <tr data-row><td><span class="chk"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span></td><td class="q">Am I covered for lost baggage on a connecting flight?<div class="a">Checked baggage lost by the airline is covered on connecting flights on a single ticket. Report immediately and get a PIR…</div></td><td class="topic">Travel Insurance</td><td class="cx">ocbc.com/travel</td><td class="cx" style="color:var(--ok)">0.91</td><td><span class="pill wait"><span class="d"></span>staged</span></td><td class="cx">2m</td></tr>
+            <tr data-row><td><span class="chk"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span></td><td class="q">What is the daily ATM withdrawal limit overseas?<div class="a">The default overseas ATM withdrawal limit is S$2,000 per day. You can adjust it in the app under Cards → Limits…</div></td><td class="topic">Cards &amp; Limits</td><td class="cx">Manual</td><td class="cx" style="color:var(--ok)">1.00</td><td><span class="pill wait"><span class="d"></span>staged</span></td><td class="cx">2h</td></tr>
+            <tr data-row><td><span class="chk"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span></td><td class="q">Does my travel cover include medical emergencies abroad?<div class="a">Emergency medical treatment overseas is covered up to your policy limit, including hospitalisation and evacuation…</div></td><td class="topic">Travel Insurance</td><td class="cx">Travel_Claims_FAQ</td><td class="cx" style="color:var(--ok)">0.93</td><td><span class="pill wait"><span class="d"></span>staged</span></td><td class="cx">3h</td></tr>
+            <tr data-row><td><span class="chk"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span></td><td class="q">How do I activate travel notifications before a trip?<div class="a">Set a travel plan in the app under Cards → Travel → Notify us so overseas transactions aren't declined…</div></td><td class="topic">Cards &amp; Limits</td><td class="cx">ocbc.com/travel</td><td class="cx" style="color:var(--ok)">0.89</td><td><span class="pill wait"><span class="d"></span>staged</span></td><td class="cx">5h</td></tr>
+            <tr data-row><td><span class="chk"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span></td><td class="q">Is trip cancellation due to illness reimbursable?<div class="a">Cancellation caused by certified illness or injury before departure is reimbursable for non-refundable prepaid costs…</div></td><td class="topic">Travel Insurance</td><td class="cx">Travel_Claims_FAQ</td><td class="cx" style="color:var(--ok)">0.90</td><td><span class="pill wait"><span class="d"></span>staged</span></td><td class="cx">6h</td></tr>
+            <tr data-row><td><span class="chk"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></span></td><td class="q">What number do I call for emergency card replacement overseas?<div class="a">Call the 24/7 global assistance line printed on the back of your card, or use in-app chat to request an emergency replacement…</div></td><td class="topic">Cards &amp; Limits</td><td class="cx">Manual</td><td class="cx" style="color:var(--ok)">0.97</td><td><span class="pill wait"><span class="d"></span>staged</span></td><td class="cx">8h</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="actionbar" id="revActionbar">
+        <span class="cnt mono"><b id="revActCount">0</b> intents selected</span>
+        <span class="mono" style="color:var(--txt-2);font-size:11px">→ checker queue · maker-checker separation enforced</span>
+        <span class="sp"></span>
+        <button class="btn ghost sm" id="revClear">Clear</button>
+        <button class="btn sig" id="revSubmit">Submit for approval <span class="kbd" style="color:#5a4108">↵</span></button>
+      </div>
+    </section>
+
+    <!-- ---------- STUBS ---------- -->
+    <section class="screen" id="settings" role="tabpanel" aria-label="Project Settings">
+      <div class="page-head"><h1>Project Settings</h1><div class="sub mono">// PRJ-0142 · Cards &amp; Payments</div></div>
+      <div class="stub"><div class="box">
+        <h2>SharePoint binding &amp; topics</h2>
+        <p>Configure the working folder, topic taxonomy, ingestion schedule, and generation defaults for this project.</p>
+        <p class="mono">/KnowledgeOps/CardsPayments · 5 sources · 4 topics · nightly re-index 02:00 SGT</p>
+      </div></div>
+    </section>
+
+    <section class="screen" id="approvals" role="tabpanel" aria-label="Approvals">
+      <div class="page-head"><h1>Approvals</h1><div class="sub mono">// checker inbox</div></div>
+      <div class="stub"><div class="box">
+        <h2>Checker inbox</h2>
+        <p>14 intents pending your approval. Maker-checker separation prevents you from approving intents you authored.</p>
+        <p class="mono">2 breaching SLA · oldest 51h · use Review to submit new intents here</p>
+      </div></div>
+    </section>
+
+    <section class="screen" id="library" role="tabpanel" aria-label="Intent Library">
+      <div class="page-head"><h1>Intent Library</h1><div class="sub mono">// live intents · serving production</div></div>
+      <div class="stub"><div class="box">
+        <h2>206 live intents</h2>
+        <p>The approved, versioned catalogue currently served to the chatbot. Every intent carries provenance back to its source and run.</p>
+        <p class="mono">last publish RUN-3379 · 4 topics · 206 live · 0 conflicts</p>
+      </div></div>
+    </section>
+
+  </main>
+
+  <!-- ============ COMMAND BAR ============ -->
+  <footer class="cmdbar">
+    <div class="seg"><span class="pdot"></span><span class="prompt">intentctl</span><span>ready</span></div>
+    <div class="seg"><span id="cmdScreen">dashboard</span></div>
+    <div class="seg mono" id="cmdContext">PRJ-0142 · Travel Insurance</div>
+    <div class="grow"></div>
+    <div class="seg hint">nav <kbd>1</kbd>–<kbd>6</kbd></div>
+    <div class="seg hint">advance <kbd>→</kbd> · back <kbd>←</kbd></div>
+    <div class="seg hint"><b>Run</b> <kbd>⌘</kbd><kbd>↵</kbd></div>
+  </footer>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast">
+  <svg class="ico" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3 3 7-7"/></svg>
+  <div><div id="toastMsg">Submitted for approval</div><div class="k mono" id="toastSub">→ checker inbox</div></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- clock ---------- */
+  function tick(){
+    var d=new Date();
+    function p(n){return (n<10?"0":"")+n;}
+    var el=document.getElementById("clock");
+    if(el) el.textContent = p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds())+" SGT";
+  }
+  tick(); setInterval(tick,1000);
+
+  /* ---------- screen nav ---------- */
+  var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
+  var navBtns = Array.prototype.slice.call(document.querySelectorAll(".nav-btn"));
+  var cmdScreen = document.getElementById("cmdScreen");
+  var cmdContext = document.getElementById("cmdContext");
+  var ctxMap = {
+    dashboard:"PRJ-0142 · Travel Insurance",
+    studio:"RUN-3391 · GenAI Batch",
+    review:"7 staged · checker sep. on",
+    approvals:"14 pending · 2 SLA",
+    library:"206 live · 0 conflicts",
+    settings:"5 sources · 4 topics"
+  };
+  var current = "dashboard";
+
+  function showScreen(id){
+    if(id===current) return;
+    var from = document.getElementById(current);
+    var to = document.getElementById(id);
+    if(!to) return;
+    if(from){
+      from.classList.add("leave-left");
+      from.classList.remove("active");
+      setTimeout(function(){ from.classList.remove("leave-left"); }, 320);
+    }
+    to.classList.add("active");
+    to.scrollTop = 0;
+    current = id;
+    navBtns.forEach(function(b){
+      var on = b.getAttribute("data-screen")===id;
+      if(on) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current");
+    });
+    if(cmdScreen) cmdScreen.textContent = id;
+    if(cmdContext) cmdContext.textContent = ctxMap[id]||"";
+  }
+  navBtns.forEach(function(b){
+    b.addEventListener("click", function(){ showScreen(b.getAttribute("data-screen")); });
+  });
+
+  /* data-goto anywhere */
+  document.addEventListener("click", function(e){
+    var t = e.target.closest("[data-goto]");
+    if(!t) return;
+    var g = t.getAttribute("data-goto");
+    if(g==="studio-reset"){ resetStudio(); showScreen("studio"); return; }
+    showScreen(g);
+  });
+
+  /* keyboard nav 1-6 */
+  var keyMap={"1":"dashboard","2":"settings","3":"studio","4":"review","5":"approvals","6":"library"};
+  document.addEventListener("keydown", function(e){
+    if(e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+    if(keyMap[e.key] && !e.metaKey && !e.ctrlKey){ showScreen(keyMap[e.key]); return; }
+    if(current==="studio"){
+      if((e.metaKey||e.ctrlKey) && e.key==="Enter"){ e.preventDefault(); if(studioStep===2) startRun(); else if(studioStep<2) nextStep(); return; }
+      if(e.key==="ArrowRight" && studioStep<3 && studioStep!==2){ nextStep(); }
+      else if(e.key==="ArrowRight" && studioStep===2 && runDone){ nextStep(); }
+      if(e.key==="ArrowLeft" && studioStep>0){ prevStep(); }
+    }
+  });
+
+  /* ---------- source selection (studio step 1) ---------- */
+  var srcRows = Array.prototype.slice.call(document.querySelectorAll("#srcTable tr[data-idx]"));
+  var srcSelCount = document.getElementById("srcSelCount");
+  var footSel = document.getElementById("footSel");
+  function updateSrcCount(){
+    var n = document.querySelectorAll("#srcTable tr.sel").length;
+    if(srcSelCount) srcSelCount.textContent = n + " of 5 selected";
+    if(footSel) footSel.textContent = n;
+  }
+  srcRows.forEach(function(r){
+    r.addEventListener("click", function(){ r.classList.toggle("sel"); updateSrcCount(); });
+  });
+
+  /* ---------- configure (step 2) ---------- */
+  var modes = Array.prototype.slice.call(document.querySelectorAll(".mode"));
+  var footMode = document.getElementById("footMode");
+  var footEst = document.getElementById("footEst");
+  var estMap = {single:"~11", batch:"~50", manual:"0"};
+  var selMode = "batch";
+  modes.forEach(function(m){
+    function pick(){
+      modes.forEach(function(x){ x.setAttribute("aria-pressed","false"); });
+      m.setAttribute("aria-pressed","true");
+      selMode = m.getAttribute("data-mode");
+      if(footMode) footMode.textContent = selMode;
+      if(footEst) footEst.textContent = estMap[selMode];
+    }
+    m.addEventListener("click", pick);
+    m.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); }});
+  });
+  var uttRange = document.getElementById("uttRange");
+  var uttVal = document.getElementById("uttVal");
+  if(uttRange) uttRange.addEventListener("input", function(){ uttVal.textContent = uttRange.value; });
+
+  /* segmented toggles (generic single-select within group) */
+  document.querySelectorAll(".seg").forEach(function(seg){
+    seg.querySelectorAll("button").forEach(function(b){
+      b.addEventListener("click", function(){
+        seg.querySelectorAll("button").forEach(function(x){ x.removeAttribute("aria-pressed"); });
+        b.setAttribute("aria-pressed","true");
+      });
+    });
+  });
+
+  /* ---------- studio stepper ---------- */
+  var studioStep = 0;
+  var panes = Array.prototype.slice.call(document.querySelectorAll(".studio-pane"));
+  var steps = Array.prototype.slice.call(document.querySelectorAll(".steprail .step"));
+  var runDone = false;
+
+  function renderSteps(){
+    steps.forEach(function(s,i){
+      var st = i<studioStep ? "done" : (i===studioStep ? "active" : "todo");
+      if(i===studioStep) st="active";
+      else if(i<studioStep) st="done";
+      s.setAttribute("data-state", st);
+      s.setAttribute("aria-selected", i===studioStep ? "true":"false");
+    });
+  }
+  function gotoStep(n){
+    if(n===studioStep) return;
+    var from = panes[studioStep];
+    var to = panes[n];
+    var back = n<studioStep;
+    if(from){
+      from.classList.toggle("leave-left", !back);
+      if(back) from.style.transform="translateX(20px)";
+      from.classList.remove("active");
+      var f=from;
+      setTimeout(function(){ f.classList.remove("leave-left"); f.style.transform=""; },320);
+    }
+    to.classList.remove("leave-left");
+    if(back) to.style.transform="translateX(-20px)";
+    // force reflow for direction
+    void to.offsetWidth;
+    to.style.transform="";
+    to.classList.add("active");
+    to.scrollTop=0;
+    studioStep = n;
+    renderSteps();
+  }
+  function nextStep(){ if(studioStep<3) gotoStep(studioStep+1); }
+  function prevStep(){ if(studioStep>0) gotoStep(studioStep-1); }
+
+  document.querySelectorAll("[data-next]").forEach(function(b){ b.addEventListener("click", nextStep); });
+  document.querySelectorAll("[data-back]").forEach(function(b){ b.addEventListener("click", prevStep); });
+  steps.forEach(function(s,i){
+    s.addEventListener("click", function(){ if(i<=Math.max(studioStep, runDone?3:studioStep)) gotoStep(i); });
+  });
+
+  function resetStudio(){
+    studioStep = 0; runDone = false;
+    panes.forEach(function(p,i){ p.classList.toggle("active", i===0); p.classList.remove("leave-left"); p.style.transform=""; });
+    renderSteps();
+    resetRun();
+  }
+
+  /* ---------- LIVE RUN ---------- */
+  var consoleEl = document.getElementById("console");
+  var bigCount = document.getElementById("bigCount");
+  var bigCountU = document.getElementById("bigCountU");
+  var progBar = document.getElementById("progBar");
+  var statElapsed = document.getElementById("statElapsed");
+  var statStatus = document.getElementById("statStatus");
+  var statStaged = document.getElementById("statStaged");
+  var runPill = document.getElementById("runPill");
+  var launchBtn = document.getElementById("launchBtn");
+  var rerunBtn = document.getElementById("rerunBtn");
+  var summary = document.getElementById("summary");
+  var srcProgress = Array.prototype.slice.call(document.querySelectorAll("#srcProgress .s"));
+  var running = false;
+  var TARGET = 47;
+
+  var script = [
+    {t:0,   tag:"info", tag2:"init",  html:'run <b>RUN-3391</b> · mode=<b>batch</b> · grounding=balanced'},
+    {t:250, tag:"info", tag2:"scope", html:'3 sources · 554 chunks · topic <b>Travel Insurance</b>'},
+    {t:600, tag:"sig",  tag2:"open",  html:'connect vector-index <span class="fn">sg-prod-03</span> … ok'},
+    {t:1000,tag:"info", tag2:"read",  html:'▸ <span class="fn">Travel_Claims_FAQ_2026.docx</span> — 312 chunks', src:0},
+    {t:1700,tag:"ok",   tag2:"emit",  html:'  ├ "How do I claim for a delayed flight?" <b>0.94</b>'},
+    {t:2100,tag:"ok",   tag2:"emit",  html:'  ├ "Does travel cover medical emergencies abroad?" <b>0.93</b>'},
+    {t:2500,tag:"ok",   tag2:"emit",  html:'  └ +19 intents · 21 from source', srcDone:0},
+    {t:2900,tag:"info", tag2:"read",  html:'▸ <span class="fn">ocbc.com/travel-insurance</span> — 88 chunks', src:1},
+    {t:3500,tag:"ok",   tag2:"emit",  html:'  ├ "Am I covered for lost baggage on a connecting flight?" <b>0.91</b>'},
+    {t:3950,tag:"warn", tag2:"dedup", html:'  ├ merged 2 near-duplicates (baggage cover)'},
+    {t:4300,tag:"ok",   tag2:"emit",  html:'  └ +14 intents · 35 total', srcDone:1},
+    {t:4700,tag:"info", tag2:"read",  html:'▸ <span class="fn">Foreign_Transaction_Fees.docx</span> — 154 chunks', src:2},
+    {t:5300,tag:"ok",   tag2:"emit",  html:'  ├ "What foreign transaction fee applies to online purchases?" <b>0.78</b>'},
+    {t:5700,tag:"warn", tag2:"flag",  html:'  ├ low-confidence: verify vs Premium_Rate_Card (stale)'},
+    {t:6000,tag:"ok",   tag2:"emit",  html:'  └ +12 intents · 47 total', srcDone:2},
+    {t:6300,tag:"sig",  tag2:"stage", html:'auto-stage ≥0.90 → <b>31 staged</b> · 12 to draft'},
+    {t:6600,tag:"sig",  tag2:"done",  html:'run complete · <b>47 intents</b> · 6.4s'}
+  ];
+
+  var timers=[];
+  function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+
+  function line(o){
+    var d=new Date();
+    function p(n){return (n<10?"0":"")+n;}
+    var ts = p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+    var el=document.createElement("div");
+    el.className="ln";
+    el.innerHTML='<span class="ts">'+ts+'</span><span class="tag '+o.tag+'">'+o.tag2+'</span><span class="msg">'+o.html+'</span>';
+    consoleEl.appendChild(el);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+  }
+
+  function setSrc(i,state){
+    var el=srcProgress[i]; if(!el) return;
+    el.classList.remove("active","done");
+    if(state) el.classList.add(state);
+  }
+
+  function resetRun(){
+    clearTimers(); running=false; runDone=false;
+    consoleEl.innerHTML='<div class="ln"><span class="ts">'+nowTs()+'</span><span class="tag info">boot</span><span class="msg">awaiting launch — press <b>Launch</b> to begin</span></div>';
+    bigCount.textContent="0"; bigCountU.textContent="idle";
+    progBar.style.width="0"; statElapsed.textContent="0.0s";
+    statStatus.innerHTML='<span class="pill off" style="border:0;padding:0"><span class="d"></span></span>idle';
+    statStaged.textContent="0";
+    runPill.className="pill live"; runPill.innerHTML='<span class="d"></span>IDLE';
+    launchBtn.textContent="Launch run"; launchBtn.disabled=false; launchBtn.style.display="";
+    summary.classList.remove("show");
+    srcProgress.forEach(function(_,i){ setSrc(i,null); });
+  }
+  function nowTs(){var d=new Date();function p(n){return(n<10?"0":"")+n;}return p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());}
+
+  var rafId=null, startTs=0;
+  function animateCounter(dur){
+    cancelAnimationFrame(rafId);
+    startTs = performance.now();
+    function frame(now){
+      var e = now-startTs;
+      var pr = Math.min(e/dur,1);
+      // ease
+      var val = Math.round(easeOut(pr)*TARGET);
+      bigCount.textContent = val;
+      statElapsed.textContent = (e/1000).toFixed(1)+"s";
+      if(pr<1 && running) rafId=requestAnimationFrame(frame);
+      else { bigCount.textContent=TARGET; }
+    }
+    rafId=requestAnimationFrame(frame);
+  }
+  function easeOut(t){ return 1-Math.pow(1-t,2.2); }
+
+  function startRun(){
+    if(running) return;
+    resetRun();
+    running=true; runDone=false;
+    launchBtn.disabled=true; launchBtn.textContent="Running…";
+    runPill.innerHTML='<span class="d"></span>RUNNING';
+    bigCountU.textContent="streaming…";
+    statStatus.innerHTML='<span class="pulse-dot"></span>generating';
+
+    var DUR = reduce ? 400 : 6600;
+    var scale = DUR/6600;
+
+    if(reduce){
+      // instant fill
+      script.forEach(function(o){ line(o); if(o.src!=null) setSrc(o.src,"done"); if(o.srcDone!=null) setSrc(o.srcDone,"done"); });
+      bigCount.textContent=TARGET; progBar.style.width="100%"; statElapsed.textContent="6.4s"; statStaged.textContent="31";
+      finishRun();
+      return;
+    }
+
+    animateCounter(DUR);
+
+    // progress bar keyframes tied to timeline
+    script.forEach(function(o){
+      timers.push(setTimeout(function(){
+        if(!running) return;
+        line(o);
+        if(o.src!=null) setSrc(o.src,"active");
+        if(o.srcDone!=null) setSrc(o.srcDone,"done");
+        progBar.style.width = Math.round((o.t/6600)*100)+"%";
+        // staged counter creeps up near end
+        if(o.tag2==="stage") statStaged.textContent="31";
+        else if(o.t>3000) statStaged.textContent = Math.round((o.t/6600)*31);
+      }, o.t*scale));
+    });
+
+    timers.push(setTimeout(finishRun, DUR+200));
+  }
+
+  function finishRun(){
+    running=false; runDone=true;
+    progBar.style.width="100%";
+    bigCount.textContent=TARGET; bigCountU.textContent="47 intents · 3 sources";
+    statElapsed.textContent="6.4s"; statStaged.textContent="31";
+    statStatus.innerHTML='<span class="pill ok" style="border:0;padding:0"><span class="d"></span></span>complete';
+    runPill.className="pill ok"; runPill.innerHTML='<span class="d"></span>COMPLETE';
+    launchBtn.style.display="none";
+    // reveal summary + enable step
+    setTimeout(function(){ summary.classList.add("show"); }, reduce?0:300);
+    var st = document.getElementById("studioRunId");
+    if(st){ st.className="pill live"; st.innerHTML='<span class="d"></span>RUN-3391'; }
+  }
+
+  if(launchBtn) launchBtn.addEventListener("click", startRun);
+  if(rerunBtn) rerunBtn.addEventListener("click", function(){ summary.classList.remove("show"); setTimeout(startRun, reduce?0:260); });
+
+  /* auto-start run when landing on step 3 via nextStep from configure */
+  var origGoto = gotoStep;
+  // hook: when reaching pane 2, focus launch; when leaving, if not done keep state
+
+  /* ---------- REVIEW selection ---------- */
+  var revRows = Array.prototype.slice.call(document.querySelectorAll("#revTable tr[data-row]"));
+  var revActionbar = document.getElementById("revActionbar");
+  var revActCount = document.getElementById("revActCount");
+  var revSelCount = document.getElementById("revSelCount");
+  function updateRev(){
+    var n = document.querySelectorAll("#revTable tr.checked").length;
+    revActCount.textContent = n;
+    revSelCount.textContent = n;
+    revActionbar.classList.toggle("show", n>0);
+  }
+  revRows.forEach(function(r){
+    r.addEventListener("click", function(){ r.classList.toggle("checked"); updateRev(); });
+  });
+  var revClear = document.getElementById("revClear");
+  if(revClear) revClear.addEventListener("click", function(){ revRows.forEach(function(r){ r.classList.remove("checked"); }); updateRev(); });
+
+  var revSubmit = document.getElementById("revSubmit");
+  var toast = document.getElementById("toast");
+  var toastMsg = document.getElementById("toastMsg");
+  var toastSub = document.getElementById("toastSub");
+  var toastTimer=null;
+  function showToast(msg,sub){
+    toastMsg.textContent=msg; toastSub.textContent=sub;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(function(){ toast.classList.remove("show"); }, 3400);
+  }
+  if(revSubmit) revSubmit.addEventListener("click", function(){
+    var n = document.querySelectorAll("#revTable tr.checked").length;
+    if(!n) return;
+    document.querySelectorAll("#revTable tr.checked").forEach(function(r){
+      r.classList.remove("checked");
+      var pill = r.querySelector(".pill");
+      if(pill){ pill.className="pill warn"; pill.innerHTML='<span class="d"></span>pending'; }
+      var age = r.querySelector("td:last-child"); if(age) age.textContent="now";
+    });
+    updateRev();
+    showToast(n+" intent"+(n>1?"s":"")+" submitted for approval","→ checker inbox · maker-checker enforced");
+  });
+
+  // review enter key submit
+  document.addEventListener("keydown", function(e){
+    if(current==="review" && e.key==="Enter" && !/^(INPUT|TEXTAREA)$/.test((e.target||{}).tagName||"")){
+      if(document.querySelectorAll("#revTable tr.checked").length){ revSubmit.click(); }
+    }
+  });
+
+  updateSrcCount();
+  renderSteps();
+})();
+</script>

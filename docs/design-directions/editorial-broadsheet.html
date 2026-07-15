@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Intent Ledger — Editorial Broadsheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Libre+Franklin:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E8E5DD;
+    --sheet:#F6F4EF;
+    --sheet-2:#F0EDE6;
+    --ink:#211E19;
+    --ink-soft:#443F38;
+    --muted:#6A6355;
+    --rule:#CFC9BB;
+    --rule-soft:#DDD8CC;
+    --oxblood:#6E2436;
+    --oxblood-deep:#571A2A;
+    --oxblood-tint:rgba(110,36,54,0.09);
+    --good:#3C5A40;
+    --warn:#8A5A16;
+    --stale:#8A6A16;
+
+    --serif:'Fraunces', Georgia, 'Times New Roman', serif;
+    --sans:'Libre Franklin', system-ui, -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+    --nav-w:236px;
+    --pad:40px;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--paper);
+    color:var(--ink-soft);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.55;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--oxblood);color:#F6F4EF}
+
+  h1,h2,h3,h4{font-family:var(--serif);color:var(--ink);font-weight:500;line-height:1.08;text-wrap:balance}
+  .tnum{font-variant-numeric:tabular-nums}
+
+  a{color:var(--oxblood);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;color:inherit}
+
+  :focus-visible{outline:2px solid var(--oxblood);outline-offset:3px;border-radius:1px}
+
+  /* ============ DIRECTION CHIP ============ */
+  .direction-chip{
+    position:fixed;left:14px;bottom:14px;z-index:200;
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--ink);color:var(--paper);
+    padding:6px 12px 6px 10px;border-radius:2px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+    box-shadow:0 6px 22px rgba(33,30,25,.22);
+  }
+  .direction-chip .dot{width:7px;height:7px;background:var(--oxblood);border-radius:50%}
+
+  /* ============ APP SHELL ============ */
+  .app{display:flex;min-height:100vh;flex-direction:column}
+
+  /* Masthead */
+  .masthead{
+    background:var(--paper);
+    border-bottom:2.5px solid var(--ink);
+    position:sticky;top:0;z-index:100;
+  }
+  .masthead-inner{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
+    padding:14px var(--pad) 9px;
+  }
+  .brand{display:flex;align-items:baseline;gap:14px;min-width:0}
+  .brand .wordmark{
+    font-family:var(--serif);font-weight:600;color:var(--ink);
+    font-size:29px;letter-spacing:-.015em;line-height:1;
+    font-optical-sizing:auto;
+  }
+  .brand .wordmark em{font-style:italic;font-weight:400;color:var(--oxblood)}
+  .brand .estd{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);white-space:nowrap;
+    border-left:1px solid var(--rule);padding-left:14px;align-self:center;
+  }
+  .edition{
+    display:flex;align-items:center;gap:18px;flex-shrink:0;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--ink-soft);
+  }
+  .edition .proj{
+    display:flex;align-items:center;gap:9px;
+    background:var(--sheet);border:1px solid var(--rule);
+    padding:6px 11px;border-radius:2px;
+  }
+  .edition .proj .lbl{color:var(--muted);text-transform:uppercase;font-size:9px;letter-spacing:.12em}
+  .edition .proj .val{color:var(--ink);font-weight:500;font-family:var(--sans);font-size:12.5px}
+  .edition .proj svg{width:12px;height:12px;stroke:var(--muted)}
+  .edition .who{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--oxblood);color:var(--sheet);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--serif);font-size:13px;font-weight:600;
+  }
+  .rule-double{height:3px;border-top:1px solid var(--ink);margin:0 var(--pad)}
+
+  .body-wrap{display:flex;flex:1;min-height:0}
+
+  /* Side nav — folio index */
+  .nav{
+    width:var(--nav-w);flex-shrink:0;
+    border-right:1px solid var(--rule);
+    padding:26px 0 26px;
+    background:var(--paper);
+    position:sticky;top:64px;align-self:flex-start;
+    height:calc(100vh - 64px);
+    overflow-y:auto;
+  }
+  .nav-head{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--muted);padding:0 var(--pad);margin-bottom:14px;
+  }
+  .nav ul{list-style:none}
+  .nav li{margin:0}
+  .nav-item{
+    display:flex;align-items:baseline;gap:14px;width:100%;
+    background:none;border:none;text-align:left;
+    padding:9px var(--pad);position:relative;
+    color:var(--ink-soft);transition:color .25s var(--ease);
+  }
+  .nav-item .folio{
+    font-family:var(--mono);font-size:11px;color:var(--muted);
+    width:20px;flex-shrink:0;font-variant-numeric:tabular-nums;
+    transition:color .25s var(--ease);
+  }
+  .nav-item .name{
+    font-family:var(--serif);font-size:17px;font-weight:400;color:var(--ink);
+    letter-spacing:-.005em;line-height:1.2;
+  }
+  .nav-item .sub{
+    display:block;font-family:var(--sans);font-size:11px;color:var(--muted);
+    margin-top:1px;letter-spacing:.01em;
+  }
+  .nav-item::before{
+    content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;
+    background:var(--oxblood);transform:scaleY(0);transform-origin:center;
+    transition:transform .3s var(--ease);
+  }
+  .nav-item:hover .name{color:var(--oxblood)}
+  .nav-item[aria-current="page"]{background:var(--sheet)}
+  .nav-item[aria-current="page"]::before{transform:scaleY(1)}
+  .nav-item[aria-current="page"] .folio{color:var(--oxblood)}
+  .nav-item[aria-current="page"] .name{color:var(--ink);font-weight:500}
+
+  .nav-foot{
+    margin-top:22px;padding:16px var(--pad) 0;border-top:1px solid var(--rule);
+    font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.7;
+  }
+  .nav-foot .k{color:var(--ink-soft)}
+
+  /* Main scroll region */
+  .main{flex:1;min-width:0;overflow-x:hidden}
+  .screens{position:relative}
+  .screen{display:none;padding:34px var(--pad) 80px;max-width:1180px}
+  .screen.active{display:block}
+
+  /* Reveal motion */
+  .rise{opacity:0;transform:translateY(12px)}
+  .screen.animate .rise{
+    animation:rise .62s var(--ease) forwards;
+    animation-delay:var(--d,0s);
+  }
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  /* Page-turn crossfade wrapper */
+  .screen.turning{animation:pageout .26s var(--ease) forwards}
+  @keyframes pageout{to{opacity:0;transform:translateY(-6px)}}
+
+  /* ============ EDITORIAL PRIMITIVES ============ */
+  /* Running head — a broadsheet folio/dateline, not an eyebrow */
+  .runhead{display:flex;align-items:baseline;gap:13px;margin-bottom:16px}
+  .runhead .rh-vol{font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--oxblood);white-space:nowrap}
+  .runhead .rh-sec{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink-soft);font-weight:400;white-space:nowrap}
+  .runhead .rh-rule{flex:1;height:1px;background:var(--rule);min-width:24px;transform:translateY(-4px)}
+  .runhead .rh-date{font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;color:var(--muted);white-space:nowrap}
+  @media (max-width:560px){.runhead .rh-sec{display:none}}
+
+  .page-title{
+    font-size:46px;font-weight:400;letter-spacing:-.02em;line-height:1;
+    font-optical-sizing:auto;
+  }
+  .page-title .it{font-style:italic;color:var(--oxblood);font-weight:400}
+  .standfirst{
+    font-family:var(--serif);font-size:18px;font-weight:300;font-style:italic;
+    color:var(--ink-soft);max-width:58ch;margin-top:14px;line-height:1.45;
+  }
+  .deck-rule{height:1px;background:var(--rule);margin:26px 0}
+  .deck-rule.strong{background:var(--ink);height:1.5px}
+
+  .col-head{
+    font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);padding-bottom:8px;border-bottom:1.5px solid var(--ink);
+    margin-bottom:16px;display:flex;justify-content:space-between;align-items:baseline;
+  }
+  .col-head .meta{color:var(--muted);letter-spacing:.05em}
+
+  /* Status pills */
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 8px;border:1px solid;border-radius:2px;white-space:nowrap;
+    font-weight:500;
+  }
+  .pill .glyph{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+  .pill.indexed{color:var(--good);border-color:rgba(60,90,64,.4)}
+  .pill.indexed .glyph{background:var(--good)}
+  .pill.stale{color:var(--stale);border-color:rgba(138,106,22,.4)}
+  .pill.stale .glyph{background:var(--stale)}
+  .pill.notindexed{color:var(--muted);border-color:var(--rule)}
+  .pill.notindexed .glyph{background:var(--muted)}
+  .pill.live{color:var(--oxblood);border-color:rgba(110,36,54,.4);background:var(--oxblood-tint)}
+  .pill.live .glyph{background:var(--oxblood)}
+  .pill.pending{color:var(--warn);border-color:rgba(138,90,22,.4)}
+  .pill.pending .glyph{background:var(--warn)}
+  .pill.staged{color:var(--ink-soft);border-color:var(--rule)}
+  .pill.staged .glyph{background:var(--ink-soft)}
+  .pill.draft{color:var(--muted);border-color:var(--rule)}
+  .pill.draft .glyph{background:var(--muted);border:1px solid var(--muted);background:transparent}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--sans);font-size:13px;font-weight:500;
+    padding:10px 18px;border-radius:2px;border:1px solid var(--ink);
+    background:var(--ink);color:var(--sheet);
+    transition:transform .15s var(--ease),background .2s,box-shadow .2s;
+  }
+  .btn:hover{background:#000;box-shadow:0 4px 16px rgba(33,30,25,.18)}
+  .btn:active{transform:translateY(1px)}
+  .btn.accent{background:var(--oxblood);border-color:var(--oxblood)}
+  .btn.accent:hover{background:var(--oxblood-deep)}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+  .btn.ghost:hover{background:var(--sheet);border-color:var(--ink);box-shadow:none}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7}
+
+  /* ============ DASHBOARD ============ */
+  .dash-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:44px;align-items:start}
+
+  /* Pipeline ledger */
+  .ledger{border-top:2px solid var(--ink)}
+  .ledger-row{
+    display:grid;grid-template-columns:1fr auto;align-items:end;gap:20px;
+    padding:16px 0;border-bottom:1px solid var(--rule);
+  }
+  .ledger-row .stage{display:flex;flex-direction:column;gap:3px}
+  .ledger-row .stage .nm{
+    font-family:var(--serif);font-size:22px;color:var(--ink);font-weight:400;line-height:1;
+  }
+  .ledger-row .stage .desc{font-size:12px;color:var(--muted)}
+  .ledger-row .fig{
+    font-family:var(--serif);font-size:38px;font-weight:400;color:var(--ink);
+    line-height:.9;font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  }
+  .ledger-row .fig .delta{
+    font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.02em;
+    margin-left:10px;font-weight:400;
+  }
+  .ledger-row .fig .delta.up{color:var(--good)}
+  .ledger-row.is-live .fig{color:var(--oxblood)}
+  .ledger-bar{height:4px;background:var(--sheet-2);grid-column:1/-1;margin-top:14px;position:relative;overflow:hidden}
+  .ledger-bar span{position:absolute;top:0;left:0;bottom:0;background:var(--ink);width:0;transition:width 1.1s var(--ease)}
+  .ledger-row.is-live .ledger-bar span{background:var(--oxblood)}
+
+  /* Attention column */
+  .attn-item{
+    display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--rule-soft);
+  }
+  .attn-item .marker{
+    font-family:var(--serif);font-size:15px;color:var(--oxblood);flex-shrink:0;
+    width:22px;font-style:italic;line-height:1.5;
+  }
+  .attn-item .body .t{color:var(--ink);font-weight:500;font-size:13.5px;line-height:1.35}
+  .attn-item .body .m{font-size:12px;color:var(--muted);margin-top:2px}
+  .attn-item .body .m b{color:var(--ink-soft);font-weight:500}
+
+  /* Runs table */
+  .table-scroll{overflow-x:auto;border-bottom:1.5px solid var(--ink)}
+  table.print{width:100%;border-collapse:collapse;min-width:560px}
+  table.print thead th{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:500;text-align:left;
+    padding:0 16px 9px 0;border-bottom:1.5px solid var(--ink);white-space:nowrap;
+  }
+  table.print thead th.num,table.print td.num{text-align:right;padding-right:0}
+  table.print tbody td{
+    padding:13px 16px 13px 0;border-bottom:1px solid var(--rule-soft);
+    font-size:13.5px;color:var(--ink-soft);vertical-align:middle;
+  }
+  table.print tbody tr:hover{background:var(--sheet)}
+  table.print .run-name{font-family:var(--serif);font-size:15px;color:var(--ink);font-weight:400}
+  table.print .type-tag{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em}
+  table.print .num{font-variant-numeric:tabular-nums;color:var(--ink);font-family:var(--mono);font-size:12.5px}
+  table.print .when{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+  .dash-foot{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);
+    border:1px solid var(--rule);margin-top:8px;
+  }
+  .dash-foot .cell{background:var(--paper);padding:16px 18px}
+  .dash-foot .cell .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .dash-foot .cell .v{font-family:var(--serif);font-size:26px;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums}
+  .dash-foot .cell .n{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+  /* ============ INTENT STUDIO ============ */
+  .studio-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+
+  .stepper{
+    display:flex;align-items:stretch;margin:28px 0 34px;
+    border-top:1px solid var(--ink);border-bottom:1px solid var(--rule);
+  }
+  .step-tab{
+    display:flex;align-items:baseline;gap:11px;padding:15px 26px 15px 0;margin-right:26px;
+    position:relative;flex:0 0 auto;
+  }
+  .step-tab .no{
+    font-family:var(--mono);font-size:11px;color:var(--muted);
+    font-variant-numeric:tabular-nums;
+  }
+  .step-tab .lbl{
+    font-family:var(--serif);font-size:17px;color:var(--muted);font-weight:400;
+    transition:color .3s var(--ease);
+  }
+  .step-tab::after{
+    content:"";position:absolute;left:0;bottom:-1px;height:2px;width:0;background:var(--oxblood);
+    transition:width .4s var(--ease);
+  }
+  .step-tab.done .lbl{color:var(--ink-soft)}
+  .step-tab.done .no{color:var(--oxblood)}
+  .step-tab.current .lbl{color:var(--ink);font-weight:500}
+  .step-tab.current .no{color:var(--oxblood)}
+  .step-tab.current::after{width:100%}
+
+  .studio-stage{position:relative;min-height:340px}
+  .step-panel{display:none}
+  .step-panel.active{display:block;animation:panelin .5s var(--ease)}
+  @keyframes panelin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* Step 1 — sources */
+  .src-layout{display:grid;grid-template-columns:1fr 288px;gap:44px;align-items:start}
+  .src-row{
+    display:grid;grid-template-columns:26px 1fr auto;gap:16px;align-items:center;
+    padding:15px 0;border-bottom:1px solid var(--rule-soft);cursor:pointer;
+    transition:background .2s;
+  }
+  .src-row:hover{background:var(--sheet)}
+  .src-row .box{
+    width:19px;height:19px;border:1.5px solid var(--muted);border-radius:2px;
+    display:flex;align-items:center;justify-content:center;transition:all .2s var(--ease);
+  }
+  .src-row .box svg{width:12px;height:12px;stroke:var(--sheet);stroke-width:2.5;fill:none;opacity:0;transform:scale(.6);transition:all .2s var(--ease)}
+  .src-row[aria-checked="true"] .box{background:var(--oxblood);border-color:var(--oxblood)}
+  .src-row[aria-checked="true"] .box svg{opacity:1;transform:scale(1)}
+  .src-row .fname{font-family:var(--serif);font-size:16px;color:var(--ink);font-weight:400;line-height:1.25}
+  .src-row .fmeta{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:3px;letter-spacing:.02em}
+  .src-row .fmeta .kind{color:var(--oxblood)}
+
+  .src-aside{
+    background:var(--sheet);border:1px solid var(--rule);padding:22px;border-radius:2px;
+    position:sticky;top:80px;
+  }
+  .src-aside h4{font-size:19px;margin-bottom:4px}
+  .src-aside .sub{font-size:12.5px;color:var(--muted);font-style:italic;font-family:var(--serif);margin-bottom:18px}
+  .src-tally{display:flex;flex-direction:column;gap:11px;margin-bottom:20px}
+  .src-tally .t-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px}
+  .src-tally .t-row .k{color:var(--ink-soft)}
+  .src-tally .t-row .v{font-family:var(--mono);font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .src-tally .t-row .v.hot{color:var(--oxblood);font-weight:600}
+
+  /* Step 2 — configure */
+  .cfg-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin-bottom:32px}
+  .mode{
+    background:var(--paper);padding:22px 20px 20px;cursor:pointer;position:relative;
+    transition:background .25s var(--ease);
+  }
+  .mode:hover{background:var(--sheet)}
+  .mode[aria-checked="true"]{background:var(--sheet)}
+  .mode[aria-checked="true"]::before{content:"";position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--oxblood)}
+  .mode .mno{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em}
+  .mode h4{font-size:21px;margin:8px 0 6px;display:flex;align-items:baseline;justify-content:space-between}
+  .mode[aria-checked="true"] h4{color:var(--oxblood)}
+  .mode .md-tick{font-family:var(--mono);font-size:11px;color:var(--oxblood);opacity:0;transition:opacity .2s}
+  .mode[aria-checked="true"] .md-tick{opacity:1}
+  .mode p{font-size:12.5px;color:var(--ink-soft);line-height:1.5}
+  .mode .mrate{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--rule-soft)}
+
+  .cfg-opts{display:grid;grid-template-columns:1fr 1fr;gap:0 44px}
+  .opt{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--rule-soft)}
+  .opt .lbl .t{font-size:13.5px;color:var(--ink);font-weight:500}
+  .opt .lbl .d{font-size:11.5px;color:var(--muted);margin-top:1px}
+  .seg{display:flex;border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+  .seg button{background:var(--paper);border:none;padding:6px 13px;font-size:12px;font-family:var(--mono);color:var(--muted);letter-spacing:.03em;transition:all .2s}
+  .seg button+button{border-left:1px solid var(--rule)}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+  .switch{width:42px;height:23px;border-radius:12px;background:var(--rule);border:none;position:relative;transition:background .25s var(--ease);flex-shrink:0}
+  .switch::after{content:"";position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:var(--paper);transition:transform .25s var(--ease);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .switch[aria-checked="true"]{background:var(--oxblood)}
+  .switch[aria-checked="true"]::after{transform:translateX(19px)}
+
+  /* Step 3 — LIVE RUN */
+  .run-stage{display:grid;grid-template-columns:1.4fr 1fr;gap:44px;align-items:start}
+  .run-console{
+    background:var(--ink);color:var(--paper);padding:0;border-radius:3px;overflow:hidden;
+    box-shadow:0 18px 50px rgba(33,30,25,.28);
+  }
+  .run-console .rc-top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:15px 22px;border-bottom:1px solid rgba(246,244,239,.13);
+  }
+  .run-console .rc-top .rc-title{font-family:var(--serif);font-size:17px;color:var(--sheet);font-weight:400}
+  .run-console .rc-top .rc-title em{font-style:italic;color:#C99AA5}
+  .run-status{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:#E7C4CC;
+  }
+  .run-status .beat{width:7px;height:7px;border-radius:50%;background:var(--oxblood)}
+  .run-status.pulsing .beat{animation:beat 1.1s ease-in-out infinite}
+  @keyframes beat{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+
+  .run-counter{padding:34px 22px 26px;text-align:center;border-bottom:1px solid rgba(246,244,239,.13)}
+  .run-counter .big{
+    font-family:var(--serif);font-size:82px;font-weight:400;line-height:.9;color:var(--sheet);
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  }
+  .run-counter .cap{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#B7B0A2;margin-top:12px}
+
+  .run-progress{padding:20px 22px}
+  .rp-bar{height:6px;background:rgba(246,244,239,.12);border-radius:3px;overflow:hidden;position:relative}
+  .rp-bar span{position:absolute;inset:0;width:0;background:linear-gradient(90deg,#8A3145,#C05063);border-radius:3px;transition:width .5s var(--ease)}
+  .rp-meta{display:flex;justify-content:space-between;margin-top:11px;font-family:var(--mono);font-size:11px;color:#B7B0A2}
+  .rp-meta .pct{color:var(--sheet)}
+
+  .run-feed{border-top:1px solid rgba(246,244,239,.13);padding:8px 22px 20px}
+  .feed-item{
+    display:flex;align-items:center;gap:12px;padding:9px 0;
+    border-bottom:1px solid rgba(246,244,239,.08);
+    opacity:.3;transition:opacity .5s var(--ease);
+  }
+  .feed-item.tick{opacity:1}
+  .feed-item .fi-name{font-family:var(--sans);font-size:12.5px;color:var(--sheet);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .feed-item .fi-mark{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+  .feed-item .fi-mark svg{width:14px;height:14px;stroke:#7FA083;stroke-width:2;fill:none;opacity:0;transition:opacity .3s}
+  .feed-item.tick .fi-mark svg{opacity:1}
+  .feed-item .fi-mark .spin{width:11px;height:11px;border:1.5px solid rgba(246,244,239,.2);border-top-color:#C05063;border-radius:50%;animation:spin .7s linear infinite}
+  .feed-item.tick .spin{display:none}
+  .feed-item .fi-ct{font-family:var(--mono);font-size:11px;color:#B7B0A2;font-variant-numeric:tabular-nums}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* run side — briefing / summary */
+  .run-side .brief-line{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--rule-soft);font-size:13px}
+  .run-side .brief-line .k{color:var(--muted)}
+  .run-side .brief-line .v{color:var(--ink);font-family:var(--mono);font-size:12.5px;text-align:right;max-width:60%}
+
+  .run-summary{display:none}
+  .run-summary.show{display:block;animation:inkset .8s var(--ease)}
+  @keyframes inkset{from{opacity:0;filter:blur(3px)}to{opacity:1;filter:none}}
+  .summary-figs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);margin:18px 0}
+  .summary-figs .sf{background:var(--paper);padding:16px 18px}
+  .summary-figs .sf .k{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .summary-figs .sf .v{font-family:var(--serif);font-size:30px;color:var(--ink);margin-top:3px;font-variant-numeric:tabular-nums}
+  .summary-figs .sf .v.ox{color:var(--oxblood)}
+
+  /* Step 4 — review generated */
+  .gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .intent-card{
+    background:var(--sheet);border:1px solid var(--rule);border-radius:2px;
+    padding:22px 22px 18px;display:flex;flex-direction:column;gap:0;
+    transition:border-color .25s,box-shadow .25s,transform .25s var(--ease);
+  }
+  .intent-card:hover{border-color:var(--ink);box-shadow:0 8px 26px rgba(33,30,25,.09);transform:translateY(-2px)}
+  .intent-card .ic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px}
+  .intent-card .ic-q{font-family:var(--serif);font-size:19px;color:var(--ink);font-weight:400;line-height:1.22;letter-spacing:-.005em}
+  .intent-card .ic-a{font-size:13px;color:var(--ink-soft);line-height:1.55;padding:12px 0;border-top:1px solid var(--rule-soft);border-bottom:1px solid var(--rule-soft)}
+  .intent-card .ic-utt{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .intent-card . utt-chip{font-family:var(--sans);font-size:11px;color:var(--ink-soft);background:var(--sheet-2);border:1px solid var(--rule-soft);padding:3px 9px;border-radius:2px}
+  .intent-card .ic-foot{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+  .intent-card .ic-src{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.02em}
+
+  /* ============ REVIEW / GOVERNANCE ============ */
+  .rev-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:4px;flex-wrap:wrap}
+  .rev-filters{display:flex;gap:0;border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+  .rev-filters button{background:var(--paper);border:none;padding:8px 15px;font-size:12px;font-family:var(--mono);letter-spacing:.04em;color:var(--muted);transition:all .2s}
+  .rev-filters button+button{border-left:1px solid var(--rule)}
+  .rev-filters button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+  .rev-count{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.03em}
+
+  .rev-row{
+    display:grid;grid-template-columns:24px 1fr 150px 130px auto;gap:20px;align-items:center;
+    padding:18px 0;border-bottom:1px solid var(--rule-soft);transition:background .2s;
+  }
+  .rev-row:hover{background:var(--sheet)}
+  .rev-row.gone{opacity:0;transform:translateX(24px);transition:opacity .45s var(--ease),transform .45s var(--ease)}
+  .rev-row .rv-no{font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .rev-row .rv-main .q{font-family:var(--serif);font-size:17px;color:var(--ink);font-weight:400;line-height:1.25}
+  .rev-row .rv-main .m{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:4px;letter-spacing:.02em}
+  .rev-row .rv-topic{font-size:12.5px;color:var(--ink-soft)}
+  .rev-row .rv-topic .tp{color:var(--muted);font-size:10px;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:2px}
+  .rev-actions{display:flex;gap:8px;justify-content:flex-end}
+  .btn.sm{padding:7px 13px;font-size:12px}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:var(--sheet);padding:13px 22px;border-radius:3px;
+    font-size:13px;display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;
+    transition:opacity .3s var(--ease),transform .3s var(--ease);z-index:250;
+    box-shadow:0 12px 40px rgba(33,30,25,.3);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .tk{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#C99AA5}
+
+  /* Generic section screens */
+  .placeholder{border-top:1px solid var(--ink);padding-top:24px;margin-top:26px}
+  .ph-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+  .ph-grid .pc{background:var(--paper);padding:22px}
+  .ph-grid .pc h4{font-size:18px;margin-bottom:6px}
+  .ph-grid .pc p{font-size:12.5px;color:var(--muted)}
+  .settings-list .set-row{display:grid;grid-template-columns:230px 1fr;gap:28px;padding:20px 0;border-bottom:1px solid var(--rule-soft)}
+  .settings-list .set-row .sk{font-family:var(--serif);font-size:16px;color:var(--ink)}
+  .settings-list .set-row .sk .d{display:block;font-family:var(--sans);font-size:12px;color:var(--muted);margin-top:3px}
+  .settings-list .set-row input,.settings-list .set-row select{
+    width:100%;background:var(--sheet);border:1px solid var(--rule);border-radius:2px;
+    padding:10px 12px;font-family:var(--sans);font-size:13px;color:var(--ink);
+  }
+  .settings-list .set-row input:focus{border-color:var(--oxblood);outline:none}
+
+  .studio-nav{display:flex;justify-content:space-between;align-items:center;margin-top:38px;padding-top:22px;border-top:1.5px solid var(--ink)}
+  .studio-nav .left-note{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.02em}
+
+  /* Responsive */
+  @media (max-width:1024px){
+    :root{--pad:26px;--nav-w:200px}
+    .dash-grid{grid-template-columns:1fr;gap:34px}
+    .run-stage{grid-template-columns:1fr}
+    .src-layout{grid-template-columns:1fr}
+    .src-aside{position:static}
+    .gen-grid{grid-template-columns:1fr}
+    .cfg-opts{grid-template-columns:1fr;gap:0}
+    .page-title{font-size:38px}
+    .rev-row{grid-template-columns:20px 1fr auto;gap:14px}
+    .rev-row .rv-topic{display:none}
+    .rev-row > .rev-status-cell{display:none}
+    .brand .estd{display:none}
+  }
+  @media (max-width:720px){
+    .nav{display:none}
+    .dash-foot{grid-template-columns:1fr}
+    .cfg-modes{grid-template-columns:1fr}
+    .summary-figs{grid-template-columns:1fr}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+    .rise{opacity:1;transform:none}
+    .run-status.pulsing .beat{animation:none}
+    .feed-item .spin{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="direction-chip"><span class="dot"></span>Direction B · Editorial Broadsheet</div>
+
+<div class="app">
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="brand">
+        <span class="wordmark">The Intent&nbsp;<em>Ledger</em></span>
+        <span class="estd">Knowledge Operations · Est. MMXXVI</span>
+      </div>
+      <div class="edition">
+        <div class="proj">
+          <span class="lbl">Project</span>
+          <span class="val">Cards &amp; Payments</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="who" title="Knowledge Operations Editor">L</div>
+      </div>
+    </div>
+    <div class="rule-double"></div>
+  </header>
+
+  <div class="body-wrap">
+    <!-- SIDE NAV -->
+    <nav class="nav" aria-label="Sections">
+      <div class="nav-head">The Edition · Contents</div>
+      <ul id="navList">
+        <li><button class="nav-item" data-screen="dashboard" aria-current="page"><span class="folio">I</span><span><span class="name">Dashboard</span><span class="sub">The daily pulse</span></span></button></li>
+        <li><button class="nav-item" data-screen="settings"><span class="folio">II</span><span><span class="name">Project Settings</span><span class="sub">Topics &amp; scope</span></span></button></li>
+        <li><button class="nav-item" data-screen="studio"><span class="folio">III</span><span><span class="name">Intent Studio</span><span class="sub">Generate &amp; draft</span></span></button></li>
+        <li><button class="nav-item" data-screen="review"><span class="folio">IV</span><span><span class="name">Review</span><span class="sub">Stage for approval</span></span></button></li>
+        <li><button class="nav-item" data-screen="approvals"><span class="folio">V</span><span><span class="name">Approvals</span><span class="sub">Checker inbox</span></span></button></li>
+        <li><button class="nav-item" data-screen="library"><span class="folio">VI</span><span><span class="name">Intent Library</span><span class="sub">The published record</span></span></button></li>
+      </ul>
+      <div class="nav-foot">
+        <div class="k">Working folder</div>
+        SharePoint › KnowledgeOps ›<br>Cards_Payments_2026
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="screens">
+
+        <!-- ============ DASHBOARD ============ -->
+        <section class="screen active" id="dashboard" aria-label="Dashboard">
+          <div class="rise" style="--d:0s">
+            <div class="runhead"><span class="rh-vol">Vol. I</span><span class="rh-sec">The Daily Pulse</span><span class="rh-rule"></span><span class="rh-date">Wednesday, 16 July 2026</span></div>
+            <h1 class="page-title">Cards &amp; Payments, <span class="it">in review</span></h1>
+            <p class="standfirst">Forty-two intents are moving through the pipeline this week. Two sources have gone stale and want re-indexing before the next batch run.</p>
+          </div>
+          <div class="deck-rule strong rise" style="--d:.05s"></div>
+
+          <div class="dash-grid">
+            <div>
+              <div class="rise" style="--d:.1s">
+                <div class="col-head">Pipeline ledger <span class="meta">as of 16 Jul, 09:14</span></div>
+                <div class="ledger" id="ledger">
+                  <div class="ledger-row" data-fill="30">
+                    <div class="stage"><span class="nm">Draft</span><span class="desc">Generated, not yet checked</span></div>
+                    <div class="fig tnum" data-to="18"><span class="v">0</span><span class="delta up">+6 today</span></div>
+                    <div class="ledger-bar"><span></span></div>
+                  </div>
+                  <div class="ledger-row" data-fill="20">
+                    <div class="stage"><span class="nm">Staged</span><span class="desc">Editor-approved, queued</span></div>
+                    <div class="fig tnum" data-to="12"><span class="v">0</span><span class="delta">unchanged</span></div>
+                    <div class="ledger-bar"><span></span></div>
+                  </div>
+                  <div class="ledger-row" data-fill="14">
+                    <div class="stage"><span class="nm">Pending approval</span><span class="desc">Awaiting a checker</span></div>
+                    <div class="fig tnum" data-to="8"><span class="v">0</span><span class="delta">2 overdue</span></div>
+                    <div class="ledger-bar"><span></span></div>
+                  </div>
+                  <div class="ledger-row is-live" data-fill="88">
+                    <div class="stage"><span class="nm">Live</span><span class="desc">Serving in the chatbot</span></div>
+                    <div class="fig tnum" data-to="204"><span class="v">0</span><span class="delta up">+4 this week</span></div>
+                    <div class="ledger-bar"><span></span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rise" style="--d:.2s" style="margin-top:38px">
+                <div class="col-head" style="margin-top:38px">Recent runs <span class="meta">last 5</span></div>
+                <div class="table-scroll">
+                  <table class="print">
+                    <thead>
+                      <tr><th>Run</th><th>Method</th><th>Topic</th><th class="num">Intents</th><th class="num">Kept</th><th>When</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><span class="run-name">Travel Insurance sweep</span></td><td><span class="type-tag">GenAI Batch</span></td><td>Travel Insurance</td><td class="num">24</td><td class="num">21</td><td class="when">09:02</td></tr>
+                      <tr><td><span class="run-name">Premium rate card</span></td><td><span class="type-tag">GenAI Single</span></td><td>Fees &amp; Charges</td><td class="num">9</td><td class="num">9</td><td class="when">Yesterday</td></tr>
+                      <tr><td><span class="run-name">Dispute handling</span></td><td><span class="type-tag">Manual</span></td><td>Card Disputes</td><td class="num">6</td><td class="num">6</td><td class="when">Yesterday</td></tr>
+                      <tr><td><span class="run-name">Contactless limits</span></td><td><span class="type-tag">GenAI Single</span></td><td>Payments</td><td class="num">7</td><td class="num">5</td><td class="when">14 Jul</td></tr>
+                      <tr><td><span class="run-name">FX &amp; overseas use</span></td><td><span class="type-tag">GenAI Batch</span></td><td>Foreign Exchange</td><td class="num">18</td><td class="num">15</td><td class="when">12 Jul</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- attention column -->
+            <aside class="rise" style="--d:.15s">
+              <div class="col-head">Wants attention</div>
+              <div class="attn-item"><span class="marker">i.</span><div class="body"><div class="t">2 sources have gone stale</div><div class="m">Travel_Claims_FAQ_2026.docx and one URL changed since last index. <b>Re-index before batch.</b></div></div></div>
+              <div class="attn-item"><span class="marker">ii.</span><div class="body"><div class="t">8 intents pending a checker</div><div class="m">2 have waited over 48 hours. <b>Nudge Approvals →</b></div></div></div>
+              <div class="attn-item"><span class="marker">iii.</span><div class="body"><div class="t">Batch draft ready to review</div><div class="m">Travel Insurance sweep produced 21 keepers. <b>Open in Review.</b></div></div></div>
+
+              <div class="dash-foot" style="margin-top:22px">
+                <div class="cell"><div class="k">Sources</div><div class="v tnum">31</div><div class="n">27 indexed · 2 stale</div></div>
+                <div class="cell"><div class="k">Topics</div><div class="v tnum">9</div><div class="n">across this project</div></div>
+                <div class="cell"><div class="k">Coverage</div><div class="v tnum">86%</div><div class="n">topics with ≥1 live intent</div></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ============ INTENT STUDIO ============ -->
+        <section class="screen" id="studio" aria-label="Intent Studio">
+          <div class="studio-head rise" style="--d:0s">
+            <div>
+              <div class="runhead"><span class="rh-vol">Vol. III</span><span class="rh-sec">The Composing Room</span><span class="rh-rule"></span><span class="rh-date">16 July edition</span></div>
+              <h1 class="page-title">Intent <span class="it">Studio</span></h1>
+            </div>
+            <div style="text-align:right">
+              <div style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em">TOPIC</div>
+              <div style="font-family:var(--serif);font-size:20px;color:var(--ink)">Travel Insurance</div>
+            </div>
+          </div>
+
+          <!-- Stepper -->
+          <div class="stepper rise" style="--d:.06s" role="tablist" aria-label="Generation steps">
+            <div class="step-tab current" data-step="1" role="tab"><span class="no">01</span><span class="lbl">Select sources</span></div>
+            <div class="step-tab" data-step="2" role="tab"><span class="no">02</span><span class="lbl">Configure</span></div>
+            <div class="step-tab" data-step="3" role="tab"><span class="no">03</span><span class="lbl">Generate</span></div>
+            <div class="step-tab" data-step="4" role="tab"><span class="no">04</span><span class="lbl">Review draft</span></div>
+          </div>
+
+          <div class="studio-stage">
+            <!-- STEP 1 -->
+            <div class="step-panel active" data-panel="1">
+              <div class="src-layout">
+                <div>
+                  <div class="col-head">SharePoint working folder <span class="meta">6 sources</span></div>
+                  <div id="srcList">
+                    <div class="src-row" role="checkbox" aria-checked="true" tabindex="0" data-status="indexed">
+                      <span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+                      <span><span class="fname">Travel_Claims_FAQ_2026.docx</span><span class="fmeta"><span class="kind">DOCX</span> · 214 KB · indexed 12 Jul</span></span>
+                      <span class="pill stale"><span class="glyph"></span>Stale</span>
+                    </div>
+                    <div class="src-row" role="checkbox" aria-checked="true" tabindex="0" data-status="indexed">
+                      <span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+                      <span><span class="fname">Premium_Rate_Card_Q3.xlsx</span><span class="fmeta"><span class="kind">XLSX</span> · 88 KB · indexed 15 Jul</span></span>
+                      <span class="pill indexed"><span class="glyph"></span>Indexed</span>
+                    </div>
+                    <div class="src-row" role="checkbox" aria-checked="true" tabindex="0" data-status="indexed">
+                      <span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+                      <span><span class="fname">Delayed_Baggage_Policy_v4.pdf</span><span class="fmeta"><span class="kind">PDF</span> · 1.2 MB · indexed 15 Jul</span></span>
+                      <span class="pill indexed"><span class="glyph"></span>Indexed</span>
+                    </div>
+                    <div class="src-row" role="checkbox" aria-checked="true" tabindex="0" data-status="indexed">
+                      <span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+                      <span><span class="fname">ocbc.com/travel-insurance/claims</span><span class="fmeta"><span class="kind">URL</span> · crawled 09 Jul</span></span>
+                      <span class="pill stale"><span class="glyph"></span>Stale</span>
+                    </div>
+                    <div class="src-row" role="checkbox" aria-checked="false" tabindex="0" data-status="notindexed">
+                      <span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+                      <span><span class="fname">Medical_Cover_Limits_2026.docx</span><span class="fmeta"><span class="kind">DOCX</span> · 176 KB · queued for indexing</span></span>
+                      <span class="pill notindexed"><span class="glyph"></span>Not indexed</span>
+                    </div>
+                    <div class="src-row" role="checkbox" aria-checked="true" tabindex="0" data-status="indexed">
+                      <span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+                      <span><span class="fname">Trip_Cancellation_Matrix.xlsx</span><span class="fmeta"><span class="kind">XLSX</span> · 64 KB · indexed 14 Jul</span></span>
+                      <span class="pill indexed"><span class="glyph"></span>Indexed</span>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="src-aside">
+                  <h4>Selection</h4>
+                  <p class="sub">Only indexed sources feed a run.</p>
+                  <div class="src-tally">
+                    <div class="t-row"><span class="k">Selected</span><span class="v tnum" id="selCount">5</span></div>
+                    <div class="t-row"><span class="k">Indexed &amp; ready</span><span class="v tnum" id="readyCount">3</span></div>
+                    <div class="t-row"><span class="k">Stale — will re-index</span><span class="v hot tnum" id="staleCount">2</span></div>
+                  </div>
+                  <button class="btn ghost" style="width:100%;justify-content:center;font-size:12px;padding:9px">Re-index stale sources first</button>
+                </aside>
+              </div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="step-panel" data-panel="2">
+              <div class="col-head">Method</div>
+              <div class="cfg-modes" id="cfgModes" role="radiogroup" aria-label="Generation method">
+                <div class="mode" role="radio" aria-checked="false" tabindex="0" data-mode="single">
+                  <div class="mno">01</div>
+                  <h4>Single <span class="md-tick">selected</span></h4>
+                  <p>Draft one topic at a time from a small set of sources. Best for careful, high-stakes copy.</p>
+                  <div class="mrate">~1 min · fine control</div>
+                </div>
+                <div class="mode" role="radio" aria-checked="true" tabindex="0" data-mode="batch">
+                  <div class="mno">02</div>
+                  <h4>Batch <span class="md-tick">selected</span></h4>
+                  <p>Sweep every selected source and generate the full spread of intents in one pass.</p>
+                  <div class="mrate">~6 min · high volume</div>
+                </div>
+                <div class="mode" role="radio" aria-checked="false" tabindex="0" data-mode="manual">
+                  <div class="mno">03</div>
+                  <h4>Manual <span class="md-tick">selected</span></h4>
+                  <p>Write the question and response yourself, with sources on hand for reference.</p>
+                  <div class="mrate">no model · full authorship</div>
+                </div>
+              </div>
+
+              <div class="col-head">Options</div>
+              <div class="cfg-opts">
+                <div class="opt"><div class="lbl"><div class="t">Utterances per intent</div><div class="d">Alternate phrasings to train on</div></div>
+                  <div class="seg" role="group" aria-label="Utterances per intent"><button aria-pressed="false">4</button><button aria-pressed="true">6</button><button aria-pressed="false">8</button></div></div>
+                <div class="opt"><div class="lbl"><div class="t">Tone</div><div class="d">Voice of the response</div></div>
+                  <div class="seg" role="group" aria-label="Tone"><button aria-pressed="true">Plain</button><button aria-pressed="false">Formal</button></div></div>
+                <div class="opt"><div class="lbl"><div class="t">Flag policy conflicts</div><div class="d">Hold intents that disagree with a live one</div></div>
+                  <button class="switch" role="switch" aria-checked="true" aria-label="Flag policy conflicts"></button></div>
+                <div class="opt"><div class="lbl"><div class="t">Cite source passage</div><div class="d">Attach the paragraph each answer came from</div></div>
+                  <button class="switch" role="switch" aria-checked="true" aria-label="Cite source passage"></button></div>
+              </div>
+            </div>
+
+            <!-- STEP 3 — LIVE RUN -->
+            <div class="step-panel" data-panel="3">
+              <div class="run-stage">
+                <div class="run-console" aria-live="polite">
+                  <div class="rc-top">
+                    <div class="rc-title">Travel Insurance <em>sweep</em></div>
+                    <div class="run-status" id="runStatus"><span class="beat"></span><span id="runStatusText">Queued</span></div>
+                  </div>
+                  <div class="run-counter">
+                    <div class="big tnum" id="runCounter">0</div>
+                    <div class="cap">Intents drafted</div>
+                  </div>
+                  <div class="run-progress">
+                    <div class="rp-bar"><span id="runBar"></span></div>
+                    <div class="rp-meta"><span id="runPhase">Awaiting launch</span><span class="pct" id="runPct">0%</span></div>
+                  </div>
+                  <div class="run-feed" id="runFeed">
+                    <div class="feed-item" data-ct="6"><span class="fi-mark"><span class="spin"></span><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span><span class="fi-name">Travel_Claims_FAQ_2026.docx</span><span class="fi-ct"></span></div>
+                    <div class="feed-item" data-ct="4"><span class="fi-mark"><span class="spin"></span><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span><span class="fi-name">Premium_Rate_Card_Q3.xlsx</span><span class="fi-ct"></span></div>
+                    <div class="feed-item" data-ct="5"><span class="fi-mark"><span class="spin"></span><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span><span class="fi-name">Delayed_Baggage_Policy_v4.pdf</span><span class="fi-ct"></span></div>
+                    <div class="feed-item" data-ct="3"><span class="fi-mark"><span class="spin"></span><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span><span class="fi-name">ocbc.com/travel-insurance/claims</span><span class="fi-ct"></span></div>
+                    <div class="feed-item" data-ct="6"><span class="fi-mark"><span class="spin"></span><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span><span class="fi-name">Trip_Cancellation_Matrix.xlsx</span><span class="fi-ct"></span></div>
+                  </div>
+                </div>
+
+                <div class="run-side">
+                  <!-- briefing (before/during) -->
+                  <div class="run-brief" id="runBrief">
+                    <div class="col-head">The briefing</div>
+                    <div class="brief-line"><span class="k">Method</span><span class="v">GenAI Batch</span></div>
+                    <div class="brief-line"><span class="k">Sources</span><span class="v">5 selected</span></div>
+                    <div class="brief-line"><span class="k">Utterances</span><span class="v">6 per intent</span></div>
+                    <div class="brief-line"><span class="k">Tone</span><span class="v">Plain</span></div>
+                    <div class="brief-line"><span class="k">Conflict check</span><span class="v">On</span></div>
+                    <p style="font-family:var(--serif);font-style:italic;font-size:14px;color:var(--muted);margin-top:20px;line-height:1.5">The press is set. Launch the run and the draft will settle like ink on the page.</p>
+                    <button class="btn accent" id="launchBtn" style="margin-top:18px"><svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>Launch run</button>
+                  </div>
+                  <!-- summary (after) -->
+                  <div class="run-summary" id="runSummary">
+                    <div class="col-head">Impression complete</div>
+                    <div class="summary-figs">
+                      <div class="sf"><div class="k">Drafted</div><div class="v tnum ox">24</div></div>
+                      <div class="sf"><div class="k">Flagged for conflict</div><div class="v tnum">3</div></div>
+                      <div class="sf"><div class="k">Sources read</div><div class="v tnum">5</div></div>
+                      <div class="sf"><div class="k">Elapsed</div><div class="v tnum">6.4<span style="font-size:14px">s</span></div></div>
+                    </div>
+                    <p style="font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-soft);line-height:1.5">Twenty-four intents drafted. Three disagree with a live answer and are held for your eye.</p>
+                    <button class="btn accent" id="toReviewBtn" style="margin-top:18px;width:100%;justify-content:center">Review the draft →</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="step-panel" data-panel="4">
+              <div class="col-head">Draft intents <span class="meta">24 drafted · 3 flagged</span></div>
+              <div class="gen-grid" id="genGrid">
+                <div class="intent-card">
+                  <div class="ic-top"><div class="ic-q">How do I claim for a delayed flight?</div><span class="pill draft"><span class="glyph"></span>Draft</span></div>
+                  <div class="ic-a">If your flight is delayed by 6 hours or more, you can claim a fixed benefit under your travel policy. Log the claim in the OCBC app under Insurance › Travel, attach your boarding pass and the airline's delay notice, and we'll assess it within 5 working days.</div>
+                  <div class="ic-utt"><span class="utt-chip">flight delayed compensation</span><span class="utt-chip">claim for late flight</span><span class="utt-chip">delayed departure payout</span><span class="utt-chip">+3</span></div>
+                  <div class="ic-foot"><span class="ic-src">Travel_Claims_FAQ_2026.docx · ¶4</span><button class="btn ghost sm">Edit</button></div>
+                </div>
+                <div class="intent-card">
+                  <div class="ic-top"><div class="ic-q">What does travel insurance cover for lost baggage?</div><span class="pill draft"><span class="glyph"></span>Draft</span></div>
+                  <div class="ic-a">Checked-in baggage that the airline loses is covered up to S$3,000 per trip, with a per-item cap of S$500. Report the loss to the airline first and keep the Property Irregularity Report — you'll need it to claim.</div>
+                  <div class="ic-utt"><span class="utt-chip">lost luggage cover</span><span class="utt-chip">baggage claim limit</span><span class="utt-chip">airline lost my bag</span><span class="utt-chip">+3</span></div>
+                  <div class="ic-foot"><span class="ic-src">Delayed_Baggage_Policy_v4.pdf · ¶2</span><button class="btn ghost sm">Edit</button></div>
+                </div>
+                <div class="intent-card" style="border-color:rgba(110,36,54,.35)">
+                  <div class="ic-top"><div class="ic-q">Can I cancel my trip and get a refund?</div><span class="pill pending"><span class="glyph"></span>Conflict</span></div>
+                  <div class="ic-a">Trip cancellation is covered only for listed reasons — illness, jury duty, or a travel advisory against your destination. A change of mind isn't covered. Claims need documentary proof of the reason.</div>
+                  <div class="ic-utt"><span class="utt-chip">cancel trip refund</span><span class="utt-chip">get money back cancellation</span><span class="utt-chip">+4</span></div>
+                  <div class="ic-foot"><span class="ic-src" style="color:var(--oxblood)">Conflicts with live intent #TI-041</span><button class="btn ghost sm">Resolve</button></div>
+                </div>
+                <div class="intent-card">
+                  <div class="ic-top"><div class="ic-q">Does my policy cover medical costs overseas?</div><span class="pill draft"><span class="glyph"></span>Draft</span></div>
+                  <div class="ic-a">Emergency medical treatment abroad is covered up to S$1,000,000, including hospital stays and emergency evacuation. Call the 24-hour assistance line before treatment where possible so we can arrange direct billing.</div>
+                  <div class="ic-utt"><span class="utt-chip">medical cover abroad</span><span class="utt-chip">hospital overseas insurance</span><span class="utt-chip">+4</span></div>
+                  <div class="ic-foot"><span class="ic-src">Medical_Cover_Limits_2026.docx · ¶1</span><button class="btn ghost sm">Edit</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- studio nav -->
+          <div class="studio-nav">
+            <div class="left-note" id="studioNote">Step 01 of 04 · 5 sources selected</div>
+            <div style="display:flex;gap:12px">
+              <button class="btn ghost" id="studioBack" disabled><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
+              <button class="btn" id="studioNext">Continue<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ REVIEW ============ -->
+        <section class="screen" id="review" aria-label="Review">
+          <div class="rise" style="--d:0s">
+            <div class="runhead"><span class="rh-vol">Vol. IV</span><span class="rh-sec">The Copy Desk</span><span class="rh-rule"></span><span class="rh-date">7 drafts on the desk</span></div>
+            <h1 class="page-title">Review &amp; <span class="it">stage</span></h1>
+            <p class="standfirst">Read each draft, then submit it for a checker's approval. Once submitted, an intent leaves your desk and waits in the Approvals inbox.</p>
+          </div>
+          <div class="deck-rule strong rise" style="--d:.05s"></div>
+
+          <div class="rev-toolbar rise" style="--d:.1s">
+            <div class="rev-filters" role="group" aria-label="Filter by state">
+              <button aria-pressed="true">All drafts</button>
+              <button aria-pressed="false">Flagged</button>
+              <button aria-pressed="false">Travel Insurance</button>
+            </div>
+            <div class="rev-count" id="revCount">7 drafts awaiting review</div>
+          </div>
+
+          <div class="rise" style="--d:.15s" id="revList">
+            <div class="rev-row">
+              <span class="rv-no tnum">01</span>
+              <div class="rv-main"><div class="q">How do I claim for a delayed flight?</div><div class="m">6 utterances · Travel_Claims_FAQ_2026.docx</div></div>
+              <div class="rv-topic"><span class="tp">Topic</span>Travel Insurance</div>
+              <div class="rev-status-cell"><span class="pill draft"><span class="glyph"></span>Draft</span></div>
+              <div class="rev-actions"><button class="btn ghost sm">Read</button><button class="btn accent sm" data-submit>Submit for approval</button></div>
+            </div>
+            <div class="rev-row">
+              <span class="rv-no tnum">02</span>
+              <div class="rv-main"><div class="q">What does travel insurance cover for lost baggage?</div><div class="m">6 utterances · Delayed_Baggage_Policy_v4.pdf</div></div>
+              <div class="rv-topic"><span class="tp">Topic</span>Travel Insurance</div>
+              <div class="rev-status-cell"><span class="pill draft"><span class="glyph"></span>Draft</span></div>
+              <div class="rev-actions"><button class="btn ghost sm">Read</button><button class="btn accent sm" data-submit>Submit for approval</button></div>
+            </div>
+            <div class="rev-row">
+              <span class="rv-no tnum">03</span>
+              <div class="rv-main"><div class="q">Can I cancel my trip and get a refund?</div><div class="m">6 utterances · conflicts with live #TI-041</div></div>
+              <div class="rv-topic"><span class="tp">Topic</span>Travel Insurance</div>
+              <div class="rev-status-cell"><span class="pill pending"><span class="glyph"></span>Conflict</span></div>
+              <div class="rev-actions"><button class="btn ghost sm">Resolve</button><button class="btn accent sm" data-submit disabled>Submit for approval</button></div>
+            </div>
+            <div class="rev-row">
+              <span class="rv-no tnum">04</span>
+              <div class="rv-main"><div class="q">Does my policy cover medical costs overseas?</div><div class="m">6 utterances · Medical_Cover_Limits_2026.docx</div></div>
+              <div class="rv-topic"><span class="tp">Topic</span>Travel Insurance</div>
+              <div class="rev-status-cell"><span class="pill draft"><span class="glyph"></span>Draft</span></div>
+              <div class="rev-actions"><button class="btn ghost sm">Read</button><button class="btn accent sm" data-submit>Submit for approval</button></div>
+            </div>
+            <div class="rev-row">
+              <span class="rv-no tnum">05</span>
+              <div class="rv-main"><div class="q">Is winter sports cover included as standard?</div><div class="m">4 utterances · Medical_Cover_Limits_2026.docx</div></div>
+              <div class="rv-topic"><span class="tp">Topic</span>Travel Insurance</div>
+              <div class="rev-status-cell"><span class="pill draft"><span class="glyph"></span>Draft</span></div>
+              <div class="rev-actions"><button class="btn ghost sm">Read</button><button class="btn accent sm" data-submit>Submit for approval</button></div>
+            </div>
+            <div class="rev-row">
+              <span class="rv-no tnum">06</span>
+              <div class="rv-main"><div class="q">How long do travel claims take to pay out?</div><div class="m">6 utterances · Travel_Claims_FAQ_2026.docx</div></div>
+              <div class="rv-topic"><span class="tp">Topic</span>Travel Insurance</div>
+              <div class="rev-status-cell"><span class="pill draft"><span class="glyph"></span>Draft</span></div>
+              <div class="rev-actions"><button class="btn ghost sm">Read</button><button class="btn accent sm" data-submit>Submit for approval</button></div>
+            </div>
+            <div class="rev-row">
+              <span class="rv-no tnum">07</span>
+              <div class="rv-main"><div class="q">Can I add a family member to my travel policy?</div><div class="m">6 utterances · ocbc.com/travel-insurance/claims</div></div>
+              <div class="rv-topic"><span class="tp">Topic</span>Travel Insurance</div>
+              <div class="rev-status-cell"><span class="pill draft"><span class="glyph"></span>Draft</span></div>
+              <div class="rev-actions"><button class="btn ghost sm">Read</button><button class="btn accent sm" data-submit>Submit for approval</button></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ SETTINGS ============ -->
+        <section class="screen" id="settings" aria-label="Project Settings">
+          <div class="rise" style="--d:0s">
+            <div class="runhead"><span class="rh-vol">Vol. II</span><span class="rh-sec">Masthead &amp; Scope</span><span class="rh-rule"></span><span class="rh-date">9 topics · 31 sources</span></div>
+            <h1 class="page-title">Project <span class="it">settings</span></h1>
+            <p class="standfirst">Cards &amp; Payments draws from one SharePoint working folder and nine topics. Set the house style once and every run inherits it.</p>
+          </div>
+          <div class="deck-rule strong rise" style="--d:.05s"></div>
+          <div class="settings-list rise" style="--d:.1s">
+            <div class="set-row"><div class="sk">Project name<span class="d">Shown across the ledger</span></div><input type="text" value="Cards &amp; Payments" aria-label="Project name"></div>
+            <div class="set-row"><div class="sk">Working folder<span class="d">Source of every document</span></div><input type="text" value="SharePoint › KnowledgeOps › Cards_Payments_2026" aria-label="Working folder"></div>
+            <div class="set-row"><div class="sk">House tone<span class="d">Default voice for generated answers</span></div><select aria-label="House tone"><option>Plain — clear and direct</option><option>Formal — policy register</option></select></div>
+            <div class="set-row"><div class="sk">Re-index cadence<span class="d">How often sources are re-crawled</span></div><select aria-label="Re-index cadence"><option>Weekly</option><option>Daily</option><option>On demand only</option></select></div>
+          </div>
+          <div class="placeholder rise" style="--d:.15s">
+            <div class="col-head">Topics in this project <span class="meta">9</span></div>
+            <div class="ph-grid">
+              <div class="pc"><h4>Travel Insurance</h4><p>21 live · 7 in draft</p></div>
+              <div class="pc"><h4>Fees &amp; Charges</h4><p>34 live · 0 in draft</p></div>
+              <div class="pc"><h4>Card Disputes</h4><p>18 live · 2 pending</p></div>
+              <div class="pc"><h4>Foreign Exchange</h4><p>15 live · 3 staged</p></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ APPROVALS ============ -->
+        <section class="screen" id="approvals" aria-label="Approvals">
+          <div class="rise" style="--d:0s">
+            <div class="runhead"><span class="rh-vol">Vol. V</span><span class="rh-sec">The Checker's Inbox</span><span class="rh-rule"></span><span class="rh-date">8 pending · 2 overdue</span></div>
+            <h1 class="page-title">Approvals</h1>
+            <p class="standfirst">Eight intents wait for a checker's decision. Approve to publish live; return to send back to the editor with a note.</p>
+          </div>
+          <div class="deck-rule strong rise" style="--d:.05s"></div>
+          <div class="rise" style="--d:.1s">
+            <div class="col-head">Pending approval <span class="meta">8 · 2 overdue</span></div>
+            <div class="rev-row" style="grid-template-columns:24px 1fr 150px auto">
+              <span class="rv-no tnum">01</span>
+              <div class="rv-main"><div class="q">How do I report a lost or stolen card?</div><div class="m">Submitted by L. Tan · 2 days ago</div></div>
+              <div class="rev-status-cell"><span class="pill pending"><span class="glyph"></span>Overdue</span></div>
+              <div class="rev-actions"><button class="btn ghost sm">Return</button><button class="btn accent sm">Approve</button></div>
+            </div>
+            <div class="rev-row" style="grid-template-columns:24px 1fr 150px auto">
+              <span class="rv-no tnum">02</span>
+              <div class="rv-main"><div class="q">What's the daily contactless payment limit?</div><div class="m">Submitted by L. Tan · yesterday</div></div>
+              <div class="rev-status-cell"><span class="pill staged"><span class="glyph"></span>Pending</span></div>
+              <div class="rev-actions"><button class="btn ghost sm">Return</button><button class="btn accent sm">Approve</button></div>
+            </div>
+            <div class="rev-row" style="grid-template-columns:24px 1fr 150px auto">
+              <span class="rv-no tnum">03</span>
+              <div class="rv-main"><div class="q">How do I dispute a transaction I don't recognise?</div><div class="m">Submitted by R. Mok · yesterday</div></div>
+              <div class="rev-status-cell"><span class="pill staged"><span class="glyph"></span>Pending</span></div>
+              <div class="rev-actions"><button class="btn ghost sm">Return</button><button class="btn accent sm">Approve</button></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ LIBRARY ============ -->
+        <section class="screen" id="library" aria-label="Intent Library">
+          <div class="rise" style="--d:0s">
+            <div class="runhead"><span class="rh-vol">Vol. VI</span><span class="rh-sec">The Published Record</span><span class="rh-rule"></span><span class="rh-date">204 live intents</span></div>
+            <h1 class="page-title">Intent <span class="it">Library</span></h1>
+            <p class="standfirst">Two hundred and four intents are live in the Cards &amp; Payments chatbot. This is the record of what the assistant will say.</p>
+          </div>
+          <div class="deck-rule strong rise" style="--d:.05s"></div>
+          <div class="rise" style="--d:.1s">
+            <div class="table-scroll">
+              <table class="print">
+                <thead><tr><th>Intent</th><th>Topic</th><th>State</th><th class="num">Utterances</th><th>Last edit</th></tr></thead>
+                <tbody>
+                  <tr><td><span class="run-name">How do I claim for a delayed flight?</span></td><td>Travel Insurance</td><td><span class="pill live"><span class="glyph"></span>Live</span></td><td class="num">6</td><td class="when">16 Jul</td></tr>
+                  <tr><td><span class="run-name">What's the foreign transaction fee?</span></td><td>Fees &amp; Charges</td><td><span class="pill live"><span class="glyph"></span>Live</span></td><td class="num">8</td><td class="when">15 Jul</td></tr>
+                  <tr><td><span class="run-name">How do I report a lost or stolen card?</span></td><td>Card Disputes</td><td><span class="pill pending"><span class="glyph"></span>Pending</span></td><td class="num">6</td><td class="when">14 Jul</td></tr>
+                  <tr><td><span class="run-name">Can I freeze my card temporarily?</span></td><td>Card Controls</td><td><span class="pill live"><span class="glyph"></span>Live</span></td><td class="num">5</td><td class="when">14 Jul</td></tr>
+                  <tr><td><span class="run-name">What exchange rate applies to overseas spend?</span></td><td>Foreign Exchange</td><td><span class="pill staged"><span class="glyph"></span>Staged</span></td><td class="num">6</td><td class="when">12 Jul</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="tk">Submitted</span><span id="toastMsg">Intent sent to Approvals</span></div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Screen switching (page-turn crossfade) ---------- */
+  var screens = document.querySelectorAll('.screen');
+  var navItems = document.querySelectorAll('.nav-item');
+  var current = 'dashboard';
+
+  function replayReveals(el){
+    // restart stagger animation by toggling class
+    el.classList.remove('animate');
+    // force reflow
+    void el.offsetWidth;
+    el.classList.add('animate');
+  }
+
+  function showScreen(id){
+    if(id===current) return;
+    var from = document.getElementById(current);
+    var to = document.getElementById(id);
+    navItems.forEach(function(n){
+      n.setAttribute('aria-current', n.dataset.screen===id ? 'page':'false');
+      if(n.dataset.screen!==id) n.removeAttribute('aria-current');
+    });
+
+    if(reduce){
+      from.classList.remove('active');
+      to.classList.add('active','animate');
+      current=id; afterShow(id); return;
+    }
+    from.classList.add('turning');
+    setTimeout(function(){
+      from.classList.remove('active','turning','animate');
+      to.classList.add('active');
+      replayReveals(to);
+      current=id;
+      afterShow(id);
+    },230);
+  }
+
+  function afterShow(id){
+    if(id==='dashboard') animateLedger();
+  }
+
+  navItems.forEach(function(n){
+    n.addEventListener('click', function(){ showScreen(n.dataset.screen); });
+  });
+
+  // initial reveals
+  var dash = document.getElementById('dashboard');
+  dash.classList.add('animate');
+
+  /* ---------- Dashboard ledger animation ---------- */
+  var ledgerDone=false;
+  function animateLedger(){
+    var rows = document.querySelectorAll('#ledger .ledger-row');
+    rows.forEach(function(row, i){
+      var fig = row.querySelector('.fig');
+      var to = +fig.dataset.to;
+      var vEl = fig.querySelector('.v');
+      var bar = row.querySelector('.ledger-bar span');
+      var fill = row.dataset.fill;
+      setTimeout(function(){
+        if(bar) bar.style.width = fill+'%';
+        countTo(vEl, to, 1000);
+      }, ledgerDone?0:(160*i)+120);
+    });
+    ledgerDone=true;
+  }
+  function countTo(el, target, dur){
+    if(reduce){ el.textContent=target; return; }
+    var start=0, t0=null;
+    function step(ts){
+      if(!t0) t0=ts;
+      var p=Math.min((ts-t0)/dur,1);
+      var e=1-Math.pow(1-p,3);
+      el.textContent = Math.round(start+(target-start)*e);
+      if(p<1) requestAnimationFrame(step);
+      else el.textContent=target;
+    }
+    requestAnimationFrame(step);
+  }
+  // run ledger on load
+  setTimeout(animateLedger, 300);
+
+  /* ---------- Source selection (Step 1) ---------- */
+  var srcRows = document.querySelectorAll('#srcList .src-row');
+  function updateTally(){
+    var sel=0, ready=0, stale=0;
+    srcRows.forEach(function(r){
+      if(r.getAttribute('aria-checked')==='true'){
+        sel++;
+        var pill=r.querySelector('.pill');
+        if(pill.classList.contains('stale')) stale++;
+        else if(pill.classList.contains('indexed')) ready++;
+      }
+    });
+    document.getElementById('selCount').textContent=sel;
+    document.getElementById('readyCount').textContent=ready;
+    document.getElementById('staleCount').textContent=stale;
+    var note=document.getElementById('studioNote');
+    if(step===1) note.textContent='Step 01 of 04 · '+sel+' sources selected';
+  }
+  function toggleSrc(r){
+    r.setAttribute('aria-checked', r.getAttribute('aria-checked')==='true'?'false':'true');
+    updateTally();
+  }
+  srcRows.forEach(function(r){
+    r.addEventListener('click', function(){ toggleSrc(r); });
+    r.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggleSrc(r);} });
+  });
+
+  /* ---------- Mode radios (Step 2) ---------- */
+  var modes=document.querySelectorAll('#cfgModes .mode');
+  modes.forEach(function(m){
+    function pick(){ modes.forEach(function(x){x.setAttribute('aria-checked','false');}); m.setAttribute('aria-checked','true'); }
+    m.addEventListener('click', pick);
+    m.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){e.preventDefault();pick();} });
+  });
+  // segmented + switches
+  document.querySelectorAll('.seg').forEach(function(seg){
+    seg.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){
+        seg.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed','false');});
+        b.setAttribute('aria-pressed','true');
+      });
+    });
+  });
+  document.querySelectorAll('.switch').forEach(function(s){
+    s.addEventListener('click', function(){ s.setAttribute('aria-checked', s.getAttribute('aria-checked')==='true'?'false':'true'); });
+  });
+  document.querySelectorAll('.rev-filters button, .seg button').forEach(function(){});
+  document.querySelectorAll('.rev-filters').forEach(function(grp){
+    grp.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){
+        grp.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed','false');});
+        b.setAttribute('aria-pressed','true');
+      });
+    });
+  });
+
+  /* ---------- Studio stepper ---------- */
+  var step=1;
+  var tabs=document.querySelectorAll('.step-tab');
+  var panels=document.querySelectorAll('.step-panel');
+  var backBtn=document.getElementById('studioBack');
+  var nextBtn=document.getElementById('studioNext');
+  var note=document.getElementById('studioNote');
+  var stepNames=['','Select sources','Configure','Generate','Review draft'];
+  var runStarted=false, runDone=false;
+
+  function renderStep(){
+    tabs.forEach(function(t){
+      var s=+t.dataset.step;
+      t.classList.toggle('current', s===step);
+      t.classList.toggle('done', s<step);
+    });
+    panels.forEach(function(p){ p.classList.toggle('active', +p.dataset.panel===step); });
+    backBtn.disabled = step===1;
+    var pad = String(step).padStart(2,'0');
+    note.textContent='Step '+pad+' of 04 · '+stepNames[step];
+    if(step===1){ updateTally(); }
+
+    // Next button behavior per step
+    if(step===3){
+      nextBtn.style.display = runDone ? 'inline-flex':'none';
+      nextBtn.innerHTML = 'Review draft <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 6l6 6-6 6"/></svg>';
+    } else if(step===4){
+      nextBtn.innerHTML = 'Stage all · go to Review <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 6l6 6-6 6"/></svg>';
+      nextBtn.style.display='inline-flex';
+    } else {
+      nextBtn.style.display='inline-flex';
+      nextBtn.innerHTML = 'Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 6l6 6-6 6"/></svg>';
+    }
+  }
+  function gotoStep(s){
+    step=Math.max(1,Math.min(4,s));
+    renderStep();
+  }
+  backBtn.addEventListener('click', function(){ gotoStep(step-1); });
+  nextBtn.addEventListener('click', function(){
+    if(step===4){ showScreen('review'); return; }
+    gotoStep(step+1);
+  });
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      var s=+t.dataset.step;
+      // don't allow jumping into an unrun generate from beyond
+      if(s<=step || s===step+1) gotoStep(s);
+    });
+  });
+
+  /* ---------- LIVE RUN (signature moment) ---------- */
+  var launchBtn=document.getElementById('launchBtn');
+  var counterEl=document.getElementById('runCounter');
+  var barEl=document.getElementById('runBar');
+  var pctEl=document.getElementById('runPct');
+  var phaseEl=document.getElementById('runPhase');
+  var statusEl=document.getElementById('runStatus');
+  var statusText=document.getElementById('runStatusText');
+  var feedItems=document.querySelectorAll('#runFeed .feed-item');
+  var briefEl=document.getElementById('runBrief');
+  var summaryEl=document.getElementById('runSummary');
+  var toReviewBtn=document.getElementById('toReviewBtn');
+  var TOTAL=24, DUR=6400;
+
+  function runLaunch(){
+    if(runStarted) return;
+    runStarted=true;
+    launchBtn.disabled=true;
+    statusEl.classList.add('pulsing');
+    statusText.textContent='Reading';
+    phaseEl.textContent='Reading sources';
+
+    var t0=performance.now();
+    var feedTimes=[];
+    var acc=0;
+    feedItems.forEach(function(fi,i){
+      acc += 0.10 + (i/feedItems.length)*0.14;
+    });
+    // schedule source ticks across the run
+    feedItems.forEach(function(fi,i){
+      var at = DUR*(0.18 + i*0.15);
+      setTimeout(function(){
+        fi.classList.add('tick');
+        fi.querySelector('.fi-ct').textContent='+'+fi.dataset.ct;
+        if(i===0){ statusText.textContent='Drafting'; phaseEl.textContent='Drafting intents'; }
+      }, reduce?0:at);
+    });
+
+    function frame(now){
+      var p=Math.min((now-t0)/DUR,1);
+      var e=1-Math.pow(1-p,2.2); // ease-out, ink settling
+      counterEl.textContent=Math.round(TOTAL*e);
+      var pct=Math.round(100*p);
+      barEl.style.width=pct+'%';
+      pctEl.textContent=pct+'%';
+      if(p<1){ requestAnimationFrame(frame); }
+      else { runComplete(); }
+    }
+    if(reduce){
+      counterEl.textContent=TOTAL; barEl.style.width='100%'; pctEl.textContent='100%';
+      feedItems.forEach(function(fi){ fi.classList.add('tick'); fi.querySelector('.fi-ct').textContent='+'+fi.dataset.ct; });
+      runComplete();
+    } else {
+      requestAnimationFrame(frame);
+    }
+  }
+  function runComplete(){
+    runDone=true;
+    statusEl.classList.remove('pulsing');
+    statusEl.querySelector('.beat').style.background='#7FA083';
+    statusText.textContent='Complete';
+    phaseEl.textContent='Draft settled';
+    counterEl.textContent=TOTAL;
+    // swap briefing -> summary
+    briefEl.style.transition='opacity .4s ease';
+    briefEl.style.opacity='0';
+    setTimeout(function(){
+      briefEl.style.display='none';
+      summaryEl.classList.add('show');
+    }, reduce?0:400);
+    // reveal Continue button in footer
+    renderStep();
+  }
+  launchBtn.addEventListener('click', runLaunch);
+  toReviewBtn.addEventListener('click', function(){ gotoStep(4); });
+
+  renderStep();
+
+  /* ---------- Review submit ---------- */
+  var toast=document.getElementById('toast');
+  var toastMsg=document.getElementById('toastMsg');
+  var toastTimer=null;
+  function showToast(msg){
+    toastMsg.textContent=msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+  function bindSubmit(){
+    document.querySelectorAll('[data-submit]').forEach(function(btn){
+      if(btn._bound) return; btn._bound=true;
+      btn.addEventListener('click', function(){
+        if(btn.disabled) return;
+        var row=btn.closest('.rev-row');
+        var q=row.querySelector('.q').textContent;
+        row.classList.add('gone');
+        showToast('“'+ (q.length>40?q.slice(0,40)+'…':q) +'” sent to Approvals');
+        setTimeout(function(){
+          row.style.display='none';
+          var visible=document.querySelectorAll('#revList .rev-row:not(.gone)').length;
+          document.getElementById('revCount').textContent=visible+' drafts awaiting review';
+        }, 460);
+      });
+    });
+  }
+  bindSubmit();
+
+})();
+</script>
+</body>
+</html>

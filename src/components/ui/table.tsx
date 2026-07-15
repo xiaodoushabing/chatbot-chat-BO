@@ -1,12 +1,12 @@
 import type { ReactNode, ThHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 
-/* Airy ruled table. Compose:
+/* Guided Canvas table: a white 22px card with a soft shadow. Compose:
    <TableShell><thead><Tr><Th…/></Tr></thead><tbody><Tr…><Td…/></Tr></tbody></TableShell> */
 
 export function TableShell({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn('overflow-x-auto rounded-(--radius-card) border border-line', className)}>
+    <div className={cn('overflow-x-auto rounded-(--radius-card) border border-line bg-bg shadow-(--shadow-soft)', className)}>
       <table className="w-full border-collapse text-sm">{children}</table>
     </div>
   );
@@ -45,7 +45,7 @@ export function Tr({
       onClick={disabled ? undefined : onClick}
       aria-selected={selected}
       className={cn(
-        'border-b border-line/70 last:border-b-0 transition-colors duration-150',
+        'border-b border-line-soft last:border-b-0 transition-colors duration-150 ease-(--ease-out)',
         selected ? 'bg-accent-wash' : onClick && !disabled && 'hover:bg-surface-2',
         onClick && !disabled && 'cursor-pointer',
         disabled && 'opacity-50',
@@ -90,7 +90,7 @@ export function Pagination({
         <button
           disabled={page === 0}
           onClick={() => onPage(page - 1)}
-          className="rounded-(--radius-field) border border-line px-3 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink disabled:opacity-40 disabled:pointer-events-none"
+          className="rounded-(--radius-field) border border-line bg-bg px-3 py-1.5 text-xs font-semibold text-ink-2 shadow-(--shadow-soft) transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 hover:text-ink disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
         >
           Previous
         </button>
@@ -100,7 +100,7 @@ export function Pagination({
         <button
           disabled={page >= pageCount - 1}
           onClick={() => onPage(page + 1)}
-          className="rounded-(--radius-field) border border-line px-3 py-1.5 text-xs font-semibold text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink disabled:opacity-40 disabled:pointer-events-none"
+          className="rounded-(--radius-field) border border-line bg-bg px-3 py-1.5 text-xs font-semibold text-ink-2 shadow-(--shadow-soft) transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 hover:text-ink disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
         >
           Next
         </button>
