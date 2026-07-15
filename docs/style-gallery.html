@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Style gallery — three design styles, one theme</title>
+<style>
+  body{ background:#eef0f2; color:#1c2026; font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; margin:0; }
+  .wrap{ max-width:1120px; margin:0 auto; padding:44px 24px 96px; }
+  h1{ font-size:26px; letter-spacing:-0.02em; margin:0 0 8px; }
+  .lede{ color:#555c66; max-width:76ch; margin:0 0 6px; }
+  .note{ font-size:13px; color:#555c66; background:#fff; border:1px solid #dde0e5; border-radius:8px; padding:10px 14px; max-width:78ch; }
+  section{ margin-top:52px; }
+  .dhead{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .dkey{ font-size:12px; font-weight:800; padding:2px 8px; border-radius:6px; background:#2545d3; color:#fff; }
+  h2{ font-size:20px; margin:0; }
+  .mood{ color:#555c66; font-size:13.5px; margin:4px 0 12px; max-width:80ch; }
+  .mockholder{ border:1px solid #d5d9de; border-radius:12px; overflow:hidden; box-shadow:0 3px 18px rgba(20,24,30,0.07); }
+  .mockscroll{ overflow-x:auto; }
+
+  /* Gallery theme tokens (light) — fixed for all three styles */
+  .mock{ min-width:980px; background:#ffffff; color:#17181a; font-family:Helvetica,'Helvetica Neue',Arial,sans-serif; font-size:13px; line-height:1.45;
+    --side:#f4f5f7; --head:#eff1f4; --ink2:#4c4f55; --ink3:#6a6e75; --bd:#e2e4e9; --ac:#2545d3; --onac:#fff; --wash:#edf1fd;
+    --ok:#177a4b; --warn:#8a6212; --info:#2545d3; --mono:ui-monospace,'SF Mono',Menlo,monospace; }
+  .m-top{ display:flex; align-items:center; gap:14px; height:46px; padding:0 16px; border-bottom:1px solid var(--bd); }
+  .m-mark{ font-weight:800; font-size:13px; } .m-mark em{ color:var(--ac); font-style:normal; }
+  .m-proj{ display:flex; align-items:center; gap:8px; border:1px solid var(--bd); border-radius:4px; padding:4px 10px; font-weight:600; }
+  .m-proj .dot{ width:8px; height:8px; border-radius:50%; background:var(--ac); }
+  .m-spacer{ flex:1; }
+  .m-role{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--wash); color:var(--ac); }
+  .m-user{ width:26px; height:26px; border-radius:50%; background:var(--ac); color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .pill{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:2px 9px; border-radius:999px; }
+  .pill i{ width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .pill.ok{ color:var(--ok); background:rgba(23,122,75,0.11); }
+  .pill.warn{ color:var(--warn); background:rgba(138,98,18,0.13); }
+  .pill.info{ color:var(--info); background:rgba(37,69,211,0.10); }
+  .btn{ border:1px solid var(--bd); background:#fff; color:#17181a; border-radius:4px; padding:5px 12px; font-weight:600; font-size:12px; font-family:inherit; }
+  .btn.pri{ background:var(--ac); border-color:var(--ac); color:#fff; }
+  .meta{ font-family:var(--mono); color:var(--ink2); font-size:11.5px; }
+  table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  th{ text-align:left; font-size:10.5px; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink3); font-weight:700; padding:7px 10px; background:var(--head); border-top:1px solid var(--bd); border-bottom:1px solid var(--bd); }
+  td{ padding:8px 10px; border-bottom:1px solid var(--bd); }
+  tr.sel td{ background:var(--wash); }
+  .file{ font-weight:600; }
+  .track{ height:6px; border-radius:999px; background:rgba(23,24,26,0.10); overflow:hidden; }
+  .fill{ height:100%; width:46%; border-radius:999px; background:var(--ac); }
+
+  /* ── Style 1: Instrument ── */
+  .s1 .body{ display:flex; min-height:470px; }
+  .s1 .nav{ width:180px; background:var(--side); border-right:1px solid var(--bd); padding:12px 8px; display:flex; flex-direction:column; gap:2px; flex-shrink:0; }
+  .s1 .nav a{ display:block; padding:7px 12px; border-radius:4px; color:var(--ink2); font-weight:500; text-decoration:none; }
+  .s1 .nav a.on{ background:var(--wash); color:var(--ac); font-weight:700; }
+  .s1 .main{ flex:1; padding:18px 22px; min-width:0; }
+  .s1 .h1{ font-size:19px; font-weight:700; }
+  .s1 .titlerow{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .s1 .chip{ display:flex; align-items:center; gap:7px; border:1px solid var(--bd); border-radius:4px; padding:4px 10px; font-weight:600; font-size:12px; }
+  .s1 .sub{ color:var(--ink2); font-size:12px; margin:5px 0 12px; }
+  .s1 .toolbar{ display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; align-items:center; }
+  .s1 .search{ border:1px solid var(--bd); border-radius:4px; padding:5px 10px; color:var(--ink2); flex:1; max-width:240px; }
+  .s1 .run{ margin-top:14px; border:1px solid var(--bd); border-radius:8px; padding:12px 14px; background:var(--side); }
+  .s1 .runhead{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+  .s1 .count{ margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--ink2); }
+
+  /* ── Style 2: Studio ── */
+  .s2 .body{ display:flex; min-height:500px; }
+  .s2 .nav{ width:180px; background:var(--side); border-right:1px solid var(--bd); padding:12px 8px; display:flex; flex-direction:column; gap:2px; flex-shrink:0; }
+  .s2 .nav a{ display:block; padding:7px 12px; border-radius:4px; color:var(--ink2); font-weight:500; text-decoration:none; }
+  .s2 .nav a.on{ background:var(--wash); color:var(--ac); font-weight:700; }
+  .s2 .main{ flex:1; padding:28px 32px; min-width:0; }
+  .s2 .h1{ font-size:23px; font-weight:600; letter-spacing:-0.01em; }
+  .s2 .pagesub{ color:var(--ink2); font-size:13px; margin:6px 0 24px; max-width:64ch; }
+  .s2 .cols{ display:flex; gap:24px; align-items:flex-start; }
+  .s2 .colL{ flex:1.6; min-width:0; }
+  .s2 .colR{ flex:1; border:1px solid var(--bd); border-radius:10px; padding:18px; }
+  .s2 .sechead{ display:flex; align-items:baseline; gap:10px; margin-bottom:10px; }
+  .s2 .sechead h4{ font-size:15px; margin:0; }
+  .s2 .sechead .meta{ margin-left:auto; }
+  .s2 .seg{ display:flex; border:1px solid var(--bd); border-radius:6px; overflow:hidden; margin-bottom:14px; }
+  .s2 .seg span{ flex:1; text-align:center; padding:6px 0; font-weight:600; font-size:12px; color:var(--ink2); }
+  .s2 .seg span.on{ background:var(--wash); color:var(--ac); }
+  .s2 .fld{ margin-bottom:12px; }
+  .s2 .fld label{ display:block; font-size:12px; font-weight:600; margin-bottom:4px; }
+  .s2 .fld .in{ border:1px solid var(--bd); border-radius:6px; padding:7px 10px; color:var(--ink3); font-size:12.5px; }
+  .s2 .fld .ta{ height:44px; }
+  .s2 .row2{ display:flex; gap:10px; } .s2 .row2 .fld{ flex:1; }
+  .s2 .cta{ width:100%; padding:9px 0; font-size:13px; margin-top:4px; }
+  .s2 .topicbar{ display:flex; gap:8px; margin:0 0 16px; }
+  .s2 .tchip{ border:1px solid var(--bd); border-radius:999px; padding:4px 14px; font-weight:600; font-size:12px; color:var(--ink2); }
+  .s2 .tchip.on{ background:#17181a; border-color:#17181a; color:#fff; }
+
+  /* ── Style 3: Console ── */
+  .s3 .cmdbar{ display:flex; align-items:center; gap:0; border-bottom:1px solid var(--bd); background:var(--side); }
+  .s3 .cmdbar .tab{ padding:9px 18px; font-weight:600; font-size:12.5px; color:var(--ink2); border-right:1px solid var(--bd); }
+  .s3 .cmdbar .tab.on{ background:#fff; color:#17181a; box-shadow:inset 0 -2px 0 var(--ac); }
+  .s3 .body{ display:flex; min-height:430px; }
+  .s3 .list{ width:46%; border-right:1px solid var(--bd); min-width:0; }
+  .s3 .listbar{ display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--bd); align-items:center; }
+  .s3 .search{ border:1px solid var(--bd); border-radius:4px; padding:5px 10px; color:var(--ink2); flex:1; }
+  .s3 .rowitem{ display:flex; align-items:center; gap:10px; padding:9px 14px; border-bottom:1px solid var(--bd); }
+  .s3 .rowitem.sel{ background:var(--wash); }
+  .s3 .rowitem .grow{ flex:1; min-width:0; }
+  .s3 .rowitem .nm{ font-weight:600; font-size:12.5px; }
+  .s3 .detail{ flex:1; padding:16px 20px; min-width:0; }
+  .s3 .detail h4{ margin:0 0 2px; font-size:15px; }
+  .s3 .kv{ display:grid; grid-template-columns:110px 1fr; gap:4px 12px; font-size:12px; margin:12px 0; }
+  .s3 .kv b{ color:var(--ink3); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; }
+  .s3 .dock{ border-top:1px solid var(--bd); background:var(--side); padding:10px 16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .s3 .dock .seg{ display:flex; border:1px solid var(--bd); border-radius:4px; overflow:hidden; }
+  .s3 .dock .seg span{ padding:5px 12px; font-weight:600; font-size:12px; color:var(--ink2); border-right:1px solid var(--bd); }
+  .s3 .dock .seg span:last-child{ border-right:0; }
+  .s3 .dock .seg span.on{ background:var(--wash); color:var(--ac); }
+  .s3 .dock .count{ margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--ink2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Style round: three structures, one skin</h1>
+  <p class="lede">Theme is now fixed (Gallery light + Deep Harbor dark). This round is <b>design style</b>: how the same Intent Studio content is structured. All three shown in light; your chosen dark theme applies to whichever you pick. The style carries across all six pages.</p>
+  <p class="note">1 · <b>Instrument</b> = everything on one screen, toolbar-driven, maximum density. 2 · <b>Studio</b> = editorial two-column with a dedicated generation rail, most whitespace. 3 · <b>Console</b> = split list/detail workbench with a command dock, most "power tool".</p>
+
+  <section>
+    <div class="dhead"><span class="dkey">STYLE 1</span><h2>Instrument</h2></div>
+    <p class="mood">Single scrolling column: toolbar over a dense ruled table, run card directly beneath. Least navigation, most information per screen — the shape of Stripe's dashboard tables. Generation opens as an inline panel above the table when triggered.</p>
+    <div class="mockholder"><div class="mockscroll"><div class="mock s1">
+      <div class="m-top"><span class="m-mark"><em>◆</em> Intent Studio</span><span class="m-proj"><span class="dot"></span> Cards &amp; Payments ▾</span><span class="m-spacer"></span><span class="m-role">OWNER</span><span class="m-user">LT</span></div>
+      <div class="body">
+        <nav class="nav"><a href="#">Dashboard</a><a href="#">Project Settings</a><a href="#" class="on">Intent Studio</a><a href="#">Review</a><a href="#">Approvals</a><a href="#">Intent Library</a></nav>
+        <div class="main">
+          <div class="titlerow"><span class="h1">Intent Studio</span><span class="chip">Topic: Travel Insurance ▾</span></div>
+          <p class="sub">14 sources · synced 15 Jul 2026, 09:42 · 2 not indexed</p>
+          <div class="toolbar"><span class="search">⌕ Search sources…</span><button class="btn">Refresh list</button><button class="btn">Sync to index</button><button class="btn pri">Generate intents</button></div>
+          <table>
+            <thead><tr><th></th><th>Source</th><th>Type</th><th>Modified</th><th>Index status</th></tr></thead>
+            <tbody>
+              <tr class="sel"><td>☑</td><td class="file">Travel_Claims_FAQ_2026.docx</td><td class="meta">SharePoint</td><td class="meta">12 Jul 2026</td><td><span class="pill ok"><i></i>Indexed</span></td></tr>
+              <tr class="sel"><td>☑</td><td class="file">Premium_Rate_Card_Q3.xlsx</td><td class="meta">SharePoint</td><td class="meta">10 Jul 2026</td><td><span class="pill warn"><i></i>Not indexed</span></td></tr>
+              <tr><td>☐</td><td class="file">ocbc.com/travel-insurance/tiq-promo</td><td class="meta">URL</td><td class="meta">08 Jul 2026</td><td><span class="pill ok"><i></i>Indexed</span></td></tr>
+              <tr><td>☐</td><td class="file">Baggage_Delay_Payouts.pdf</td><td class="meta">SharePoint</td><td class="meta">02 Jul 2026</td><td><span class="pill ok"><i></i>Indexed</span></td></tr>
+            </tbody>
+          </table>
+          <div class="run">
+            <div class="runhead"><span class="pill info"><i></i>Running</span><b>GenAI batch — intent_requests_jul.xlsx</b><span class="meta">run_b7f3a2</span><span class="count">55 / 120 rows</span></div>
+            <div class="track"><div class="fill"></div></div>
+          </div>
+        </div>
+      </div>
+    </div></div></div>
+  </section>
+
+  <section>
+    <div class="dhead"><span class="dkey">STYLE 2</span><h2>Studio</h2></div>
+    <p class="mood">Editorial two-column: sources on the left, a permanent generation rail on the right so the "create" action is always visible, topics as chips under a large page title. Roomiest and most guided — the shape of Notion or Linear settings surfaces.</p>
+    <div class="mockholder"><div class="mockscroll"><div class="mock s2">
+      <div class="m-top"><span class="m-mark"><em>◆</em> Intent Studio</span><span class="m-proj"><span class="dot"></span> Cards &amp; Payments ▾</span><span class="m-spacer"></span><span class="m-role">OWNER</span><span class="m-user">LT</span></div>
+      <div class="body">
+        <nav class="nav"><a href="#">Dashboard</a><a href="#">Project Settings</a><a href="#" class="on">Intent Studio</a><a href="#">Review</a><a href="#">Approvals</a><a href="#">Intent Library</a></nav>
+        <div class="main">
+          <div class="h1">Intent Studio</div>
+          <p class="pagesub">Pick sources from this topic's SharePoint folder, then generate intent–response pairs.</p>
+          <div class="topicbar"><span class="tchip on">Travel Insurance</span><span class="tchip">Credit Cards</span><span class="tchip">FX &amp; Remittance</span><span class="tchip">+ 1 more</span></div>
+          <div class="cols">
+            <div class="colL">
+              <div class="sechead"><h4>Sources</h4><span class="meta">14 items · synced 09:42</span></div>
+              <table>
+                <thead><tr><th></th><th>Source</th><th>Modified</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr class="sel"><td>☑</td><td class="file">Travel_Claims_FAQ_2026.docx</td><td class="meta">12 Jul</td><td><span class="pill ok"><i></i>Indexed</span></td></tr>
+                  <tr class="sel"><td>☑</td><td class="file">Premium_Rate_Card_Q3.xlsx</td><td class="meta">10 Jul</td><td><span class="pill warn"><i></i>Not indexed</span></td></tr>
+                  <tr><td>☐</td><td class="file">ocbc.com/travel-insurance/tiq-promo</td><td class="meta">08 Jul</td><td><span class="pill ok"><i></i>Indexed</span></td></tr>
+                  <tr><td>☐</td><td class="file">Baggage_Delay_Payouts.pdf</td><td class="meta">02 Jul</td><td><span class="pill ok"><i></i>Indexed</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="colR">
+              <div class="seg"><span class="on">GenAI · Single</span><span>GenAI · Batch</span><span>Manual</span></div>
+              <div class="fld"><label>Intent (specific question)</label><div class="in">e.g. How do I claim for a delayed flight?</div></div>
+              <div class="fld"><label>Content requirements</label><div class="in ta">Cover payout tiers and exclusions…</div></div>
+              <div class="row2">
+                <div class="fld"><label>Max intents</label><div class="in">10</div></div>
+                <div class="fld"><label>Tonality</label><div class="in">Professional ▾</div></div>
+              </div>
+              <button class="btn pri cta">Generate intents · 2 sources</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div></div>
+  </section>
+
+  <section>
+    <div class="dhead"><span class="dkey">STYLE 3</span><h2>Console</h2></div>
+    <p class="mood">Split workbench: topics as tabs across the top, source list on the left with a detail inspector on the right, and a persistent command dock at the bottom holding the generation controls and live run state. Most keyboard-and-power-user; the shape of an IDE or mail client.</p>
+    <div class="mockholder"><div class="mockscroll"><div class="mock s3">
+      <div class="m-top"><span class="m-mark"><em>◆</em> Intent Studio</span><span class="m-proj"><span class="dot"></span> Cards &amp; Payments ▾</span><span class="m-spacer"></span><span class="m-role">OWNER</span><span class="m-user">LT</span></div>
+      <div class="cmdbar"><span class="tab on">Travel Insurance</span><span class="tab">Credit Cards</span><span class="tab">FX &amp; Remittance</span><span class="tab">Deposits</span><span class="m-spacer"></span></div>
+      <div class="body">
+        <div class="list">
+          <div class="listbar"><span class="search">⌕ Search 14 sources…</span><button class="btn">Refresh</button></div>
+          <div class="rowitem sel"><span>☑</span><div class="grow"><div class="nm">Travel_Claims_FAQ_2026.docx</div><div class="meta">SharePoint · 12 Jul 2026</div></div><span class="pill ok"><i></i>Indexed</span></div>
+          <div class="rowitem sel"><span>☑</span><div class="grow"><div class="nm">Premium_Rate_Card_Q3.xlsx</div><div class="meta">SharePoint · 10 Jul 2026</div></div><span class="pill warn"><i></i>Not indexed</span></div>
+          <div class="rowitem"><span>☐</span><div class="grow"><div class="nm">ocbc.com/travel-insurance/tiq-promo</div><div class="meta">URL · 08 Jul 2026</div></div><span class="pill ok"><i></i>Indexed</span></div>
+          <div class="rowitem"><span>☐</span><div class="grow"><div class="nm">Baggage_Delay_Payouts.pdf</div><div class="meta">SharePoint · 02 Jul 2026</div></div><span class="pill ok"><i></i>Indexed</span></div>
+        </div>
+        <div class="detail">
+          <h4>Travel_Claims_FAQ_2026.docx</h4>
+          <span class="meta">sites/gdo-chatbot/travel-insurance/Travel_Claims_FAQ_2026.docx</span>
+          <div class="kv">
+            <b>Status</b><span><span class="pill ok"><i></i>Indexed</span> 14 Jul 2026, 22:10</span>
+            <b>Modified</b><span class="meta">12 Jul 2026, 16:03 · M. Chen</span>
+            <b>Used in</b><span class="meta">3 runs · 41 live intents</span>
+          </div>
+          <div class="track" style="max-width:340px"><div class="fill"></div></div>
+          <p class="meta" style="margin-top:6px">run_b7f3a2 · 55 / 120 rows · ✓ 51 → 3 ✕ 1</p>
+        </div>
+      </div>
+      <div class="dock">
+        <div class="seg"><span class="on">GenAI · Single</span><span>GenAI · Batch</span><span>Manual</span></div>
+        <span class="meta">2 sources selected</span>
+        <button class="btn">Run settings</button>
+        <button class="btn pri">Generate intents</button>
+        <span class="count">⌘⏎ to run</span>
+      </div>
+    </div></div></div>
+  </section>
+</div>
+</body>
+</html>

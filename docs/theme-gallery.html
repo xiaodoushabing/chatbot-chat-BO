@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme gallery — eight directions</title>
+<style>
+  body{ background:#eef0f2; color:#1c2026; font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; margin:0; }
+  .wrap{ max-width:1060px; margin:0 auto; padding:44px 24px 96px; }
+  h1{ font-size:26px; letter-spacing:-0.02em; margin:0 0 8px; }
+  .lede{ color:#555c66; max-width:74ch; margin:0 0 24px; }
+  .group{ margin-top:52px; padding-top:10px; border-top:2px solid #1c2026; }
+  .group h2{ font-size:15px; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 4px; }
+  .group p{ color:#555c66; font-size:13.5px; margin:0; }
+  section{ margin-top:36px; }
+  .dhead{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .dkey{ font-size:12px; font-weight:800; padding:2px 8px; border-radius:6px; background:#1c2026; color:#fff; }
+  h3{ font-size:19px; margin:0; }
+  .mood{ color:#555c66; font-size:13.5px; margin:4px 0 10px; max-width:76ch; }
+  .swatches{ display:flex; gap:6px; margin:0 0 10px; align-items:center; }
+  .sw{ width:22px; height:22px; border-radius:6px; border:1px solid rgba(0,0,0,0.18); }
+  .fonts{ font-size:12.5px; color:#555c66; margin-left:10px; }
+  .mockholder{ border:1px solid #d5d9de; border-radius:12px; overflow:hidden; box-shadow:0 3px 18px rgba(20,24,30,0.07); }
+  .mockscroll{ overflow-x:auto; }
+
+  .mock{ min-width:860px; background:var(--bg); color:var(--ink); font-family:var(--font); font-size:13px; line-height:1.45; }
+  .m-top{ display:flex; align-items:center; gap:14px; height:46px; padding:0 16px; border-bottom:1px solid var(--bd); background:var(--topbg,var(--bg)); color:var(--topink,var(--ink)); }
+  .m-mark{ font-weight:800; font-size:13px; }
+  .m-mark em{ color:var(--topaccent,var(--ac)); font-style:normal; }
+  .m-proj{ display:flex; align-items:center; gap:8px; border:1px solid var(--topbd,var(--bd)); border-radius:var(--r); padding:4px 10px; font-weight:600; }
+  .m-proj .dot{ width:8px; height:8px; border-radius:50%; background:var(--topaccent,var(--ac)); }
+  .m-proj .car{ opacity:0.65; font-size:10px; }
+  .m-spacer{ flex:1; }
+  .m-role{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--wash); color:var(--acink,var(--ac)); }
+  .m-user{ width:26px; height:26px; border-radius:50%; background:var(--ac); color:var(--onac); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .m-body{ display:flex; min-height:420px; }
+  .m-nav{ width:186px; background:var(--side); border-right:1px solid var(--bd); padding:12px 8px; display:flex; flex-direction:column; gap:2px; flex-shrink:0; color:var(--sideink,var(--ink2)); }
+  .m-nav a{ display:block; padding:7px 12px; border-radius:var(--r); color:inherit; font-weight:500; text-decoration:none; }
+  .m-nav a.on{ background:var(--navon,var(--wash)); color:var(--navonink,var(--acink,var(--ac))); font-weight:700; }
+  .m-main{ flex:1; padding:20px 24px 24px; min-width:0; }
+  .m-crumb{ font-size:11px; color:var(--ink2); font-family:var(--mono); margin-bottom:6px; }
+  .m-titlerow{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .m-h1{ font-size:19px; font-weight:700; letter-spacing:-0.01em; font-family:var(--display,var(--font)); }
+  .m-topic{ display:flex; align-items:center; gap:7px; border:1px solid var(--bd); border-radius:var(--r); padding:4px 10px; font-weight:600; font-size:12px; }
+  .m-sub{ color:var(--ink2); font-size:12px; margin:6px 0 16px; }
+  .m-toolbar{ display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .m-search{ display:flex; align-items:center; gap:6px; border:1px solid var(--bd); border-radius:var(--r); padding:5px 10px; color:var(--ink2); flex:1; max-width:250px; }
+  .m-btn{ border:1px solid var(--bd); background:transparent; color:var(--ink); border-radius:var(--r); padding:5px 12px; font-weight:600; font-size:12px; font-family:inherit; }
+  .m-btn.pri{ background:var(--ac); border-color:var(--ac); color:var(--onac); }
+  table.m-tbl{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  .m-tbl th{ text-align:left; font-size:10.5px; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink2); font-weight:700; padding:7px 10px; background:var(--head); border-top:1px solid var(--bd); border-bottom:1px solid var(--bd); }
+  .m-tbl td{ padding:8px 10px; border-bottom:1px solid var(--bd); }
+  .m-tbl tr.sel td{ background:var(--wash); }
+  .m-file{ font-weight:600; }
+  .m-meta{ font-family:var(--mono); color:var(--ink2); font-size:11.5px; }
+  .pill{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:2px 9px; border-radius:999px; }
+  .pill i{ width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .pill.ok{ color:var(--ok); background:color-mix(in oklab, var(--ok) 13%, transparent); }
+  .pill.warn{ color:var(--warn); background:color-mix(in oklab, var(--warn) 15%, transparent); }
+  .pill.info{ color:var(--info); background:color-mix(in oklab, var(--info) 14%, transparent); }
+  .m-run{ margin-top:16px; border:1px solid var(--bd); border-radius:calc(var(--r) + 4px); padding:14px 16px; background:var(--runbg,var(--side)); }
+  .m-run-head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .m-run-id{ font-family:var(--mono); font-size:11px; color:var(--ink2); }
+  .m-run-title{ font-weight:700; }
+  .m-run-count{ margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--ink2); }
+  .m-track{ margin-top:10px; height:6px; border-radius:999px; background:color-mix(in oklab, var(--ink) 12%, transparent); overflow:hidden; }
+  .m-fill{ height:100%; width:46%; border-radius:999px; background:var(--ac); }
+  .m-run-meta{ margin-top:8px; display:flex; gap:16px; font-size:11px; color:var(--ink2); font-family:var(--mono); flex-wrap:wrap; }
+  .m-login{ display:flex; align-items:center; gap:16px; padding:14px 16px; border-top:1px solid var(--bd); background:var(--side); color:var(--sideink,var(--ink2)); }
+  .m-login .cap{ font-size:11.5px; max-width:34ch; }
+  .m-scene{ position:relative; width:300px; height:110px; border-radius:10px; overflow:hidden; flex-shrink:0; background:var(--scenebg); border:1px solid var(--bd); }
+  .m-orb{ position:absolute; border-radius:50%; filter:blur(22px); }
+  .m-orb.o1{ width:130px; height:130px; left:-40px; top:-40px; background:var(--orb1); }
+  .m-orb.o2{ width:105px; height:105px; right:-25px; bottom:-40px; background:var(--orb2); }
+  .m-card{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:128px; height:72px; border-radius:10px; background:var(--scenecard); border:1px solid var(--scenebd); backdrop-filter:blur(6px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+  .m-card .l1{ width:66px; height:7px; border-radius:4px; background:var(--sceneink); opacity:0.85; }
+  .m-card .l2{ width:92px; height:5px; border-radius:4px; background:var(--sceneink); opacity:0.4; }
+  .m-card .l3{ width:92px; height:12px; border-radius:5px; background:var(--ac); }
+
+  /* A · Proof Room */
+  .t-proof{ --bg:#ffffff; --side:#f6f3f2; --head:#f1edec; --ink:#282221; --ink2:#544c49; --bd:#e5dfdd;
+    --ac:#9e1b30; --onac:#fff; --wash:#f9edef; --ok:#1e7a4c; --warn:#8a6212; --info:#3d6390; --r:8px;
+    --font:'Helvetica Neue',system-ui,sans-serif; --mono:ui-monospace,Menlo,monospace;
+    --scenebg:linear-gradient(135deg,#fdfbfa,#f3e2e4); --orb1:rgba(158,27,48,0.16); --orb2:rgba(61,99,144,0.12);
+    --scenecard:rgba(255,255,255,0.72); --scenebd:rgba(255,255,255,0.9); --sceneink:#3a2f2e; }
+  /* B · Night Desk (rose) */
+  .t-night{ --bg:#1a1817; --side:#131211; --head:#211e1d; --ink:#ece8e6; --ink2:#b5adaa; --bd:#2e2a29;
+    --ac:#e5556a; --onac:#2b0a10; --wash:rgba(229,85,106,0.14); --ok:#4cc98d; --warn:#d9ad55; --info:#8aa9ee; --r:8px;
+    --font:system-ui,sans-serif; --mono:ui-monospace,Menlo,monospace; --runbg:#211e1d;
+    --scenebg:radial-gradient(120% 140% at 20% 10%,#26171a,#0e0d0d); --orb1:rgba(229,85,106,0.22); --orb2:rgba(138,169,238,0.12);
+    --scenecard:rgba(28,25,25,0.72); --scenebd:rgba(255,255,255,0.10); --sceneink:#ddd6d3; }
+  /* C · Gallery (Swiss cobalt) */
+  .t-gallery{ --bg:#ffffff; --side:#f4f5f7; --head:#eff1f4; --ink:#17181a; --ink2:#4c4f55; --bd:#e2e4e9;
+    --ac:#2545d3; --onac:#fff; --wash:#edf1fd; --ok:#177a4b; --warn:#8a6212; --info:#2545d3; --r:4px;
+    --font:Helvetica,'Helvetica Neue',Arial,sans-serif; --mono:ui-monospace,Menlo,monospace;
+    --scenebg:linear-gradient(135deg,#ffffff,#eef1fb); --orb1:rgba(37,69,211,0.14); --orb2:rgba(23,24,26,0.08);
+    --scenecard:rgba(255,255,255,0.78); --scenebd:rgba(23,24,26,0.12); --sceneink:#26282c; }
+  /* D · Midnight Archive (indigo + brass) */
+  .t-archive{ --bg:#171a2b; --side:#101322; --head:#1d2136; --ink:#e9e9f0; --ink2:#abadc0; --bd:#2c3049;
+    --ac:#c9a353; --onac:#211a08; --wash:rgba(201,163,83,0.13); --ok:#4bc98d; --warn:#d9ad55; --info:#7f9df5; --r:6px;
+    --font:system-ui,sans-serif; --display:Georgia,serif; --mono:ui-monospace,Menlo,monospace; --runbg:#1d2136;
+    --scenebg:radial-gradient(130% 150% at 15% 0%,#232849,#0c0e1a); --orb1:rgba(201,163,83,0.20); --orb2:rgba(127,157,245,0.14);
+    --scenecard:rgba(20,23,40,0.72); --scenebd:rgba(255,255,255,0.12); --sceneink:#d9dae6; }
+  /* E · Celadon Counter */
+  .t-celadon{ --bg:#f5f8f5; --side:#eaf1ea; --head:#e4ede5; --ink:#1f2b24; --ink2:#46564c; --bd:#d6e1d7;
+    --ac:#2f6d4f; --onac:#fff; --wash:#e0ede5; --ok:#2f6d4f; --warn:#a2591f; --info:#3d6390; --r:10px;
+    --font:'Avenir Next','Segoe UI',system-ui,sans-serif; --mono:ui-monospace,Menlo,monospace; --runbg:#ffffff;
+    --scenebg:linear-gradient(135deg,#f2f7f2,#dcebdf); --orb1:rgba(47,109,79,0.18); --orb2:rgba(201,80,44,0.10);
+    --scenecard:rgba(255,255,255,0.75); --scenebd:rgba(255,255,255,0.95); --sceneink:#2c3d33; }
+  /* F · Print Shop (industrial chartreuse) */
+  .t-print{ --bg:#f1f2f3; --side:#e8eaec; --head:#e3e5e8; --ink:#0f1113; --ink2:#3f434a; --bd:#c8ccd3;
+    --ac:#101215; --onac:#e8f527; --wash:#eef3b8; --acink:#3c400c; --ok:#1c7a4a; --warn:#8a6212; --info:#2d5f8a; --r:2px;
+    --font:system-ui,sans-serif; --mono:ui-monospace,'SF Mono',Menlo,monospace; --runbg:#ffffff;
+    --scenebg:linear-gradient(135deg,#eceef0,#dfe2e5); --orb1:rgba(232,245,39,0.5); --orb2:rgba(16,18,21,0.15);
+    --scenecard:rgba(255,255,255,0.8); --scenebd:rgba(16,18,21,0.18); --sceneink:#1b1e22; }
+  .t-print .m-h1{ text-transform:uppercase; letter-spacing:0.02em; font-size:17px; }
+  /* G · Deep Harbor (blue-black + cyan) */
+  .t-harbor{ --bg:#10151a; --side:#0b0f14; --head:#161d24; --ink:#e4ecf2; --ink2:#a3b3c0; --bd:#233039;
+    --ac:#35c2d4; --onac:#062329; --wash:rgba(53,194,212,0.12); --ok:#43c98a; --warn:#d9ad55; --info:#35c2d4; --r:8px;
+    --font:system-ui,sans-serif; --mono:ui-monospace,Menlo,monospace; --runbg:#161d24;
+    --scenebg:radial-gradient(130% 150% at 20% 0%,#12222c,#080d12); --orb1:rgba(53,194,212,0.20); --orb2:rgba(80,110,160,0.14);
+    --scenecard:rgba(14,20,26,0.72); --scenebd:rgba(255,255,255,0.10); --sceneink:#cfdbe4; }
+  /* H · Ultraviolet Console */
+  .t-violet{ --bg:#17161d; --side:#110f16; --head:#1e1c26; --ink:#eae8f2; --ink2:#aca6c2; --bd:#2b2837;
+    --ac:#8b7bf5; --onac:#120e2e; --wash:rgba(139,123,245,0.14); --ok:#4cc98d; --warn:#d9ad55; --info:#8b7bf5; --r:10px;
+    --font:system-ui,sans-serif; --mono:ui-monospace,Menlo,monospace; --runbg:#1e1c26;
+    --scenebg:radial-gradient(130% 150% at 20% 0%,#221d38,#0d0c12); --orb1:rgba(139,123,245,0.22); --orb2:rgba(229,85,150,0.10);
+    --scenecard:rgba(24,22,32,0.72); --scenebd:rgba(255,255,255,0.10); --sceneink:#d8d4e6; }
+
+  @media (prefers-reduced-motion: no-preference){
+    .m-fill{ animation:creep 3.2s cubic-bezier(0.22,1,0.36,1) infinite alternate; }
+    @keyframes creep{ from{ width:38%; } to{ width:58%; } }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Theme gallery: eight directions, same app</h1>
+  <p class="lede">Every mockup renders the identical Intent Studio slice, so you are comparing pure identity: palette, type voice, radii, and the login backdrop treatment. Pick one light and one dark (the app ships with a theme toggle), or a single direction if you'd rather ship one theme. Fonts shown are system stand-ins; the real faces are named per direction and will be self-hosted.</p>
+
+  <div class="group"><h2>Light rooms</h2><p>Daylight desks, dense reading. Four different temperaments.</p></div>
+
+  <section>
+    <div class="dhead"><span class="dkey">A</span><h3>Proof Room</h3><span class="fonts">Schibsted Grotesk + Spline Sans Mono</span></div>
+    <p class="mood">Your earlier pick, revised: paper-white, warm graphite ink (meta text darkened as you flagged), one deep carmine stamp. The quiet editorial cousin of the bank's red.</p>
+    <div class="swatches"><span class="sw" style="background:#fff"></span><span class="sw" style="background:#f6f3f2"></span><span class="sw" style="background:#282221"></span><span class="sw" style="background:#9e1b30"></span></div>
+    <div class="mockholder"><div class="mockscroll"><div class="mock t-proof" data-mock></div></div></div>
+  </section>
+
+  <section>
+    <div class="dhead"><span class="dkey">C</span><h3>Gallery</h3><span class="fonts">Neue Haas / Helvetica Now + IBM Plex Mono</span></div>
+    <p class="mood">Swiss white-cube minimalism: pure white, near-black ink, a single cobalt klein-blue accent, near-square corners. The most severe and most timeless; typography does all the work.</p>
+    <div class="swatches"><span class="sw" style="background:#fff"></span><span class="sw" style="background:#f4f5f7"></span><span class="sw" style="background:#17181a"></span><span class="sw" style="background:#2545d3"></span></div>
+    <div class="mockholder"><div class="mockscroll"><div class="mock t-gallery" data-mock></div></div></div>
+  </section>
+
+  <section>
+    <div class="dhead"><span class="dkey">E</span><h3>Celadon Counter</h3><span class="fonts">Onest + Commit Mono</span></div>
+    <p class="mood">Celadon-glazed surfaces, deep spruce ink and accent, a whisper of persimmon in the login scene. Botanical calm for long sessions; the least "banking" of the set, in a good way.</p>
+    <div class="swatches"><span class="sw" style="background:#f5f8f5"></span><span class="sw" style="background:#eaf1ea"></span><span class="sw" style="background:#1f2b24"></span><span class="sw" style="background:#2f6d4f"></span></div>
+    <div class="mockholder"><div class="mockscroll"><div class="mock t-celadon" data-mock></div></div></div>
+  </section>
+
+  <section>
+    <div class="dhead"><span class="dkey">F</span><h3>Print Shop</h3><span class="fonts">Suisse-style grotesk + SF Mono, uppercase page titles</span></div>
+    <p class="mood">Industrial: cool gray paper, jet-black controls, chartreuse highlighter for selection and the run track. Squared corners, heavier rules. The boldest light option; reads like a working pressroom.</p>
+    <div class="swatches"><span class="sw" style="background:#f1f2f3"></span><span class="sw" style="background:#e8eaec"></span><span class="sw" style="background:#0f1113"></span><span class="sw" style="background:#e8f527"></span></div>
+    <div class="mockholder"><div class="mockscroll"><div class="mock t-print" data-mock></div></div></div>
+  </section>
+
+  <div class="group"><h2>Dark rooms</h2><p>After-hours instruments. Four different signals, no orange anywhere.</p></div>
+
+  <section>
+    <div class="dhead"><span class="dkey">B</span><h3>Night Desk</h3><span class="fonts">Schibsted Grotesk + Spline Sans Mono</span></div>
+    <p class="mood">Your earlier pick, revised: warm graphite-black with the orange swapped for a luminous carmine-rose, the same bloodline as Proof Room's stamp. Pairs seamlessly with A.</p>
+    <div class="swatches"><span class="sw" style="background:#1a1817"></span><span class="sw" style="background:#131211"></span><span class="sw" style="background:#ece8e6"></span><span class="sw" style="background:#e5556a"></span></div>
+    <div class="mockholder"><div class="mockscroll"><div class="mock t-night" data-mock></div></div></div>
+  </section>
+
+  <section>
+    <div class="dhead"><span class="dkey">D</span><h3>Midnight Archive</h3><span class="fonts">Source Serif 4 titles + IBM Plex Sans/Mono</span></div>
+    <p class="mood">A private bank's vault after hours: deep indigo surfaces, brass-gold signal, serif page titles. Heritage and gravitas; approvals feel like signing a ledger.</p>
+    <div class="swatches"><span class="sw" style="background:#171a2b"></span><span class="sw" style="background:#101322"></span><span class="sw" style="background:#e9e9f0"></span><span class="sw" style="background:#c9a353"></span></div>
+    <div class="mockholder"><div class="mockscroll"><div class="mock t-archive" data-mock></div></div></div>
+  </section>
+
+  <section>
+    <div class="dhead"><span class="dkey">G</span><h3>Deep Harbor</h3><span class="fonts">Hanken Grotesk + JetBrains Mono</span></div>
+    <p class="mood">Blue-black harbor night with a cyan beacon. Cool, technical, wide-awake; the closest to a modern observability tool while staying distinctly quieter.</p>
+    <div class="swatches"><span class="sw" style="background:#10151a"></span><span class="sw" style="background:#0b0f14"></span><span class="sw" style="background:#e4ecf2"></span><span class="sw" style="background:#35c2d4"></span></div>
+    <div class="mockholder"><div class="mockscroll"><div class="mock t-harbor" data-mock></div></div></div>
+  </section>
+
+  <section>
+    <div class="dhead"><span class="dkey">H</span><h3>Ultraviolet Console</h3><span class="fonts">Geist-family grotesk + Fira Code</span></div>
+    <p class="mood">Graphite dusk with an iris-violet signal and a faint magenta afterglow in the login scene. Contemporary product-tool energy; the friendliest dark option.</p>
+    <div class="swatches"><span class="sw" style="background:#17161d"></span><span class="sw" style="background:#110f16"></span><span class="sw" style="background:#eae8f2"></span><span class="sw" style="background:#8b7bf5"></span></div>
+    <div class="mockholder"><div class="mockscroll"><div class="mock t-violet" data-mock></div></div></div>
+  </section>
+</div>
+
+<template id="mockup">
+  <div class="m-top">
+    <span class="m-mark"><em>◆</em> Intent Studio</span>
+    <span class="m-proj"><span class="dot"></span> Cards &amp; Payments <span class="car">▾</span></span>
+    <span class="m-spacer"></span>
+    <span class="m-role">OWNER</span>
+    <span class="m-user">LT</span>
+  </div>
+  <div class="m-body">
+    <nav class="m-nav">
+      <a href="#">Dashboard</a>
+      <a href="#">Project Settings</a>
+      <a href="#" class="on">Intent Studio</a>
+      <a href="#">Review</a>
+      <a href="#">Approvals</a>
+      <a href="#">Intent Library</a>
+    </nav>
+    <div class="m-main">
+      <div class="m-crumb">cards-payments / travel-insurance</div>
+      <div class="m-titlerow">
+        <span class="m-h1">Intent Studio</span>
+        <span class="m-topic">Topic: Travel Insurance <span class="car">▾</span></span>
+      </div>
+      <p class="m-sub">14 sources · synced 15 Jul 2026, 09:42 · 2 not indexed</p>
+      <div class="m-toolbar">
+        <span class="m-search">⌕ Search sources…</span>
+        <button class="m-btn">Refresh list</button>
+        <button class="m-btn">Sync to index</button>
+        <button class="m-btn pri">Generate intents</button>
+      </div>
+      <table class="m-tbl">
+        <thead><tr><th></th><th>Source</th><th>Type</th><th>Modified</th><th>Index status</th></tr></thead>
+        <tbody>
+          <tr class="sel"><td>☑</td><td class="m-file">Travel_Claims_FAQ_2026.docx</td><td class="m-meta">SharePoint</td><td class="m-meta">12 Jul 2026</td><td><span class="pill ok"><i></i>Indexed</span></td></tr>
+          <tr class="sel"><td>☑</td><td class="m-file">Premium_Rate_Card_Q3.xlsx</td><td class="m-meta">SharePoint</td><td class="m-meta">10 Jul 2026</td><td><span class="pill warn"><i></i>Not indexed</span></td></tr>
+          <tr><td>☐</td><td class="m-file">ocbc.com/travel-insurance/tiq-promo</td><td class="m-meta">URL</td><td class="m-meta">08 Jul 2026</td><td><span class="pill ok"><i></i>Indexed</span></td></tr>
+        </tbody>
+      </table>
+      <div class="m-run">
+        <div class="m-run-head">
+          <span class="pill info"><i></i>Running</span>
+          <span class="m-run-title">GenAI batch — intent_requests_jul.xlsx</span>
+          <span class="m-run-id">run_b7f3a2</span>
+          <span class="m-run-count">55 / 120 rows</span>
+        </div>
+        <div class="m-track"><div class="m-fill"></div></div>
+        <div class="m-run-meta"><span>✓ 51 succeeded</span><span>→ 3 skipped</span><span>✕ 1 failed</span><span>elapsed 04:12</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="m-login">
+    <div class="m-scene"><span class="m-orb o1"></span><span class="m-orb o2"></span><div class="m-card"><span class="l1"></span><span class="l2"></span><span class="l3"></span></div></div>
+    <p class="cap">Login backdrop in this direction: drifting luminous orbs behind the glass sign-in card.</p>
+  </div>
+</template>
+
+<script>
+  const tpl = document.getElementById('mockup');
+  document.querySelectorAll('[data-mock]').forEach(el => el.appendChild(tpl.content.cloneNode(true)));
+</script>
+</body>
+</html>

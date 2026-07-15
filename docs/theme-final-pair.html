@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Final pair — Proof Room (light) · Night Desk (dark)</title>
+<style>
+  body{ background:#f0eeed; color:#26201f; font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; margin:0; }
+  .wrap{ max-width:1060px; margin:0 auto; padding:44px 24px 96px; }
+  h1{ font-size:26px; letter-spacing:-0.02em; margin:0 0 8px; }
+  .lede{ color:#5d5451; max-width:70ch; margin:0 0 10px; }
+  .change{ font-size:13px; background:#fff; border:1px solid #e2dcda; border-radius:8px; padding:10px 14px; max-width:76ch; color:#4a423f; }
+  .change b{ color:#9e1b30; }
+  section{ margin-top:48px; }
+  h2{ font-size:19px; margin:0 0 4px; }
+  .mood{ color:#5d5451; font-size:13.5px; margin:0 0 12px; max-width:72ch; }
+  .swatches{ display:flex; gap:6px; margin:0 0 12px; }
+  .sw{ width:24px; height:24px; border-radius:6px; border:1px solid rgba(0,0,0,0.18); }
+  .mockholder{ border:1px solid #ddd6d4; border-radius:12px; overflow:hidden; box-shadow:0 4px 24px rgba(30,20,18,0.06); }
+  .mockscroll{ overflow-x:auto; }
+
+  .mock{ min-width:860px; background:var(--m-bg); color:var(--m-ink); font-family:var(--m-font); font-size:13px; line-height:1.45; }
+  .m-top{ display:flex; align-items:center; gap:14px; height:46px; padding:0 16px; border-bottom:1px solid var(--m-border); }
+  .m-mark{ font-weight:800; font-size:13px; }
+  .m-mark em{ color:var(--m-accent); font-style:normal; }
+  .m-proj{ display:flex; align-items:center; gap:8px; border:1px solid var(--m-border); border-radius:8px; padding:4px 10px; font-weight:600; }
+  .m-proj .dot{ width:8px; height:8px; border-radius:50%; background:var(--m-accent); }
+  .m-proj .car{ color:var(--m-ink2); font-size:10px; }
+  .m-spacer{ flex:1; }
+  .m-role{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--m-wash); color:var(--m-accent); }
+  .m-user{ width:26px; height:26px; border-radius:50%; background:var(--m-accent); color:var(--m-onaccent); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .m-body{ display:flex; min-height:430px; }
+  .m-nav{ width:186px; background:var(--m-side); border-right:1px solid var(--m-border); padding:12px 8px; display:flex; flex-direction:column; gap:2px; flex-shrink:0; }
+  .m-nav a{ display:block; padding:7px 12px; border-radius:8px; color:var(--m-ink2); font-weight:500; text-decoration:none; }
+  .m-nav a.on{ background:var(--m-wash); color:var(--m-accent); font-weight:700; }
+  .m-main{ flex:1; padding:20px 24px 24px; min-width:0; }
+  .m-crumb{ font-size:11px; color:var(--m-ink2); font-family:var(--m-mono); margin-bottom:6px; }
+  .m-titlerow{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .m-h1{ font-size:19px; font-weight:700; letter-spacing:-0.01em; }
+  .m-topic{ display:flex; align-items:center; gap:7px; border:1px solid var(--m-border); border-radius:8px; padding:4px 10px; font-weight:600; font-size:12px; }
+  .m-sub{ color:var(--m-ink2); font-size:12px; margin:6px 0 16px; }
+  .m-toolbar{ display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .m-search{ display:flex; align-items:center; gap:6px; border:1px solid var(--m-border); border-radius:8px; padding:5px 10px; color:var(--m-ink2); flex:1; max-width:260px; }
+  .m-btn{ border:1px solid var(--m-border); background:transparent; color:var(--m-ink); border-radius:8px; padding:5px 12px; font-weight:600; font-size:12px; font-family:inherit; }
+  .m-btn.pri{ background:var(--m-accent); border-color:var(--m-accent); color:var(--m-onaccent); }
+  table.m-tbl{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  .m-tbl th{ text-align:left; font-size:10.5px; letter-spacing:0.05em; text-transform:uppercase; color:var(--m-ink3); font-weight:700; padding:7px 10px; background:var(--m-head); border-top:1px solid var(--m-border); border-bottom:1px solid var(--m-border); }
+  .m-tbl td{ padding:8px 10px; border-bottom:1px solid var(--m-border); }
+  .m-tbl tr.sel td{ background:var(--m-wash); }
+  .m-file{ font-weight:600; }
+  .m-meta{ font-family:var(--m-mono); color:var(--m-ink2); font-size:11.5px; }
+  .pill{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:2px 9px; border-radius:999px; }
+  .pill i{ width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .pill.ok{ color:var(--m-ok); background:color-mix(in oklab, var(--m-ok) 13%, transparent); }
+  .pill.warn{ color:var(--m-warn); background:color-mix(in oklab, var(--m-warn) 15%, transparent); }
+  .pill.info{ color:var(--m-info); background:color-mix(in oklab, var(--m-info) 14%, transparent); }
+  .m-run{ margin-top:16px; border:1px solid var(--m-border); border-radius:12px; padding:14px 16px; background:var(--m-runbg); }
+  .m-run-head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .m-run-id{ font-family:var(--m-mono); font-size:11px; color:var(--m-ink2); }
+  .m-run-title{ font-weight:700; }
+  .m-run-count{ margin-left:auto; font-family:var(--m-mono); font-size:12px; color:var(--m-ink2); }
+  .m-track{ margin-top:10px; height:6px; border-radius:999px; background:color-mix(in oklab, var(--m-ink) 12%, transparent); overflow:hidden; }
+  .m-fill{ height:100%; width:46%; border-radius:999px; background:var(--m-accent); }
+  .m-run-meta{ margin-top:8px; display:flex; gap:16px; font-size:11px; color:var(--m-ink2); font-family:var(--m-mono); flex-wrap:wrap; }
+  .m-login{ display:flex; align-items:center; gap:16px; padding:14px 16px; border-top:1px solid var(--m-border); background:var(--m-side); }
+  .m-login .cap{ font-size:11.5px; color:var(--m-ink2); max-width:34ch; }
+  .m-scene{ position:relative; width:300px; height:120px; border-radius:10px; overflow:hidden; flex-shrink:0; background:var(--m-scenebg); border:1px solid var(--m-border); }
+  .m-orb{ position:absolute; border-radius:50%; filter:blur(22px); }
+  .m-card{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:132px; height:76px; border-radius:10px; background:var(--m-scenecard); border:1px solid var(--m-scenebd); backdrop-filter:blur(6px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+  .m-card .l1{ width:70px; height:7px; border-radius:4px; background:var(--m-sceneink); opacity:0.85; }
+  .m-card .l2{ width:96px; height:5px; border-radius:4px; background:var(--m-sceneink); opacity:0.4; }
+  .m-card .l3{ width:96px; height:12px; border-radius:5px; background:var(--m-accent); }
+
+  /* Proof Room — revised: darker secondary ink (was #837875-ish, now #524a48 range) */
+  .theme-light{ --m-bg:#ffffff; --m-side:#f6f3f2; --m-head:#f1edec; --m-ink:#282221; --m-ink2:#544c49; --m-ink3:#6d6461;
+    --m-border:#e5dfdd; --m-accent:#9e1b30; --m-onaccent:#ffffff; --m-wash:#f9edef; --m-ok:#1e7a4c; --m-warn:#8a6212; --m-info:#3d6390;
+    --m-font:'Helvetica Neue',system-ui,sans-serif; --m-mono:ui-monospace,'SF Mono',Menlo,monospace; --m-runbg:#f6f3f2;
+    --m-scenebg:linear-gradient(135deg,#fdfbfa 0%,#f6eeee 55%,#f3e2e4 100%); --m-scenecard:rgba(255,255,255,0.72); --m-scenebd:rgba(255,255,255,0.9); --m-sceneink:#3a2f2e; }
+  .theme-light .m-orb.o1{ width:130px; height:130px; left:-40px; top:-40px; background:rgba(158,27,48,0.16); }
+  .theme-light .m-orb.o2{ width:110px; height:110px; right:-30px; bottom:-40px; background:rgba(61,99,144,0.12); }
+
+  /* Night Desk — revised: ember orange replaced with luminous carmine-rose (same hue family as light accent) */
+  .theme-dark{ --m-bg:#1a1817; --m-side:#131211; --m-head:#211e1d; --m-ink:#ece8e6; --m-ink2:#b5adaa; --m-ink3:#948c89;
+    --m-border:#2e2a29; --m-accent:#e5556a; --m-onaccent:#2b0a10; --m-wash:rgba(229,85,106,0.14); --m-ok:#4cc98d; --m-warn:#d9ad55; --m-info:#8aa9ee;
+    --m-font:system-ui,sans-serif; --m-mono:ui-monospace,'SF Mono',Menlo,monospace; --m-runbg:#211e1d;
+    --m-scenebg:radial-gradient(120% 140% at 20% 10%,#26171a 0%,#141213 55%,#0e0d0d 100%); --m-scenecard:rgba(28,25,25,0.72); --m-scenebd:rgba(255,255,255,0.10); --m-sceneink:#ddd6d3; }
+  .theme-dark .m-orb.o1{ width:140px; height:140px; left:-40px; top:-50px; background:rgba(229,85,106,0.22); }
+  .theme-dark .m-orb.o2{ width:100px; height:100px; right:-20px; bottom:-40px; background:rgba(138,169,238,0.12); }
+
+  @media (prefers-reduced-motion: no-preference){
+    .m-fill{ animation:creep 3.2s cubic-bezier(0.22,1,0.36,1) infinite alternate; }
+    @keyframes creep{ from{ width:38%; } to{ width:58%; } }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The final pair — one identity, two rooms</h1>
+  <p class="lede">Your picks, revised per your feedback. Light is <b>Proof Room</b>; dark is <b>Night Desk</b>. A toggle in the top bar switches between them — same carmine bloodline in both, so it reads as one product.</p>
+  <p class="change">Changes from the last round — <b>①</b> Light: secondary &amp; table-meta text darkened two steps (the filenames/dates you flagged now pass 4.5:1). <b>②</b> Dark: ember orange is gone; the signal is now a <b>luminous carmine-rose</b>, the same hue family as the light theme's carmine stamp — no more Grafana. Surfaces also warmed slightly to match the rose.</p>
+
+  <section>
+    <h2>Light · Proof Room (revised)</h2>
+    <p class="mood">Paper-white ground, warm graphite ink, deep carmine stamp. Schibsted Grotesk + Spline Sans Mono.</p>
+    <div class="swatches"><span class="sw" style="background:#ffffff"></span><span class="sw" style="background:#f6f3f2"></span><span class="sw" style="background:#282221"></span><span class="sw" style="background:#544c49"></span><span class="sw" style="background:#9e1b30"></span></div>
+    <div class="mockholder"><div class="mockscroll"><div class="mock theme-light" data-mock></div></div></div>
+  </section>
+
+  <section>
+    <h2>Dark · Night Desk (revised)</h2>
+    <p class="mood">Warm graphite-black, luminous carmine-rose signal, mono-heavy metadata. Same fonts, same layout — the room after hours.</p>
+    <div class="swatches"><span class="sw" style="background:#1a1817"></span><span class="sw" style="background:#131211"></span><span class="sw" style="background:#ece8e6"></span><span class="sw" style="background:#b5adaa"></span><span class="sw" style="background:#e5556a"></span></div>
+    <div class="mockholder"><div class="mockscroll"><div class="mock theme-dark" data-mock></div></div></div>
+  </section>
+</div>
+
+<template id="mockup">
+  <div class="m-top">
+    <span class="m-mark"><em>◆</em> Intent Studio</span>
+    <span class="m-proj"><span class="dot"></span> Cards &amp; Payments <span class="car">▾</span></span>
+    <span class="m-spacer"></span>
+    <span class="m-role">OWNER</span>
+    <span class="m-user">LT</span>
+  </div>
+  <div class="m-body">
+    <nav class="m-nav">
+      <a href="#">Dashboard</a>
+      <a href="#">Project Settings</a>
+      <a href="#" class="on">Intent Studio</a>
+      <a href="#">Review</a>
+      <a href="#">Approvals</a>
+      <a href="#">Intent Library</a>
+    </nav>
+    <div class="m-main">
+      <div class="m-crumb">cards-payments / travel-insurance</div>
+      <div class="m-titlerow">
+        <span class="m-h1">Intent Studio</span>
+        <span class="m-topic">Topic: Travel Insurance <span class="car">▾</span></span>
+      </div>
+      <p class="m-sub">14 sources · synced 15 Jul 2026, 09:42 · 2 not indexed</p>
+      <div class="m-toolbar">
+        <span class="m-search">⌕ Search sources…</span>
+        <button class="m-btn">Refresh list</button>
+        <button class="m-btn">Sync to index</button>
+        <button class="m-btn pri">Generate intents</button>
+      </div>
+      <table class="m-tbl">
+        <thead><tr><th></th><th>Source</th><th>Type</th><th>Modified</th><th>Index status</th></tr></thead>
+        <tbody>
+          <tr class="sel"><td>☑</td><td class="m-file">Travel_Claims_FAQ_2026.docx</td><td class="m-meta">SharePoint</td><td class="m-meta">12 Jul 2026</td><td><span class="pill ok"><i></i>Indexed</span></td></tr>
+          <tr class="sel"><td>☑</td><td class="m-file">Premium_Rate_Card_Q3.xlsx</td><td class="m-meta">SharePoint</td><td class="m-meta">10 Jul 2026</td><td><span class="pill warn"><i></i>Not indexed</span></td></tr>
+          <tr><td>☐</td><td class="m-file">ocbc.com/travel-insurance/tiq-promo</td><td class="m-meta">URL</td><td class="m-meta">08 Jul 2026</td><td><span class="pill ok"><i></i>Indexed</span></td></tr>
+        </tbody>
+      </table>
+      <div class="m-run">
+        <div class="m-run-head">
+          <span class="pill info"><i></i>Running</span>
+          <span class="m-run-title">GenAI batch — intent_requests_jul.xlsx</span>
+          <span class="m-run-id">run_b7f3a2</span>
+          <span class="m-run-count">55 / 120 rows</span>
+        </div>
+        <div class="m-track"><div class="m-fill"></div></div>
+        <div class="m-run-meta"><span>✓ 51 succeeded</span><span>→ 3 skipped</span><span>✕ 1 failed</span><span>elapsed 04:12</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="m-login">
+    <div class="m-scene"><span class="m-orb o1"></span><span class="m-orb o2"></span><div class="m-card"><span class="l1"></span><span class="l2"></span><span class="l3"></span></div></div>
+    <p class="cap">Login backdrop in this theme: drifting luminous orbs behind the glass sign-in card.</p>
+  </div>
+</template>
+
+<script>
+  const tpl = document.getElementById('mockup');
+  document.querySelectorAll('[data-mock]').forEach(el => el.appendChild(tpl.content.cloneNode(true)));
+</script>
+</body>
+</html>
