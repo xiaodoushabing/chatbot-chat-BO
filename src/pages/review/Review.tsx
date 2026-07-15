@@ -368,15 +368,6 @@ export default function Review() {
       .sort((a, b) => rank(a) - rank(b) || b.submittedAt.localeCompare(a.submittedAt));
   }, [approvals, user.name, topicIds]);
 
-  /* Rejected intents returned with checker notes. */
-  const returned = useMemo(
-    () =>
-      intents
-        .filter(i => i.state === 'rejected' && topicIds.has(i.topicId))
-        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
-    [intents, topicIds],
-  );
-
   const editingIntent = intents.find(i => i.id === editingId) ?? null;
   const nothingStagedAtAll = staged.length === 0;
 
@@ -525,47 +516,7 @@ export default function Review() {
         )}
       </section>
 
-      {/* ── Returned with notes ── */}
-      {returned.length > 0 && (
-        <section aria-label="Returned with notes" className="mt-10">
-          <SectionHeader title="Returned with notes" meta={plural(returned.length, 'intent')} />
-          <div className="flex flex-col gap-3">
-            {returned.map(intent => (
-              <div
-                key={intent.id}
-                className="rounded-(--radius-card) border border-line bg-bg px-4 py-3.5"
-              >
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                  <IntentStatePill state={intent.state} />
-                  <span className="font-medium text-ink">{intent.question}</span>
-                  <span className="text-xs text-ink-2">{topicName(intent.topicId)}</span>
-                  <Mono>{fmtDateTime(intent.updatedAt)}</Mono>
-                  {!isChecker && (
-                    <div className="ml-auto flex items-center gap-2">
-                      <Button size="sm" onClick={() => setEditingId(intent.id)}>
-                        <Pencil size={13} aria-hidden /> Edit
-                      </Button>
-                      <Button size="sm" onClick={() => stageIntents([intent.id])}>
-                        <RotateCcw size={13} aria-hidden /> Restage
-                      </Button>
-                    </div>
-                  )}
-                </div>
-                {intent.reviewNote && (
-                  <div className="mt-2.5 rounded-(--radius-field) bg-err/8 px-3 py-2">
-                    <p className="text-2xs font-bold tracking-wider text-err uppercase">
-                      Checker note
-                    </p>
-                    <p className="mt-0.5 text-sm text-ink">{intent.reviewNote}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── My submissions ── */}
+      {/* ── My submissions (pending → withdraw; approved/rejected viewable with note) ── */}
       {!isChecker && (
         <section aria-label="My submissions" className="mt-10">
           <SectionHeader title="My submissions" meta={plural(mySubmissions.length, 'request')} />
@@ -609,11 +560,15 @@ export default function Review() {
                       <ApprovalStatusPill status={req.status} />
                     </Td>
                     <Td className="text-right">
-                      {req.status === 'pending' && (
+                      {req.status === 'pending' ? (
                         <Button size="sm" onClick={() => withdrawRequest(req.id)}>
                           Withdraw
                         </Button>
-                      )}
+                      ) : req.status === 'rejected' && !isChecker ? (
+                        <Button size="sm" onClick={() => stageIntents(req.intentIds)}>
+                          <RotateCcw size={13} aria-hidden /> Restage
+                        </Button>
+                      ) : null}
                     </Td>
                   </Tr>
                 ))}

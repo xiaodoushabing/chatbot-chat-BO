@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence } from 'motion/react';
 import {
   Check,
   ChevronDown,
@@ -23,10 +24,12 @@ import {
   Pill,
   SectionHeader,
   TableSkeleton,
+  Tabs,
 } from '../../components/ui/display';
 import { TableShell, Td, Th, Tr } from '../../components/ui/table';
 import GenerationEngine from './GenerationEngine';
 import RunRail from './RunRail';
+import { LiveRunCard } from './LiveRunCard';
 
 /* ── Topic dropdown (header context) ── */
 
@@ -243,7 +246,7 @@ function SourcesPanel({
   selected: Set<string>;
   setSelected: (next: Set<string>) => void;
 }) {
-  const { user, enumeratedTopics, markEnumerated, refreshSources, syncToIndex } = useStore();
+  const { user, enumeratedTopics, markEnumerated, refreshSources } = useStore();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -292,10 +295,6 @@ function SourcesPanel({
     else next.delete(id);
     setSelected(next);
   };
-
-  const syncable = topicSources.filter(
-    s => selected.has(s.id) && (s.indexStatus === 'not_indexed' || s.indexStatus === 'stale'),
-  );
 
   const doRefresh = async () => {
     setRefreshing(true);
@@ -379,23 +378,12 @@ function SourcesPanel({
             <span className="text-xs font-semibold text-ink" aria-live="polite">
               Selected {selectedCount} of {selectable.length}
             </span>
-            <div className="ml-auto flex items-center gap-2">
-              {someSelected && (
-                <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
-                  Clear selection
-                </Button>
-              )}
-              <Button
-                size="sm"
-                variant="primary"
-                disabled={syncable.length === 0}
-                onClick={() => syncToIndex(syncable.map(s => s.id))}
-                title={syncable.length === 0 ? 'Select at least one not-indexed or stale source' : undefined}
-              >
-                <DatabaseZap size={12} aria-hidden />
-                Sync to index{syncable.length > 0 && ` · ${syncable.length}`}
+            <span className="hidden text-xs text-ink-3 sm:inline">— feeds the generation module below</span>
+            {someSelected && (
+              <Button size="sm" variant="ghost" className="ml-auto" onClick={() => setSelected(new Set())}>
+                Clear selection
               </Button>
-            </div>
+            )}
           </div>
           <TableShell>
             <thead>
@@ -485,10 +473,12 @@ export default function IntentStudio() {
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [activeRunId, setActiveRunId] = useState<string | null>(null);
+  const [tab, setTab] = useState<'engine' | 'history'>('engine');
   const topicKey = topic?.id;
   useEffect(() => {
     setSelected(new Set());
     setActiveRunId(null);
+    setTab('engine');
   }, [topicKey]);
 
   const activeRun = runs.find(r => r.id === activeRunId && r.topicId === topicKey) ?? null;
@@ -528,24 +518,49 @@ export default function IntentStudio() {
         }
       />
       {topic && (
-        <div className="flex items-start gap-6">
-          <div className="min-w-0 flex-1">
-            <SourcesPanel
-              topicId={topic.id}
-              topicSources={topicSources}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <GenerationEngine
-              topicId={topic.id}
-              topicSources={topicSources}
-              selectedSourceIds={[...selected]}
-              running={activeRun?.status === 'running'}
-              onLaunched={setActiveRunId}
-            />
-          </div>
-          <RunRail topicRuns={topicRuns} activeRun={activeRun} onDismiss={() => setActiveRunId(null)} />
-        </div>
+        <>
+          <Tabs<'engine' | 'history'>
+            tabs={[
+              { value: 'engine', label: 'Generation engine' },
+              { value: 'history', label: 'Run output & history', count: topicRuns.length },
+            ]}
+            value={tab}
+            onChange={setTab}
+          />
+
+          {tab === 'engine' ? (
+            <div role="tabpanel" aria-label="Generation engine" className="mt-8 flex flex-col gap-8">
+              {/* Signature moment: a launched run stays visible here without leaving the tab. */}
+              <AnimatePresence initial={false}>
+                {activeRun && (
+                  <LiveRunCard run={activeRun} onDismiss={() => setActiveRunId(null)} />
+                )}
+              </AnimatePresence>
+              {/* One cohesive flow: select sources (top), then generate (directly below). */}
+              <SourcesPanel
+                topicId={topic.id}
+                topicSources={topicSources}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <GenerationEngine
+                topicId={topic.id}
+                topicSources={topicSources}
+                selectedSourceIds={[...selected]}
+                running={activeRun?.status === 'running'}
+                onLaunched={setActiveRunId}
+              />
+            </div>
+          ) : (
+            <div role="tabpanel" aria-label="Run output & history" className="mt-8">
+              <RunRail
+                topicRuns={topicRuns}
+                activeRun={activeRun}
+                onDismiss={() => setActiveRunId(null)}
+              />
+            </div>
+          )}
+        </>
       )}
     </>
   );

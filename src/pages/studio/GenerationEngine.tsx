@@ -5,7 +5,6 @@ import type { Source } from '../../data/types';
 import { plural } from '../../lib/format';
 import {
   Button,
-  Checkbox,
   Field,
   IconButton,
   Input,
@@ -13,152 +12,13 @@ import {
   Select,
   Textarea,
 } from '../../components/ui/controls';
-import { Drawer } from '../../components/ui/overlay';
 
 type Mode = 'single' | 'batch' | 'manual';
 
-/* ── Manual intent composer drawer (unchanged flow) ── */
-
-function ManualComposer({
-  open,
-  onClose,
-  topicId,
-  topicSources,
-}: {
-  open: boolean;
-  onClose: () => void;
-  topicId: string;
-  topicSources: Source[];
-}) {
-  const { createManualIntent, user } = useStore();
-  const [question, setQuestion] = useState('');
-  const [response, setResponse] = useState('');
-  const [utterances, setUtterances] = useState<string[]>(['']);
-  const [picked, setPicked] = useState<Set<string>>(new Set());
-
-  const pickable = topicSources.filter(s => user.role !== 'contributor' || s.accessible);
-  const valid = question.trim().length > 0 && response.trim().length > 0;
-
-  const reset = () => {
-    setQuestion('');
-    setResponse('');
-    setUtterances(['']);
-    setPicked(new Set());
-  };
-
-  const save = () => {
-    createManualIntent({
-      topicId,
-      question: question.trim(),
-      response: response.trim(),
-      utterances: utterances.map(u => u.trim()).filter(Boolean),
-      sourceIds: [...picked],
-    });
-    reset();
-    onClose();
-  };
-
-  return (
-    <Drawer
-      open={open}
-      onClose={onClose}
-      title="New manual intent"
-      meta={<span className="text-xs text-ink-2">Saved straight to staging — no generation run.</span>}
-      footer={
-        <>
-          <Button variant="ghost" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="primary" disabled={!valid} onClick={save}>
-            Create intent
-          </Button>
-        </>
-      }
-    >
-      <div className="flex flex-col gap-5">
-        <Field label="Intent question" htmlFor="manual-question">
-          <Input
-            id="manual-question"
-            value={question}
-            onChange={e => setQuestion(e.target.value)}
-            placeholder="How do I claim for a delayed flight?"
-          />
-        </Field>
-        <Field label="Response" htmlFor="manual-response" hint="The answer the chatbot will give, grounded in the sources below.">
-          <Textarea
-            id="manual-response"
-            rows={5}
-            value={response}
-            onChange={e => setResponse(e.target.value)}
-            placeholder="State the policy, limits and exact steps…"
-          />
-        </Field>
-
-        <fieldset className="flex flex-col gap-2">
-          <legend className="text-xs font-semibold text-ink">Utterances</legend>
-          {utterances.map((u, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <Input
-                aria-label={`Utterance ${i + 1}`}
-                value={u}
-                onChange={e =>
-                  setUtterances(list => list.map((x, j) => (j === i ? e.target.value : x)))
-                }
-                placeholder="Alternative phrasing of the question"
-              />
-              <IconButton
-                label={`Remove utterance ${i + 1}`}
-                disabled={utterances.length === 1}
-                onClick={() => setUtterances(list => list.filter((_, j) => j !== i))}
-              >
-                <X size={13} />
-              </IconButton>
-            </div>
-          ))}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="self-start"
-            onClick={() => setUtterances(list => [...list, ''])}
-          >
-            <Plus size={13} aria-hidden /> Add utterance
-          </Button>
-        </fieldset>
-
-        <fieldset className="flex flex-col gap-1.5">
-          <legend className="mb-1 text-xs font-semibold text-ink">Source documents</legend>
-          <div className="max-h-52 overflow-y-auto rounded-(--radius-field) border border-line">
-            {pickable.length === 0 && (
-              <p className="px-3 py-3 text-sm text-ink-2">No accessible sources in this topic.</p>
-            )}
-            {pickable.map(s => (
-              <label
-                key={s.id}
-                className="flex cursor-pointer items-center gap-2.5 border-b border-line px-3 py-2 text-sm text-ink transition-colors duration-150 last:border-b-0 hover:bg-surface-2"
-              >
-                <Checkbox
-                  checked={picked.has(s.id)}
-                  onChange={e =>
-                    setPicked(prev => {
-                      const next = new Set(prev);
-                      if (e.target.checked) next.add(s.id);
-                      else next.delete(s.id);
-                      return next;
-                    })
-                  }
-                />
-                <span className="min-w-0 flex-1 truncate">{s.name}</span>
-                <span className="shrink-0 text-xs text-ink-3">{s.kind === 'url' ? 'URL' : 'SharePoint'}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      </div>
-    </Drawer>
-  );
-}
-
-/* ── The generation engine card (main column, below sources) ── */
+/* ── The generation module ──
+   Sits directly below the sources table as the second half of one flow: source
+   selection above feeds every mode here (Single, Batch, Manual). Manual is an
+   inline composer — no drawer — matching Single/Batch. */
 
 export default function GenerationEngine({
   topicId,
@@ -173,19 +33,22 @@ export default function GenerationEngine({
   running?: boolean;
   onLaunched: (runId: string) => void;
 }) {
-  const { startRun, tonalities } = useStore();
+  const { startRun, createManualIntent, tonalities } = useStore();
   const [mode, setMode] = useState<Mode>('single');
-  const [composerOpen, setComposerOpen] = useState(false);
 
   // Single
   const [question, setQuestion] = useState('');
   const [requirements, setRequirements] = useState('');
-  // Run settings
+  // Run settings (shared by Single + Batch)
   const [maxIntents, setMaxIntents] = useState(5);
   const [tonality, setTonality] = useState(tonalities[0]);
   // Batch
   const spreadsheets = useMemo(() => topicSources.filter(s => s.isSpreadsheet), [topicSources]);
   const [batchFileId, setBatchFileId] = useState('');
+  // Manual
+  const [manualQuestion, setManualQuestion] = useState('');
+  const [manualResponse, setManualResponse] = useState('');
+  const [manualUtterances, setManualUtterances] = useState<string[]>(['']);
 
   useEffect(() => {
     // topic changed: the engine resets to a clean launcher
@@ -221,16 +84,36 @@ export default function GenerationEngine({
     onLaunched(id);
   };
 
+  const manualValid = manualQuestion.trim().length > 0 && manualResponse.trim().length > 0;
+
+  const saveManual = () => {
+    createManualIntent({
+      topicId,
+      question: manualQuestion.trim(),
+      response: manualResponse.trim(),
+      utterances: manualUtterances.map(u => u.trim()).filter(Boolean),
+      sourceIds: selectedSourceIds,
+    });
+    setManualQuestion('');
+    setManualResponse('');
+    setManualUtterances(['']);
+  };
+
   return (
     <section
       aria-label="Generation engine"
-      className="mt-10 rounded-(--radius-card) border border-line bg-surface-2"
+      className="rounded-(--radius-card) border border-line bg-surface-2 shadow-(--shadow-soft)"
     >
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line px-4 py-3">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 border-b border-line px-5 py-4">
         <div className="flex items-center gap-2">
           <Sparkles size={15} className="text-accent" aria-hidden />
-          <h2 className="text-md font-semibold text-ink">Generation engine</h2>
+          <h3 className="text-md font-semibold text-ink">Generate intents</h3>
         </div>
+        <span className="font-mono text-xs text-ink-2" aria-live="polite">
+          {sourceCount > 0
+            ? `${plural(sourceCount, 'source')} selected above`
+            : 'No sources selected above'}
+        </span>
         <SegmentedControl<Mode>
           className="ml-auto"
           options={[
@@ -239,14 +122,11 @@ export default function GenerationEngine({
             { value: 'manual', label: 'Manual' },
           ]}
           value={mode}
-          onChange={m => {
-            setMode(m);
-            if (m === 'manual') setComposerOpen(true);
-          }}
+          onChange={setMode}
         />
       </div>
 
-      <div className="p-4">
+      <div className="p-5">
         {mode === 'single' && (
           <div className="flex flex-col gap-4">
             <Field label="Target intent / question" htmlFor="engine-question">
@@ -291,7 +171,7 @@ export default function GenerationEngine({
                 />
               </Field>
             </div>
-            <div className="flex flex-wrap items-center gap-3 border-t border-line pt-3">
+            <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
               <p className="text-xs text-ink-2" aria-live="polite">
                 {sourceCount > 0
                   ? `Source data: ${plural(sourceCount, 'selected source')} from the table above.`
@@ -335,7 +215,7 @@ export default function GenerationEngine({
                 Excel file; single-run fields are bypassed.
               </p>
             </div>
-            <div className="flex justify-end border-t border-line pt-3">
+            <div className="flex justify-end border-t border-line pt-4">
               <Button
                 variant="primary"
                 disabled={!batchFileId || running}
@@ -349,24 +229,81 @@ export default function GenerationEngine({
         )}
 
         {mode === 'manual' && (
-          <div className="flex flex-wrap items-center gap-3">
-            <p className="max-w-prose text-sm text-ink-2">
-              Write an intent yourself — question, response and utterances. It skips generation and
-              lands in staging, ready for review.
+          <div className="flex flex-col gap-4">
+            <p className="max-w-prose text-xs text-ink-2">
+              Write an intent yourself. It skips generation and lands in staging, ready for review.
             </p>
-            <Button variant="primary" className="ml-auto" onClick={() => setComposerOpen(true)}>
-              Open composer
-            </Button>
+            <Field label="Intent question" htmlFor="manual-question">
+              <Input
+                id="manual-question"
+                value={manualQuestion}
+                onChange={e => setManualQuestion(e.target.value)}
+                placeholder="How do I claim for a delayed flight?"
+              />
+            </Field>
+            <Field
+              label="Response"
+              htmlFor="manual-response"
+              hint="The answer the chatbot will give, grounded in the selected sources above."
+            >
+              <Textarea
+                id="manual-response"
+                rows={5}
+                value={manualResponse}
+                onChange={e => setManualResponse(e.target.value)}
+                placeholder="State the policy, limits and exact steps…"
+              />
+            </Field>
+
+            <fieldset className="flex flex-col gap-2">
+              <legend className="text-xs font-semibold text-ink">Utterances</legend>
+              {manualUtterances.map((u, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <Input
+                    aria-label={`Utterance ${i + 1}`}
+                    value={u}
+                    onChange={e =>
+                      setManualUtterances(list => list.map((x, j) => (j === i ? e.target.value : x)))
+                    }
+                    placeholder="Alternative phrasing of the question"
+                  />
+                  <IconButton
+                    label={`Remove utterance ${i + 1}`}
+                    disabled={manualUtterances.length === 1}
+                    onClick={() => setManualUtterances(list => list.filter((_, j) => j !== i))}
+                  >
+                    <X size={13} />
+                  </IconButton>
+                </div>
+              ))}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="self-start"
+                onClick={() => setManualUtterances(list => [...list, ''])}
+              >
+                <Plus size={13} aria-hidden /> Add utterance
+              </Button>
+            </fieldset>
+
+            <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
+              <p className="text-xs text-ink-2" aria-live="polite">
+                {sourceCount > 0
+                  ? `Source references: ${plural(sourceCount, 'selected source')} from the table above.`
+                  : 'No sources selected — add references by selecting sources in the table above.'}
+              </p>
+              <Button
+                variant="primary"
+                className="ml-auto"
+                disabled={!manualValid}
+                onClick={saveManual}
+              >
+                Create intent
+              </Button>
+            </div>
           </div>
         )}
       </div>
-
-      <ManualComposer
-        open={composerOpen}
-        onClose={() => setComposerOpen(false)}
-        topicId={topicId}
-        topicSources={topicSources}
-      />
     </section>
   );
 }
