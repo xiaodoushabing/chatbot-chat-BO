@@ -8,6 +8,7 @@ import {
   Send,
   Undo2,
 } from 'lucide-react';
+import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
 import type { ApprovalRequest, Intent } from '../../data/types';
 import { fmtDateTime, plural } from '../../lib/format';
@@ -47,6 +48,120 @@ function OriginCell({ intent }: { intent: Intent }) {
     >
       {runId}
     </Link>
+  );
+}
+
+/* ── Intent card (same structure as RunDetail's intent cards) ──
+   Header: checkbox + topic tag + state pill + edit / remove-from-staging icons.
+   Body: labeled "Intent question (user query)" and "Expected response" sections,
+   source-reference chips, created-by meta. */
+
+function IntentCard({
+  intent,
+  topicName,
+  sourceNames,
+  readOnly,
+  selected,
+  onToggleSelect,
+  onEdit,
+  onUnstage,
+}: {
+  intent: Intent;
+  topicName: string;
+  sourceNames: string[];
+  readOnly: boolean;
+  selected: boolean;
+  onToggleSelect: () => void;
+  onEdit: () => void;
+  onUnstage: () => void;
+}) {
+  return (
+    <article
+      aria-label={intent.question}
+      className={cn(
+        'rounded-(--radius-card) border bg-bg px-4 py-3.5 transition-colors duration-150',
+        selected ? 'border-accent/60 bg-accent/4' : 'border-line',
+      )}
+    >
+      {/* Card header */}
+      <div className="flex items-center gap-2.5">
+        {!readOnly && (
+          <Checkbox
+            aria-label={`Select “${intent.question}”`}
+            checked={selected}
+            onChange={onToggleSelect}
+          />
+        )}
+        <span className="rounded-full border border-line bg-surface-2 px-2 py-0.5 text-2xs font-semibold text-ink-2">
+          {topicName}
+        </span>
+        <IntentStatePill state={intent.state} />
+        {!readOnly && (
+          <div className="ml-auto flex items-center gap-0.5">
+            <IconButton label="Edit intent" className="h-7 w-7" onClick={onEdit}>
+              <Pencil size={13} />
+            </IconButton>
+            <IconButton label="Remove from staging" className="h-7 w-7" onClick={onUnstage}>
+              <Undo2 size={13} />
+            </IconButton>
+          </div>
+        )}
+      </div>
+
+      {/* Intent question */}
+      <div className="mt-3">
+        <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">
+          Intent question (user query)
+        </p>
+        <p className="mt-1 text-sm font-semibold text-ink text-balance">{intent.question}</p>
+      </div>
+
+      <div className="my-3 h-px bg-line" aria-hidden />
+
+      {/* Expected response */}
+      <div>
+        <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">Expected response</p>
+        <p className="mt-1 max-w-prose text-sm leading-relaxed text-ink-2">{intent.response}</p>
+      </div>
+
+      {/* Source references */}
+      <div className="mt-3">
+        <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">Source references</p>
+        <div className="mt-1 flex flex-wrap gap-1.5">
+          {sourceNames.length > 0 ? (
+            sourceNames.map(n => (
+              <span
+                key={n}
+                className="rounded-full border border-line bg-surface-2 px-2 py-0.5 font-mono text-2xs text-ink-2"
+              >
+                {n}
+              </span>
+            ))
+          ) : (
+            <span className="text-xs text-ink-3">None recorded</span>
+          )}
+        </div>
+      </div>
+
+      {/* Created-by meta */}
+      <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-line pt-2.5">
+        <span className="text-xs text-ink-2">Staged by {intent.createdBy}</span>
+        <span className="text-ink-3" aria-hidden>
+          ·
+        </span>
+        <Mono>{fmtDateTime(intent.updatedAt)}</Mono>
+        <span className="text-ink-3" aria-hidden>
+          ·
+        </span>
+        <OriginCell intent={intent} />
+        <span className="text-ink-3" aria-hidden>
+          ·
+        </span>
+        <span className="font-mono text-xs text-ink-2">
+          {plural(intent.utterances.length, 'utterance')}
+        </span>
+      </div>
+    </article>
   );
 }
 
@@ -157,6 +272,7 @@ export default function Review() {
     user,
     projectId,
     topics,
+    sources,
     intents,
     approvals,
     unstageIntents,
@@ -172,6 +288,7 @@ export default function Review() {
   );
   const topicIds = useMemo(() => new Set(projectTopics.map(t => t.id)), [projectTopics]);
   const topicName = (id: string) => projectTopics.find(t => t.id === id)?.name ?? '—';
+  const sourceName = (id: string) => sources.find(s => s.id === id)?.name ?? id;
 
   /* Topic filter lives in the URL so Studio can deep-link with ?topic=. */
   const [searchParams, setSearchParams] = useSearchParams();
@@ -308,23 +425,6 @@ export default function Review() {
               ))}
             </Select>
           </div>
-          {!isChecker && selectedIds.length > 0 && (
-            <div className="ml-auto flex items-center gap-2">
-              <span className="font-mono text-xs text-ink-2">{selectedIds.length} selected</span>
-              <Button
-                size="sm"
-                onClick={() => {
-                  unstageIntents(selectedIds);
-                  setSelected(new Set());
-                }}
-              >
-                <Undo2 size={13} aria-hidden /> Remove from staging
-              </Button>
-              <Button size="sm" variant="primary" onClick={() => setSubmitOpen(true)}>
-                <Send size={13} aria-hidden /> Submit for approval
-              </Button>
-            </div>
-          )}
         </div>
 
         {nothingStagedAtAll ? (
@@ -358,91 +458,70 @@ export default function Review() {
             }
           />
         ) : (
-          <TableShell>
-            <thead>
-              <tr>
-                {!isChecker && (
-                  <Th className="w-9">
-                    <Checkbox
-                      aria-label="Select all staged intents"
-                      checked={allVisibleSelected}
-                      indeterminate={!allVisibleSelected && someVisibleSelected}
-                      onChange={toggleAll}
-                    />
-                  </Th>
-                )}
-                <Th>Question</Th>
-                <Th>Topic</Th>
-                <Th>Origin</Th>
-                <Th>Staged by</Th>
-                <Th>Staged at</Th>
-                <Th>State</Th>
-                {!isChecker && (
-                  <Th className="w-20 text-right">
-                    <span className="sr-only">Actions</span>
-                  </Th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            {/* Selection bar — carries the bulk actions for the filtered card list. */}
+            {!isChecker && (
+              <div
+                role="region"
+                aria-label="Selection actions"
+                className="mb-3 flex flex-wrap items-center gap-3 rounded-(--radius-card) border border-line bg-surface-2 px-3.5 py-2"
+              >
+                <Checkbox
+                  aria-label="Select all filtered staged intents"
+                  checked={allVisibleSelected}
+                  indeterminate={!allVisibleSelected && someVisibleSelected}
+                  onChange={toggleAll}
+                />
+                <span className="font-mono text-xs tabular-nums text-ink-2">
+                  Selected {selectedIds.length} of {visible.length} filtered
+                </span>
+                <div className="ml-auto flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    disabled={selectedIds.length === 0}
+                    onClick={() => {
+                      unstageIntents(selectedIds);
+                      setSelected(new Set());
+                    }}
+                  >
+                    <Undo2 size={13} aria-hidden /> Remove from staging
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    disabled={selectedIds.length === 0}
+                    onClick={() => setSubmitOpen(true)}
+                  >
+                    <Send size={13} aria-hidden /> Submit selected for approval
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Intent cards */}
+            <div className="flex flex-col gap-3">
               {visible.map(intent => (
-                <Tr key={intent.id} selected={!isChecker && selected.has(intent.id)}>
-                  {!isChecker && (
-                    <Td>
-                      <Checkbox
-                        aria-label={`Select “${intent.question}”`}
-                        checked={selected.has(intent.id)}
-                        onChange={() => toggleOne(intent.id)}
-                      />
-                    </Td>
-                  )}
-                  <Td className="max-w-md">
-                    <span className="block truncate font-medium text-ink" title={intent.question}>
-                      {intent.question}
-                    </span>
-                  </Td>
-                  <Td className="whitespace-nowrap text-ink-2">{topicName(intent.topicId)}</Td>
-                  <Td className="whitespace-nowrap">
-                    <OriginCell intent={intent} />
-                  </Td>
-                  <Td className="whitespace-nowrap text-ink-2">{intent.createdBy}</Td>
-                  <Td mono className="whitespace-nowrap">
-                    {fmtDateTime(intent.updatedAt)}
-                  </Td>
-                  <Td>
-                    <IntentStatePill state={intent.state} />
-                  </Td>
-                  {!isChecker && (
-                    <Td className="text-right">
-                      <div className="flex justify-end gap-0.5">
-                        <IconButton
-                          label="Edit intent"
-                          className="h-7 w-7"
-                          onClick={() => setEditingId(intent.id)}
-                        >
-                          <Pencil size={13} />
-                        </IconButton>
-                        <IconButton
-                          label="Remove from staging"
-                          className="h-7 w-7"
-                          onClick={() => {
-                            unstageIntents([intent.id]);
-                            setSelected(prev => {
-                              const next = new Set(prev);
-                              next.delete(intent.id);
-                              return next;
-                            });
-                          }}
-                        >
-                          <Undo2 size={13} />
-                        </IconButton>
-                      </div>
-                    </Td>
-                  )}
-                </Tr>
+                <IntentCard
+                  key={intent.id}
+                  intent={intent}
+                  topicName={topicName(intent.topicId)}
+                  sourceNames={intent.sourceIds.map(sourceName)}
+                  readOnly={isChecker}
+                  selected={!isChecker && selected.has(intent.id)}
+                  onToggleSelect={() => toggleOne(intent.id)}
+                  onEdit={() => setEditingId(intent.id)}
+                  onUnstage={() => {
+                    unstageIntents([intent.id]);
+                    setSelected(prev => {
+                      const next = new Set(prev);
+                      next.delete(intent.id);
+                      return next;
+                    });
+                  }}
+                />
               ))}
-            </tbody>
-          </TableShell>
+            </div>
+          </>
         )}
       </section>
 

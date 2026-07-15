@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
-import { ArrowLeft, ChevronDown, ChevronRight, FileX2, Layers, Pencil, X } from 'lucide-react';
+import { ArrowLeft, FileX2, Layers, Pencil, X } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
 import type { Intent, Run } from '../../data/types';
 import { fmtDateTime, fmtDuration, plural } from '../../lib/format';
-import { Button, Checkbox, Field, Input, SearchField, Textarea } from '../../components/ui/controls';
+import { Button, Checkbox, Field, IconButton, Input, SearchField, Textarea } from '../../components/ui/controls';
 import {
   BatchChildPill,
   EmptyState,
@@ -98,10 +98,13 @@ function EditIntentDrawer({ intent, onClose }: { intent: Intent | null; onClose:
   );
 }
 
-/* ── One intent row (+ expandable detail row) ── */
+/* ── One intent card (adopted structure: header row → labeled sections → chips → meta) ── */
 
-function IntentRow({
+const LONG_RESPONSE = 260;
+
+function IntentCard({
   intent,
+  topicName,
   sourceNames,
   canAct,
   selected,
@@ -111,6 +114,7 @@ function IntentRow({
   onEdit,
 }: {
   intent: Intent;
+  topicName: string;
   sourceNames: string[];
   canAct: boolean;
   selected: boolean;
@@ -121,77 +125,96 @@ function IntentRow({
 }) {
   const stageable = canAct && intent.state === 'draft';
   const editable = canAct && (intent.state === 'draft' || intent.state === 'staged');
+  const isLong = intent.response.length > LONG_RESPONSE;
   return (
-    <>
-      <Tr selected={selected}>
-        <Td className="w-9">
-          {stageable ? (
-            <Checkbox
-              checked={selected}
-              onChange={onToggleSelect}
-              aria-label={`Select intent: ${intent.question}`}
-            />
-          ) : null}
-        </Td>
-        <Td className="max-w-md">
+    <article
+      aria-label={`Intent: ${intent.question}`}
+      className={cn(
+        'rounded-(--radius-card) border bg-surface-2 px-4 py-3.5 transition-colors duration-150',
+        selected ? 'border-accent/60' : 'border-line',
+      )}
+    >
+      {/* Header row: checkbox (draft only) · topic tag · state pill · edit */}
+      <div className="flex items-center gap-2.5">
+        {stageable && (
+          <Checkbox
+            checked={selected}
+            onChange={onToggleSelect}
+            aria-label={`Select intent: ${intent.question}`}
+          />
+        )}
+        <span className="rounded-full border border-line bg-bg px-2 py-0.5 text-2xs font-semibold text-ink-2">
+          {topicName}
+        </span>
+        <IntentStatePill state={intent.state} />
+        <div className="ml-auto flex items-center gap-1">
+          {editable && (
+            <IconButton label={`Edit intent: ${intent.question}`} onClick={onEdit}>
+              <Pencil size={13} aria-hidden />
+            </IconButton>
+          )}
+        </div>
+      </div>
+
+      {/* Intent question */}
+      <div className="mt-3">
+        <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">
+          Intent question (user query)
+        </p>
+        <p className="mt-1 text-sm font-semibold text-ink text-balance">{intent.question}</p>
+      </div>
+
+      <div className="my-3 h-px bg-line" aria-hidden />
+
+      {/* Expected response */}
+      <div>
+        <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">Expected response</p>
+        <p
+          className={cn(
+            'mt-1 max-w-prose text-sm leading-relaxed text-ink-2',
+            isLong && !expanded && 'line-clamp-3',
+          )}
+        >
+          {intent.response}
+        </p>
+        {isLong && (
           <button
             onClick={onToggleExpand}
             aria-expanded={expanded}
-            className="flex w-full items-start gap-1.5 text-left text-sm font-medium text-ink transition-colors duration-150 hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+            className="mt-1 text-xs font-semibold text-accent transition-colors duration-150 hover:underline focus-visible:outline-2 focus-visible:outline-accent"
           >
-            {expanded ? (
-              <ChevronDown size={14} className="mt-0.5 shrink-0 text-ink-3" aria-hidden />
-            ) : (
-              <ChevronRight size={14} className="mt-0.5 shrink-0 text-ink-3" aria-hidden />
-            )}
-            <span className={cn(!expanded && 'truncate')}>{intent.question}</span>
+            {expanded ? 'Show less' : 'Show full response'}
           </button>
-        </Td>
-        <Td mono className="whitespace-nowrap">
-          {plural(intent.utterances.length, 'utterance')}
-        </Td>
-        <Td className="max-w-48">
-          <span className="block truncate font-mono text-xs text-ink-2" title={sourceNames.join(', ')}>
-            {sourceNames.length > 0 ? sourceNames.join(', ') : '—'}
-          </span>
-        </Td>
-        <Td>
-          <IntentStatePill state={intent.state} />
-        </Td>
-        <Td className="w-16 text-right">
-          {editable && (
-            <button
-              onClick={onEdit}
-              aria-label={`Edit intent: ${intent.question}`}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-(--radius-ctl) text-ink-3 transition-colors duration-150 hover:bg-surface-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
-            >
-              <Pencil size={13} aria-hidden />
-            </button>
+        )}
+      </div>
+
+      {/* Source references */}
+      <div className="mt-3">
+        <p className="text-2xs font-semibold tracking-wide text-ink-3 uppercase">Source references</p>
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {sourceNames.length > 0 ? (
+            sourceNames.map(n => (
+              <span
+                key={n}
+                className="rounded-full border border-line bg-bg px-2 py-0.5 font-mono text-xs text-ink-2"
+              >
+                {n}
+              </span>
+            ))
+          ) : (
+            <span className="text-xs text-ink-3">None recorded</span>
           )}
-        </Td>
-      </Tr>
-      {expanded && (
-        <tr className="border-b border-line last:border-b-0 bg-surface-2/60">
-          <td />
-          <td colSpan={5} className="px-3 py-3">
-            <p className="max-w-prose text-sm leading-relaxed text-ink">{intent.response}</p>
-            <div className="mt-2.5 flex flex-wrap gap-1.5" aria-label="Utterances">
-              {intent.utterances.map((u, i) => (
-                <span
-                  key={i}
-                  className="rounded-full border border-line bg-bg px-2 py-0.5 text-xs text-ink-2"
-                >
-                  {u}
-                </span>
-              ))}
-            </div>
-            <p className="mt-2.5 font-mono text-xs text-ink-2">
-              Sources: {sourceNames.length > 0 ? sourceNames.join(' · ') : 'none recorded'}
-            </p>
-          </td>
-        </tr>
-      )}
-    </>
+        </div>
+      </div>
+
+      {/* Footer meta: utterances left, created-by right-aligned */}
+      <div className="mt-3 flex items-baseline gap-3">
+        <span className="font-mono text-xs text-ink-3">{plural(intent.utterances.length, 'utterance')}</span>
+        <span className="ml-auto text-right text-xs text-ink-3">
+          Created by {intent.createdBy} · {fmtDateTime(intent.createdAt)}
+        </span>
+      </div>
+    </article>
   );
 }
 
@@ -270,7 +293,6 @@ export default function RunDetail() {
   const p = run.progress;
 
   const stageableVisible = visibleIntents.filter(i => i.state === 'draft');
-  const stageableAll = runIntents.filter(i => i.state === 'draft');
   const selectedIds = stageableVisible.filter(i => selected.has(i.id)).map(i => i.id);
   const allChecked = stageableVisible.length > 0 && selectedIds.length === stageableVisible.length;
   const someChecked = selectedIds.length > 0 && !allChecked;
@@ -408,34 +430,59 @@ export default function RunDetail() {
           />
         )
       ) : (
-        <TableShell>
-          <thead>
-            <tr>
-              <Th className="w-9">
-                {canAct && (
-                  <Checkbox
-                    checked={allChecked}
-                    indeterminate={someChecked}
-                    onChange={toggleAll}
-                    disabled={stageableVisible.length === 0}
-                    aria-label="Select all draft intents"
-                  />
-                )}
-              </Th>
-              <Th>Question</Th>
-              <Th>Utterances</Th>
-              <Th>Sources</Th>
-              <Th>State</Th>
-              <Th className="w-16">
-                <span className="sr-only">Actions</span>
-              </Th>
-            </tr>
-          </thead>
-          <tbody>
+        <>
+          {/* Persistent selection bar above the list — present whenever there are stageable drafts */}
+          <AnimatePresence initial={false}>
+            {canAct && stageableVisible.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.18, ease: EASE }}
+                role="region"
+                aria-label="Staging actions"
+                className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-(--radius-card) border border-line bg-bg px-4 py-2.5"
+              >
+                <Checkbox
+                  checked={allChecked}
+                  indeterminate={someChecked}
+                  onChange={toggleAll}
+                  aria-label="Select all filtered draft intents"
+                />
+                <span className="font-mono text-xs tabular-nums text-ink-2">
+                  Selected {selectedIds.length} of {stageableVisible.length} filtered
+                </span>
+                <div className="ml-auto flex items-center gap-2">
+                  {selectedIds.length > 0 && (
+                    <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>
+                      Clear
+                    </Button>
+                  )}
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    disabled={selectedIds.length === 0}
+                    onClick={() => stage(selectedIds)}
+                  >
+                    Stage selected
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => stage(stageableVisible.map(i => i.id))}
+                  >
+                    Stage all {stageableVisible.length} filtered drafts
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <div className="flex flex-col gap-3">
             {visibleIntents.map(intent => (
-              <IntentRow
+              <IntentCard
                 key={intent.id}
                 intent={intent}
+                topicName={topic.name}
                 sourceNames={intent.sourceIds.map(sourceName)}
                 canAct={canAct}
                 selected={selected.has(intent.id)}
@@ -445,8 +492,8 @@ export default function RunDetail() {
                 onEdit={() => setEditing(intent)}
               />
             ))}
-          </tbody>
-        </TableShell>
+          </div>
+        </>
       )}
     </>
   );
@@ -567,40 +614,6 @@ export default function RunDetail() {
       ) : (
         intentTable
       )}
-
-      <AnimatePresence>
-        {canAct && selectedIds.length > 0 && (
-          <motion.div
-            initial={{ y: 72, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 72, opacity: 0 }}
-            transition={{ duration: 0.22, ease: EASE }}
-            className="pointer-events-none fixed inset-x-0 bottom-5 z-(--z-sticky) flex justify-center px-8"
-          >
-            <div
-              role="region"
-              aria-label="Staging actions"
-              className="pointer-events-auto flex items-center gap-4 rounded-(--radius-card) border border-line bg-bg px-4 py-2.5 shadow-(--shadow-pop)"
-            >
-              <span className="font-mono text-xs tabular-nums text-ink-2">
-                {plural(selectedIds.length, 'intent')} selected
-              </span>
-              <div className="h-4 w-px bg-line" aria-hidden />
-              <Button variant="primary" size="sm" onClick={() => stage(selectedIds)}>
-                Stage selected
-              </Button>
-              {stageableAll.length > selectedIds.length && (
-                <Button variant="secondary" size="sm" onClick={() => stage(stageableAll.map(i => i.id))}>
-                  Stage all {stageableAll.length} drafts
-                </Button>
-              )}
-              <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>
-                Clear
-              </Button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <EditIntentDrawer key={editing?.id ?? 'none'} intent={editing} onClose={() => setEditing(null)} />
     </div>

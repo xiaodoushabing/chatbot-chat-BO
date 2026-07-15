@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { ArchiveRestore, BookOpenText, FileText, Link2, SearchX, Trash2 } from 'lucide-react';
 import { useStore } from '../../state/store';
@@ -107,6 +107,12 @@ export default function IntentLibrary() {
       />
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          placeholder="Search question or response"
+          className="w-80 max-w-full"
+        />
         <Field label="Topic" htmlFor="lib-topic" className="w-56">
           <Select id="lib-topic" value={topicFilter} onChange={e => setTopicFilter(e.target.value)}>
             <option value="all">All topics</option>
@@ -117,12 +123,6 @@ export default function IntentLibrary() {
             ))}
           </Select>
         </Field>
-        <SearchField
-          value={query}
-          onChange={setQuery}
-          placeholder="Search question or response"
-          className="w-80 max-w-full"
-        />
         <span className="ml-auto pb-2 font-mono text-xs text-ink-2">
           {plural(filtered.length, 'intent')}
         </span>
@@ -300,13 +300,33 @@ function IntentDrawer({
     ? store.sources.filter(s => intent.sourceIds.includes(s.id))
     : [];
   const runId = intent?.origin.kind === 'run' ? intent.origin.runId : null;
+  const intentTopic = intent ? store.topics.find(t => t.id === intent.topicId) : null;
+  const approval = intent
+    ? store.approvals.find(a => a.status === 'approved' && a.intentIds.includes(intent.id)) ?? null
+    : null;
 
   return (
     <Drawer
       open={intent !== null}
       onClose={onClose}
-      title={intent?.question ?? ''}
-      meta={intent && <IntentStatePill state={intent.state} />}
+      title="Intent detail"
+      meta={
+        intent && (
+          <span className="flex items-center gap-2">
+            {intentTopic && (
+              <span className="rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs text-ink-2">
+                {intentTopic.name}
+              </span>
+            )}
+            <IntentStatePill state={intent.state} />
+            {intent.isRevision && (
+              <span className="rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs font-medium text-ink-2">
+                revision
+              </span>
+            )}
+          </span>
+        )
+      }
       footer={
         intent && isOwner ? (
           editing ? (
@@ -343,8 +363,44 @@ function IntentDrawer({
       {intent && !editing && (
         <div className="flex flex-col gap-6">
           <section>
-            <h3 className="mb-2 text-xs font-semibold tracking-wide text-ink-3 uppercase">Response</h3>
+            <h3 className="mb-2 text-xs font-semibold tracking-wide text-ink-3 uppercase">
+              Intent question (user query)
+            </h3>
+            <p className="max-w-prose text-sm leading-relaxed font-medium text-ink">{intent.question}</p>
+          </section>
+
+          <section>
+            <h3 className="mb-2 text-xs font-semibold tracking-wide text-ink-3 uppercase">
+              Expected response
+            </h3>
             <p className="max-w-prose text-sm leading-relaxed text-ink">{intent.response}</p>
+          </section>
+
+          <section>
+            <h3 className="mb-2 text-xs font-semibold tracking-wide text-ink-3 uppercase">
+              Source references <Mono className="normal-case tracking-normal">({intentSources.length})</Mono>
+            </h3>
+            {intentSources.length === 0 ? (
+              <p className="text-sm text-ink-2">No source documents recorded for this intent.</p>
+            ) : (
+              <ul className="flex flex-wrap gap-1.5">
+                {intentSources.map(s => (
+                  <li
+                    key={s.id}
+                    className="flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs text-ink-2"
+                  >
+                    {s.kind === 'url' ? (
+                      <Link2 size={12} className="shrink-0 text-ink-3" aria-hidden />
+                    ) : (
+                      <FileText size={12} className="shrink-0 text-ink-3" aria-hidden />
+                    )}
+                    <span className="truncate" title={s.path}>
+                      {s.name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           <section>
@@ -365,30 +421,8 @@ function IntentDrawer({
 
           <section>
             <h3 className="mb-2 text-xs font-semibold tracking-wide text-ink-3 uppercase">
-              Sources <Mono className="normal-case tracking-normal">({intentSources.length})</Mono>
+              Created by &amp; origin
             </h3>
-            {intentSources.length === 0 ? (
-              <p className="text-sm text-ink-2">No source documents recorded for this intent.</p>
-            ) : (
-              <ul className="flex flex-col gap-1.5">
-                {intentSources.map(s => (
-                  <li key={s.id} className="flex items-center gap-2 text-sm text-ink">
-                    {s.kind === 'url' ? (
-                      <Link2 size={13} className="shrink-0 text-ink-3" aria-hidden />
-                    ) : (
-                      <FileText size={13} className="shrink-0 text-ink-3" aria-hidden />
-                    )}
-                    <span className="truncate" title={s.path}>
-                      {s.name}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section>
-            <h3 className="mb-2 text-xs font-semibold tracking-wide text-ink-3 uppercase">History</h3>
             <KeyValue
               items={[
                 ['Created by', intent.createdBy],
@@ -406,6 +440,22 @@ function IntentDrawer({
                     'Manual entry'
                   ),
                 ],
+                ...(approval && approval.decidedBy
+                  ? ([
+                      [
+                        'Approved by',
+                        <span key="a">
+                          {approval.decidedBy}
+                          {approval.decidedAt && (
+                            <>
+                              {' · '}
+                              <Mono>{fmtDateTime(approval.decidedAt)}</Mono>
+                            </>
+                          )}
+                        </span>,
+                      ],
+                    ] as Array<[string, ReactNode]>)
+                  : []),
                 ['Updated at', <Mono key="u">{fmtDateTime(intent.updatedAt)}</Mono>],
                 ...(intent.reviewNote ? ([['Review note', intent.reviewNote]] as Array<[string, string]>) : []),
               ]}

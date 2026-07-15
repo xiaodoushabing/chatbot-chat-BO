@@ -1,16 +1,17 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import {
   CheckCircle2,
-  FolderPlus,
   FolderSearch,
   Lock,
   Pencil,
   Plus,
+  ScanSearch,
   Trash2,
   XCircle,
 } from 'lucide-react';
 import { useStore } from '../../state/store';
 import type { DiscoveredFolder, Topic } from '../../data/types';
+import { discoveredFolders as fixtureFolders } from '../../data/fixtures';
 import { fmtDateTime, plural } from '../../lib/format';
 import {
   Button,
@@ -34,6 +35,16 @@ export default function ProjectSettings() {
   const { projectId } = useStore();
   // Remount on project switch so drafts, test results and caches reset with context.
   return <SettingsBody key={projectId} />;
+}
+
+/** Provenance is derived, not stored: a topic whose URL matches a discoverable
+    subfolder of the root came from enumeration; anything else was created manually. */
+function provenance(topic: Topic): 'SharePoint enumeration' | 'Manual creation' {
+  return fixtureFolders.some(
+    f => f.projectId === topic.projectId && f.sharepointUrl === topic.sharepointUrl,
+  )
+    ? 'SharePoint enumeration'
+    : 'Manual creation';
 }
 
 function SettingsBody() {
@@ -71,8 +82,6 @@ function SettingsBody() {
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState('');
   const [removing, setRemoving] = useState<Topic | null>(null);
-  const [addOpen, setAddOpen] = useState(false);
-  const [createOpen, setCreateOpen] = useState(false);
 
   const visibleTopics = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -180,23 +189,28 @@ function SettingsBody() {
           )}
         </section>
 
-        {/* ── Topics ── */}
+        {/* ── Add topics (owner only): side-by-side panels ── */}
+        {isOwner && (
+          <section aria-labelledby="add-topics-heading" className="mt-10">
+            <SectionHeader
+              title="Add topics"
+              meta={<span id="add-topics-heading">two paths, same result</span>}
+            />
+            <div className="grid gap-4 lg:grid-cols-2">
+              <EnumeratePanel
+                projectTopics={projectTopics}
+                rootTested={test.status === 'ok'}
+              />
+              <ManualCreatePanel rootUrl={project.sharepointUrl} />
+            </div>
+          </section>
+        )}
+
+        {/* ── Topics table ── */}
         <section aria-labelledby="topics-heading" className="mt-10">
           <SectionHeader
             title="Topics"
             meta={<span id="topics-heading">{plural(projectTopics.length, 'topic')}</span>}
-            actions={
-              isOwner && (
-                <>
-                  <Button variant="secondary" onClick={() => setCreateOpen(true)}>
-                    <Plus size={13} aria-hidden /> Create manually
-                  </Button>
-                  <Button variant="primary" onClick={() => setAddOpen(true)}>
-                    <FolderPlus size={13} aria-hidden /> Add topics
-                  </Button>
-                </>
-              )
-            }
           />
           <p className="mb-3 max-w-prose text-sm text-ink-2">
             Each topic maps to one subfolder of the root. Its documents and URL manifests become the
@@ -215,15 +229,8 @@ function SettingsBody() {
               title="No topics yet"
               body={
                 isOwner
-                  ? 'Add topics discovers the subfolders under your SharePoint root so you can promote them in one step, or create one manually from a folder URL.'
+                  ? 'Scan the root above to promote its subfolders in one step, or create a topic manually from a folder URL.'
                   : 'A project owner promotes subfolders of the SharePoint root into topics; sources and generation runs are scoped to them.'
-              }
-              action={
-                isOwner && (
-                  <Button variant="primary" onClick={() => setAddOpen(true)}>
-                    <FolderPlus size={13} aria-hidden /> Add topics
-                  </Button>
-                )
               }
             />
           ) : visibleTopics.length === 0 ? (
@@ -241,12 +248,12 @@ function SettingsBody() {
               <thead>
                 <tr>
                   <Th>Name</Th>
-                  <Th>Folder path</Th>
+                  <Th>SharePoint subfolder</Th>
                   <Th className="text-right">Sources</Th>
                   <Th>Added</Th>
                   <Th>Last synced</Th>
                   {isOwner && (
-                    <Th className="w-20">
+                    <Th className="w-12">
                       <span className="sr-only">Actions</span>
                     </Th>
                   )}
@@ -255,7 +262,7 @@ function SettingsBody() {
               <tbody>
                 {visibleTopics.map(topic => (
                   <Tr key={topic.id}>
-                    <Td className="font-medium text-ink">
+                    <Td>
                       {renamingId === topic.id ? (
                         <div className="flex items-center gap-1.5">
                           <Input
@@ -277,12 +284,31 @@ function SettingsBody() {
                           </Button>
                         </div>
                       ) : (
-                        topic.name
+                        <>
+                          <span className="flex items-center gap-1">
+                            <span className="font-medium text-ink">{topic.name}</span>
+                            {isOwner && (
+                              <IconButton
+                                label={`Rename ${topic.name}`}
+                                onClick={() => {
+                                  setRenamingId(topic.id);
+                                  setRenameDraft(topic.name);
+                                }}
+                                className="h-6 w-6"
+                              >
+                                <Pencil size={12} />
+                              </IconButton>
+                            )}
+                          </span>
+                          <span className="mt-0.5 block text-2xs text-ink-3">
+                            {topic.folderName} · {provenance(topic)}
+                          </span>
+                        </>
                       )}
                     </Td>
                     <Td>
-                      <span title={topic.sharepointUrl} className="block max-w-xs truncate">
-                        <Mono>/{topic.folderName}</Mono>
+                      <span title={topic.sharepointUrl} className="block max-w-2xs truncate">
+                        <Mono>{topic.sharepointUrl}</Mono>
                       </span>
                     </Td>
                     <Td mono className="text-right tabular-nums">
@@ -302,18 +328,7 @@ function SettingsBody() {
                     {isOwner && (
                       <Td className="whitespace-nowrap text-right">
                         <IconButton
-                          label={`Rename ${topic.name}`}
-                          disabled={renamingId === topic.id}
-                          onClick={() => {
-                            setRenamingId(topic.id);
-                            setRenameDraft(topic.name);
-                          }}
-                          className="h-7 w-7"
-                        >
-                          <Pencil size={13} />
-                        </IconButton>
-                        <IconButton
-                          label={`Remove ${topic.name}`}
+                          label={`Delete ${topic.name}`}
                           onClick={() => setRemoving(topic)}
                           className="h-7 w-7 hover:text-err"
                         >
@@ -361,11 +376,11 @@ function SettingsBody() {
         </p>
       </Modal>
 
-      {/* ── Confirm: remove topic ── */}
+      {/* ── Confirm: delete topic ── */}
       <Modal
         open={removing !== null}
         onClose={() => setRemoving(null)}
-        title="Remove topic?"
+        title="Delete topic?"
         footer={
           <>
             <Button variant="ghost" onClick={() => setRemoving(null)}>
@@ -378,7 +393,7 @@ function SettingsBody() {
                 setRemoving(null);
               }}
             >
-              Remove topic
+              Delete topic
             </Button>
           </>
         }
@@ -394,62 +409,40 @@ function SettingsBody() {
           </>
         )}
       </Modal>
-
-      {isOwner && (
-        <AddTopicsModal
-          open={addOpen}
-          onClose={() => setAddOpen(false)}
-          projectTopics={projectTopics}
-        />
-      )}
-      {isOwner && (
-        <CreateTopicModal
-          open={createOpen}
-          onClose={() => setCreateOpen(false)}
-          rootUrl={project.sharepointUrl}
-        />
-      )}
     </>
   );
 }
 
-/* ── Add topics: enumerate subfolders of the root ── */
+/* ── Left panel: auto-enumerate subfolders of the root ── */
 
-function AddTopicsModal({
-  open,
-  onClose,
+function EnumeratePanel({
   projectTopics,
+  rootTested,
 }: {
-  open: boolean;
-  onClose: () => void;
   projectTopics: Topic[];
+  rootTested: boolean;
 }) {
   const store = useStore();
-  const { projectId } = store;
+  const { projectId, enumerateFolders } = store;
   const [folders, setFolders] = useState<DiscoveredFolder[] | null>(null); // session cache
-  const [loading, setLoading] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const requested = useRef(false);
-  const { enumerateFolders } = store;
 
-  // Enumerate on first open only; the result is cached in component state.
-  useEffect(() => {
-    if (!open || requested.current) return;
-    requested.current = true;
-    setLoading(true);
-    void enumerateFolders(projectId).then(res => {
-      setFolders(res);
-      setLoading(false);
-    });
-  }, [open, projectId, enumerateFolders]);
+  const scan = async () => {
+    setScanning(true);
+    const res = await enumerateFolders(projectId);
+    setFolders(res);
+    setScanning(false);
+  };
 
   const addedUrls = useMemo(
     () => new Set(projectTopics.map(t => t.sharepointUrl)),
     [projectTopics],
   );
   const selectable = (folders ?? []).filter(f => !addedUrls.has(f.sharepointUrl));
+  const chosen = selectable.filter(f => selected.has(f.sharepointUrl));
   const allSelected = selectable.length > 0 && selectable.every(f => selected.has(f.sharepointUrl));
-  const someSelected = selectable.some(f => selected.has(f.sharepointUrl));
+  const someSelected = chosen.length > 0;
 
   const toggle = (url: string) =>
     setSelected(prev => {
@@ -459,39 +452,41 @@ function AddTopicsModal({
       return next;
     });
 
-  const submit = () => {
-    const chosen = selectable.filter(f => selected.has(f.sharepointUrl));
+  const addSelected = () => {
     if (chosen.length === 0) return;
     store.addTopics(projectId, chosen);
     setSelected(new Set());
-    onClose();
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title="Add topics from SharePoint"
-      wide
-      footer={
-        <>
-          <Button variant="ghost" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="primary" disabled={selected.size === 0} onClick={submit}>
-            Add {selected.size === 0 ? 'topics' : plural(selected.size, 'topic')}
-          </Button>
-        </>
-      }
-    >
-      <p className="mb-4 text-sm text-ink-2">
-        Subfolders discovered under the project root. Select the ones to promote to topics —
-        folders that are already topics are listed for completeness.
+    <div className="flex flex-col rounded-(--radius-card) border border-line p-5">
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <h3 className="text-sm font-semibold text-ink">Auto-enumerate SharePoint subfolders</h3>
+        <Button
+          variant="secondary"
+          className="shrink-0"
+          onClick={scan}
+          loading={scanning}
+          disabled={!rootTested}
+        >
+          <ScanSearch size={13} aria-hidden />
+          {scanning ? 'Scanning…' : folders === null ? 'Scan root' : 'Rescan'}
+        </Button>
+      </div>
+      <p className="mb-3 max-w-prose text-xs text-ink-2">
+        Scans the folders directly under the root and lists them for promotion — the fastest way to
+        add several topics at once.
       </p>
+      {!rootTested && (
+        <p className="mb-3 flex items-center gap-1.5 text-xs font-medium text-warn" role="status">
+          <Lock size={12} className="shrink-0" aria-hidden />
+          Run Test URL on the root first — scanning needs a verified root this session.
+        </p>
+      )}
 
-      {loading || folders === null ? (
-        <div className="flex flex-col gap-2 py-1" role="status" aria-label="Enumerating subfolders">
-          {Array.from({ length: 5 }, (_, i) => (
+      {scanning ? (
+        <div className="flex flex-col gap-2" role="status" aria-label="Enumerating subfolders">
+          {Array.from({ length: 4 }, (_, i) => (
             <div key={i} className="flex items-center gap-3 rounded-(--radius-ctl) border border-line px-3 py-2.5">
               <Skeleton className="h-3.5 w-3.5" />
               <Skeleton className="h-3.5 w-40" />
@@ -500,75 +495,90 @@ function AddTopicsModal({
           ))}
           <p className="mt-1 text-xs text-ink-3">Enumerating subfolders of the root…</p>
         </div>
+      ) : folders === null ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-(--radius-card) border border-dashed border-line px-6 py-10 text-center">
+          <FolderSearch size={20} className="text-ink-3" aria-hidden />
+          <p className="text-sm font-semibold text-ink">Nothing scanned yet</p>
+          <p className="max-w-xs text-xs text-ink-2">
+            Discovered subfolders will appear here as a checklist, with folders that are already
+            topics marked.
+          </p>
+        </div>
       ) : folders.length === 0 ? (
         <EmptyState
           icon={FolderSearch}
           title="No subfolders found"
-          body="The root has no subfolders to promote. Create folders in SharePoint, or add a topic manually from a folder URL."
+          body="The root has no subfolders to promote. Create folders in SharePoint, or add a topic manually."
         />
       ) : (
-        <div role="group" aria-label="Discovered folders">
-          <label className="mb-1 flex cursor-pointer items-center gap-3 border-b border-line px-3 pb-2 text-2xs font-bold tracking-wider text-ink-3 uppercase">
-            <Checkbox
-              checked={allSelected}
-              indeterminate={!allSelected && someSelected}
-              disabled={selectable.length === 0}
-              onChange={() =>
-                setSelected(allSelected ? new Set() : new Set(selectable.map(f => f.sharepointUrl)))
-              }
-              aria-label="Select all discovered folders"
-            />
-            Folder
-            <span className="ml-auto">Files</span>
-          </label>
-          <ul className="flex flex-col">
-            {folders.map(f => {
-              const already = addedUrls.has(f.sharepointUrl);
-              return (
-                <li key={f.sharepointUrl}>
-                  <label
-                    className={
-                      already
-                        ? 'flex items-center gap-3 border-b border-line px-3 py-2.5 opacity-55 last:border-b-0'
-                        : 'flex cursor-pointer items-center gap-3 border-b border-line px-3 py-2.5 transition-colors duration-150 last:border-b-0 hover:bg-surface-2'
-                    }
-                  >
-                    <Checkbox
-                      checked={already || selected.has(f.sharepointUrl)}
-                      disabled={already}
-                      onChange={() => toggle(f.sharepointUrl)}
-                      aria-label={`Select folder ${f.folderName}`}
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-medium text-ink">{f.folderName}</span>
-                      <Mono className="block truncate text-2xs">{f.sharepointUrl}</Mono>
-                    </span>
-                    {already && <span className="shrink-0 text-xs text-ink-2">Already a topic</span>}
-                    <Mono className="w-14 shrink-0 text-right tabular-nums">
-                      {plural(f.fileCount, 'file')}
-                    </Mono>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+        <>
+          <div role="group" aria-label="Discovered folders">
+            <label className="mb-1 flex cursor-pointer items-center gap-3 border-b border-line px-3 pb-2 text-2xs font-bold tracking-wider text-ink-3 uppercase">
+              <Checkbox
+                checked={allSelected}
+                indeterminate={!allSelected && someSelected}
+                disabled={selectable.length === 0}
+                onChange={() =>
+                  setSelected(allSelected ? new Set() : new Set(selectable.map(f => f.sharepointUrl)))
+                }
+                aria-label="Select all discovered folders"
+              />
+              Folder
+              <span className="ml-auto">Files</span>
+            </label>
+            <ul className="flex flex-col">
+              {folders.map(f => {
+                const already = addedUrls.has(f.sharepointUrl);
+                return (
+                  <li key={f.sharepointUrl}>
+                    <label
+                      className={
+                        already
+                          ? 'flex items-center gap-3 border-b border-line px-3 py-2.5 opacity-55 last:border-b-0'
+                          : 'flex cursor-pointer items-center gap-3 border-b border-line px-3 py-2.5 transition-colors duration-150 last:border-b-0 hover:bg-surface-2'
+                      }
+                    >
+                      <Checkbox
+                        checked={already || selected.has(f.sharepointUrl)}
+                        disabled={already}
+                        onChange={() => toggle(f.sharepointUrl)}
+                        aria-label={`Select folder ${f.folderName}`}
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-medium text-ink">{f.folderName}</span>
+                        <Mono className="block truncate text-2xs">{f.sharepointUrl}</Mono>
+                      </span>
+                      {already && (
+                        <span className="shrink-0 text-xs text-ink-2">Already a topic</span>
+                      )}
+                      <Mono className="w-14 shrink-0 text-right tabular-nums">
+                        {plural(f.fileCount, 'file')}
+                      </Mono>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <div className="mt-3 flex items-center justify-end gap-3 border-t border-line pt-3">
+            <span className="text-xs text-ink-2">
+              {chosen.length === 0
+                ? `${plural(selectable.length, 'folder')} available`
+                : `${chosen.length} of ${plural(selectable.length, 'folder')} selected`}
+            </span>
+            <Button variant="primary" disabled={chosen.length === 0} onClick={addSelected}>
+              Add {chosen.length === 0 ? 'selected' : plural(chosen.length, 'topic')}
+            </Button>
+          </div>
+        </>
       )}
-    </Modal>
+    </div>
   );
 }
 
-/* ── Create topic manually ── */
+/* ── Right panel: create topic manually ── */
 
-function CreateTopicModal({
-  open,
-  onClose,
-  rootUrl,
-}: {
-  open: boolean;
-  onClose: () => void;
-  rootUrl: string;
-}) {
+function ManualCreatePanel({ rootUrl }: { rootUrl: string }) {
   const store = useStore();
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
@@ -586,25 +596,15 @@ function CreateTopicModal({
     setName('');
     setUrl('');
     setUrlError(null);
-    onClose();
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title="Create topic manually"
-      footer={
-        <>
-          <Button variant="ghost" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="primary" disabled={!name.trim() || !url.trim()} onClick={submit}>
-            Create topic
-          </Button>
-        </>
-      }
-    >
+    <div className="flex flex-col rounded-(--radius-card) border border-line p-5">
+      <h3 className="mb-1 text-sm font-semibold text-ink">Create topic manually</h3>
+      <p className="mb-4 max-w-prose text-xs text-ink-2">
+        Point a topic at one specific subfolder when you already know its URL — useful for folders
+        added to SharePoint after the last scan.
+      </p>
       <form
         className="flex flex-col gap-4"
         onSubmit={e => {
@@ -618,7 +618,6 @@ function CreateTopicModal({
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="e.g. GIRO & Billing"
-            autoFocus
           />
         </Field>
         <Field
@@ -639,11 +638,12 @@ function CreateTopicModal({
             aria-invalid={urlError !== null}
           />
         </Field>
-        {/* Allow Enter to submit */}
-        <button type="submit" className="sr-only">
-          Create topic
-        </button>
+        <div className="mt-auto flex justify-end">
+          <Button type="submit" variant="primary" disabled={!name.trim() || !url.trim()}>
+            <Plus size={13} aria-hidden /> Create topic
+          </Button>
+        </div>
       </form>
-    </Modal>
+    </div>
   );
 }
