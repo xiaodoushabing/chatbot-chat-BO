@@ -1,53 +1,30 @@
-# Design
+# Design — Guided Canvas
 
-One identity, two rooms, one cool-blue bloodline. **Light — "Gallery":** Swiss white-cube; pure white ground, near-black ink, a single cobalt accent, near-square corners; typography does the work. **Dark — "Deep Harbor":** blue-black harbor night with a cyan beacon; cool, technical, wide-awake. Daylight cobalt becomes harbor cyan after dark: the same product under two lights. Color strategy: **Restrained** in both themes; the login screen alone earns a Committed, luminous treatment (drifting-orb backdrop behind a glass card, rendered per-theme). Theme is user-toggleable; both are first-class. Nothing warm, nothing orange, no corporate red.
+A guided, spatial, softly-elevated product that turns a compliance-heavy banking chore into a calm, confidence-building flow. "An instrument you're walked through, not a dashboard you decode." Reference prototype: `docs/design-directions/guided-canvas.html` (the approved direction). Light + dark, user-toggleable; both are first-class and share one warm identity.
 
-## Color (OKLCH; CSS vars on `:root`, overridden under `.dark`)
+## Identity
 
-| Token | Light (Gallery) | Dark (Deep Harbor) | Role |
-|---|---|---|---|
-| `--bg` | `oklch(1 0 0)` | `oklch(0.205 0.015 235)` | Body ground. |
-| `--surface-2` | `oklch(0.966 0.003 250)` | `oklch(0.17 0.014 235)` | Sidebar, toolbars, wells. |
-| `--surface-3` | `oklch(0.947 0.004 250)` | `oklch(0.245 0.016 235)` | Table headers, insets, run cards. |
-| `--ink` | `oklch(0.215 0.01 250)` | `oklch(0.93 0.008 230)` | Primary text. |
-| `--ink-2` | `oklch(0.40 0.012 250)` | `oklch(0.76 0.015 230)` | Secondary text and table metadata — **must pass 4.5:1** (client flagged faint meta text; never lighten this role). |
-| `--ink-3` | `oklch(0.50 0.012 250)` | `oklch(0.64 0.015 230)` | Uppercase column headers and ≥12px-semibold labels only. Never cell/body text. |
-| `--border` | `oklch(0.905 0.005 250)` | `oklch(0.30 0.018 235)` | 1px hairlines. |
-| `--accent` | `oklch(0.46 0.21 264)` cobalt | `oklch(0.76 0.115 210)` cyan | Primary actions, selection, active nav, focus ring. |
-| `--accent-press` | `oklch(0.40 0.20 264)` | `oklch(0.70 0.115 210)` | Hover/pressed. |
-| `--on-accent` | white | `oklch(0.17 0.04 225)` | Text on accent fills. |
-| `--accent-wash` | `oklch(0.955 0.018 264)` | `oklch(0.29 0.05 220)` | Selected rows, active nav/chips (paired with accent-colored text). |
-| `--ok` | `oklch(0.50 0.13 155)` | `oklch(0.76 0.14 155)` | Indexed / approved / succeeded / live. |
-| `--warn` | `oklch(0.52 0.12 80)` | `oklch(0.80 0.13 85)` | Pending / stale / not-indexed / skipped. |
-| `--err` | `oklch(0.50 0.19 27)` | `oklch(0.72 0.16 22)` | Failed / rejected / dead. |
-| `--info` | `oklch(0.48 0.11 255)` | `oklch(0.76 0.115 210)` | Running / informational (accent-adjacent by design). |
+- **Ground:** warm off-white canvas (`--canvas`) with a subtle top-right radial glow; content sits on it as **white, softly-elevated cards** (`--bg` = white in light). Dark theme: warm deep-graphite canvas, elevated warm-charcoal cards, a faint violet glow.
+- **Accent:** one considered **indigo-violet** (`--accent` #4B41C4 light / luminous #9488F7 dark). Used for primary actions, active nav, selection, the wizard rail, focus. Not decoration.
+- **Type:** `Fraunces` (variable serif) for display — page titles, big numerals (pipeline counts, the run ring), step titles, intent questions. `Hanken Grotesk` for all UI/body/labels. `JetBrains Mono` for ids/paths/timestamps only. Fraunces carries the warmth and the "designed" feel; Hanken keeps UI crisp.
+- **Shape:** generous radii — cards `--radius-card` 22px, inputs/buttons `--radius-field` 12px, small `--radius-ctl` 11px, pills fully round. Soft diffuse shadows (`--shadow-soft/2/pop`), never hard boxes. Accent buttons get `--shadow-accent`.
+- **Status = named lifecycle colors**, each a text color on its own tint: draft (warm gray), staged (ochre), pending (violet), live (emerald). Always paired with a label; never color alone.
 
-Rules: accent = action/selection/state, never decoration. Status pills tint via `color-mix` (~12% of semantic color) and always pair color with a label — never color alone. No side-stripe borders, no gradient text; glass only on the login card.
+## Motion (part of the build, not decoration)
 
-## Typography
+- Curve `--ease-out` cubic-bezier(.22,.61,.36,1). Screens fade-up on enter. Cards lift on hover (translateY + shadow). Nav items nudge + an accent rail scales in on active.
+- **Signature — the Intent Studio wizard:** a horizontal step flow **Select sources → Configure → Generate → Review**. An animated **progress rail** fills node-to-node; steps **slide** (enter from the right, exit left) with fade. The **Generate** step is the theatre: an easing **SVG progress ring** with a Fraunces count-up, sources **ticking off** with checkmarks that draw, a pulsing status pill, resolving into a completion summary that rises in. Reduced-motion: crossfade to end states, no slide.
+- Toasts rise from the bottom; the run completion badge draws its check.
 
-- **UI:** `Instrument Sans Variable` (self-hosted via @fontsource) — the Swiss voice; weights 400/500/600/700 for headings, labels, buttons, body.
-- **Data:** `JetBrains Mono Variable` — run IDs, counts, timestamps, URLs, paths, table numerics. Always `tabular-nums`.
-- Fixed rem scale ≈1.2: `12 / 13 / 14 (base) / 16 / 19 / 23 / 28`. Page titles 23px/600; section heads 16px/600. Prose ≤72ch. Uppercase only for 10.5–11px column headers and tiny role badges, +0.05em tracking.
+## Shell
 
-## Layout & structure
+- Grid: 248px brand+nav column · top bar. Brand: gradient violet mark + "Intent Studio" (Fraunces) / "Knowledge Operations" sub. Top bar (translucent canvas, blurred): project switcher (card with a violet monogram tile), spacer, a top action or two, theme toggle, avatar (conic-violet).
+- **Grouped nav** with uppercase group labels — **BUILD** (Dashboard, Project Settings, Intent Studio) and **GOVERN** (Review, Approvals, Intent Library). Active item: white card + accent text + soft shadow + a 3px accent rail on its left edge; hover nudges right. Badges (counts) as violet pills.
 
-- Shell: 232px side nav on `--surface-2` (collapsible to 64px), 56px top bar on `--bg`, 1px hairlines everywhere. Top bar: product mark, **global project switcher**, page search slot, role badge, theme toggle, user menu.
-- Content: forms/settings max 1200px; data tables to 1440px. Section spacing 32–48px; intra-panel 16–20px. Radii: 4px controls, 6px inputs/menus, 10px cards/modals — crisp, never pillowy (pills are the one exception).
-- Cards only for real groupings (run summary, topic tile); ruled tables and wells elsewhere; never nested cards.
-- z-scale: dropdown 10 · sticky 20 · overlay 30 · modal 40 · toast 50 · tooltip 60.
+## Components (rebuild the primitives to this language)
 
-## Components
-
-Primitives in `src/components/ui/` are the only interaction vocabulary: Button (primary/secondary/ghost/danger), IconButton, Input, Textarea, Select, Checkbox, SegmentedControl, StatusPill, Tabs, Table (dense, sticky header, selectable rows), SearchField, Modal (native `<dialog>`), Drawer, Toast, Skeleton, EmptyState, ProgressBar, KeyValue meta row. Every interactive component: default / hover / focus-visible / active / disabled / loading. Skeletons for loading; teaching empty states; no bare spinners mid-content.
-
-## Motion
-
-- 150–250ms, `cubic-bezier(0.22, 1, 0.36, 1)`. No bounce; no page-load choreography inside the shell.
-- Motion = state: selection wash, staging bar slide-up, approval flip, toast entry, theme cross-fade (120ms).
-- **Signature moment — the run:** launcher morphs into a live run card; progress track fills as source ticks feed a mono count-up of drafted intents; pill pulses while running, resolves to a drawn check with the summary settling in. Batch = segmented track. Reduced motion: crossfade to end states.
-- Login: slow drifting luminous orbs (cobalt/graphite by day, cyan/abyss at night) behind the glass card; static under reduced motion.
+Buttons: primary (accent fill, white text, accent shadow, lifts on hover), ghost (white card + border), subtle (transparent). Inputs/selects: white, 12px radius, violet focus ring. Cards: white, 22px radius, soft shadow. Pills: lifecycle colors. SegmentedControl: soft warm track, active = white chip + accent text + soft shadow. Tabs: use these ONLY for genuine view-switching; where the client wants topic scoping (Review), use a topic **filter dropdown**, not tabs. Tables can render as airy rows or as cards depending on the page (Review = cards; Intent Library = dense table). Skeletons for loading, teaching empty states, absolute SGT timestamps.
 
 ## Voice
 
-Labels are nouns, buttons are verbs ("Generate intents", "Submit for approval", "Withdraw"). Meta text states facts with counts and absolute SGT timestamps. No exclamation marks.
+Warm but precise. Labels are nouns, buttons are verbs. No exclamation marks. The one flourish is Fraunces on the numbers and titles.

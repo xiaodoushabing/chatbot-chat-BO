@@ -10,6 +10,8 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource-variable/fraunces": "^5.2.9",
+    "@fontsource-variable/hanken-grotesk": "^5.2.8",
     "@fontsource-variable/instrument-sans": "^5.2.0",
     "@fontsource-variable/jetbrains-mono": "^5.2.0",
     "clsx": "^2.1.1",
