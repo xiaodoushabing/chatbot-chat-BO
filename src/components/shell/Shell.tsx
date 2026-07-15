@@ -58,11 +58,11 @@ function ProjectSwitcher() {
         onClick={() => setOpen(v => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex h-8 items-baseline gap-1.5 rounded-(--radius-field) px-2.5 transition-colors hover:bg-surface-2"
+        className="flex h-10 items-center gap-2 rounded-(--radius-field) px-2.5 transition-colors hover:bg-surface-2"
       >
-        <span className="text-sm font-medium text-ink-3">Project:</span>
-        <span className="border-b-2 border-accent pb-px text-[15px] font-bold text-ink">{current.name}</span>
-        <ChevronsUpDown size={13} className="self-center text-ink-3" aria-hidden />
+        <span className="text-base font-medium text-ink-3">Project:</span>
+        <span className="border-b-2 border-accent pb-px text-lg font-bold text-ink">{current.name}</span>
+        <ChevronsUpDown size={15} className="text-ink-3" aria-hidden />
       </button>
       {open && (
         <div
@@ -171,28 +171,158 @@ export default function Shell() {
   return (
     <div className="flex h-screen flex-col">
       <div className="h-[3px] shrink-0 bg-accent" aria-hidden />
-      <header className="flex h-14 shrink-0 items-center gap-4 border-b border-line bg-bg px-4">
-        <span className="flex items-center gap-2 text-sm font-bold tracking-tight text-ink">
-          <span className="flex h-6 w-6 items-center justify-center rounded-(--radius-ctl) bg-accent text-on-accent">
-            <Sparkles size={13} aria-hidden />
-          </span>
-          <span className={cn(collapsed && 'sr-only')}>Intent Studio</span>
-        </span>
-        <ProjectSwitcher />
-        <div className="ml-auto flex items-center gap-2.5">
-          <span className="rounded-full bg-accent-wash px-2.5 py-1 text-2xs font-bold tracking-wide text-accent uppercase">
-            {ROLE_LABEL[user.role]}
-          </span>
-          <button
-            onClick={toggleTheme}
-            aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
-            className="flex h-8 w-8 items-center justify-center rounded-(--radius-ctl) text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
-          >
-            {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
-          </button>
-          <UserMenu />
+      <div data-impeccable-variants="ccb5a1bc" data-impeccable-variant-count="4" style={{ display: "contents" }}>
+        {/* impeccable-variants-start ccb5a1bc */}
+        {/* Original */}
+        <div data-impeccable-variant="original">
+          <header className="flex h-14 shrink-0 items-center gap-4 border-b border-line bg-bg px-4">
+            <span className="flex items-center gap-2 text-sm font-bold tracking-tight text-ink">
+              <span className="flex h-6 w-6 items-center justify-center rounded-(--radius-ctl) bg-accent text-on-accent">
+                <Sparkles size={13} aria-hidden />
+              </span>
+              <span className={cn(collapsed && 'sr-only')}>Intent Studio</span>
+            </span>
+            <ProjectSwitcher />
+            <div className="ml-auto flex items-center gap-2.5">
+              <span className="rounded-full bg-accent-wash px-2.5 py-1 text-2xs font-bold tracking-wide text-accent uppercase">
+                {ROLE_LABEL[user.role]}
+              </span>
+              <button
+                onClick={toggleTheme}
+                aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+                className="flex h-8 w-8 items-center justify-center rounded-(--radius-ctl) text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+              >
+                {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+              </button>
+              <UserMenu />
+            </div>
+          </header>
         </div>
-      </header>
+        {/* Variants: insert below this line */}
+        <style data-impeccable-css="ccb5a1bc">{`
+          @scope ([data-impeccable-variant="1"]) {
+            :scope > header { display:flex; align-items:center; gap:16px; height:72px; padding:0 20px; border-bottom:1px solid var(--border); background:var(--bg); }
+            :scope > header .hdr-mark { display:flex; align-items:center; gap:10px; font-size:16px; font-weight:700; letter-spacing:-0.005em; color:var(--ink); }
+            :scope > header .hdr-icon { display:flex; height:30px; width:30px; align-items:center; justify-content:center; border-radius:var(--radius-field); background:var(--accent); color:var(--on-accent); }
+            :scope > header .hdr-divider { height:24px; width:1px; background:var(--border); }
+            :scope > header .hdr-spacer { margin-left:auto; display:flex; align-items:center; gap:14px; }
+          }
+          @scope ([data-impeccable-variant="2"]) {
+            :scope > header { display:flex; align-items:center; gap:14px; height:76px; padding:0 20px; border-bottom:1px solid var(--border); background:var(--bg); }
+            :scope > header .hdr-icon { display:flex; height:32px; width:32px; align-items:center; justify-content:center; border-radius:var(--radius-field); background:var(--accent); color:var(--on-accent); flex-shrink:0; }
+            :scope > header .hdr-spacer { margin-left:auto; display:flex; align-items:center; gap:14px; }
+          }
+          @scope ([data-impeccable-variant="3"]) {
+            :scope > header { display:flex; align-items:center; gap:10px; height:72px; padding:0 20px; border-bottom:1px solid var(--border); background:var(--bg); }
+            :scope > header .hdr-mark { display:flex; align-items:center; gap:9px; font-size:16px; font-weight:700; color:var(--ink); white-space:nowrap; }
+            :scope > header .hdr-icon { display:flex; height:28px; width:28px; align-items:center; justify-content:center; border-radius:var(--radius-field); background:var(--accent); color:var(--on-accent); }
+            :scope > header .hdr-slash { font-size:18px; font-weight:400; color:var(--ink-3); }
+            :scope > header .hdr-spacer { margin-left:auto; display:flex; align-items:center; gap:14px; }
+          }
+          @scope ([data-impeccable-variant="4"]) {
+            :scope > header { display:flex; align-items:center; gap:20px; height:80px; padding:0 24px; border-bottom:1px solid var(--border); background:var(--bg); }
+            :scope > header .hdr-mark { display:flex; align-items:center; gap:12px; font-size:18px; font-weight:800; letter-spacing:-0.01em; color:var(--ink); }
+            :scope > header .hdr-icon { display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:var(--radius-card); background:var(--accent); color:var(--on-accent); }
+            :scope > header .hdr-spacer { margin-left:auto; display:flex; align-items:center; gap:16px; }
+          }
+        `}</style>
+        <div data-impeccable-variant="1">
+          <header>
+            <span className="hdr-mark">
+              <span className="hdr-icon">
+                <Sparkles size={15} aria-hidden />
+              </span>
+              <span className={cn(collapsed && 'sr-only')}>Backoffice</span>
+            </span>
+            <span className="hdr-divider" aria-hidden />
+            <ProjectSwitcher />
+            <div className="hdr-spacer">
+              <span className="rounded-full bg-accent-wash px-2.5 py-1 text-2xs font-bold tracking-wide text-accent uppercase">
+                {ROLE_LABEL[user.role]}
+              </span>
+              <button
+                onClick={toggleTheme}
+                aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+                className="flex h-8 w-8 items-center justify-center rounded-(--radius-ctl) text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+              >
+                {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+              </button>
+              <UserMenu />
+            </div>
+          </header>
+        </div>
+        <div data-impeccable-variant="2" style={{ display: 'none' }}>
+          <header>
+            <span className="hdr-icon" aria-label="Backoffice">
+              <Sparkles size={16} aria-hidden />
+            </span>
+            <ProjectSwitcher />
+            <div className="hdr-spacer">
+              <span className="rounded-full bg-accent-wash px-2.5 py-1 text-2xs font-bold tracking-wide text-accent uppercase">
+                {ROLE_LABEL[user.role]}
+              </span>
+              <button
+                onClick={toggleTheme}
+                aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+                className="flex h-8 w-8 items-center justify-center rounded-(--radius-ctl) text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+              >
+                {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+              </button>
+              <UserMenu />
+            </div>
+          </header>
+        </div>
+        <div data-impeccable-variant="3" style={{ display: 'none' }}>
+          <header>
+            <span className="hdr-mark">
+              <span className="hdr-icon">
+                <Sparkles size={14} aria-hidden />
+              </span>
+              <span className={cn(collapsed && 'sr-only')}>Backoffice</span>
+            </span>
+            <span className="hdr-slash" aria-hidden>/</span>
+            <ProjectSwitcher />
+            <div className="hdr-spacer">
+              <span className="rounded-full bg-accent-wash px-2.5 py-1 text-2xs font-bold tracking-wide text-accent uppercase">
+                {ROLE_LABEL[user.role]}
+              </span>
+              <button
+                onClick={toggleTheme}
+                aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+                className="flex h-8 w-8 items-center justify-center rounded-(--radius-ctl) text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+              >
+                {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+              </button>
+              <UserMenu />
+            </div>
+          </header>
+        </div>
+        <div data-impeccable-variant="4" style={{ display: 'none' }}>
+          <header>
+            <span className="hdr-mark">
+              <span className="hdr-icon">
+                <Sparkles size={19} aria-hidden />
+              </span>
+              <span className={cn(collapsed && 'sr-only')}>Backoffice</span>
+            </span>
+            <ProjectSwitcher />
+            <div className="hdr-spacer">
+              <span className="rounded-full bg-accent-wash px-2.5 py-1 text-2xs font-bold tracking-wide text-accent uppercase">
+                {ROLE_LABEL[user.role]}
+              </span>
+              <button
+                onClick={toggleTheme}
+                aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+                className="flex h-8 w-8 items-center justify-center rounded-(--radius-ctl) text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+              >
+                {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+              </button>
+              <UserMenu />
+            </div>
+          </header>
+        </div>
+        {/* impeccable-variants-end ccb5a1bc */}
+      </div>
       <div className="flex min-h-0 flex-1">
         <nav
           aria-label="Primary"

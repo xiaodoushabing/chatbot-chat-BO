@@ -132,15 +132,15 @@ export function PageHeader({
         {context}
         {actions && <div className="ml-auto flex items-center gap-2">{actions}</div>}
       </div>
-      {sub && <p className="mt-1.5 max-w-prose text-sm text-ink-2">{sub}</p>}
+      {sub && <p className="mt-2 max-w-2xl text-sm text-ink-2 text-pretty">{sub}</p>}
     </header>
   );
 }
 
 export function SectionHeader({ title, meta, actions }: { title: string; meta?: ReactNode; actions?: ReactNode }) {
   return (
-    <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-      <h2 className="inline-block border-b-[3px] border-accent pb-1 text-md font-bold tracking-[-0.005em] text-ink">
+    <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
+      <h2 className="inline-block border-b-[3px] border-accent pb-2 text-md font-bold tracking-[-0.005em] text-ink">
         {title}
       </h2>
       {meta && <span className="font-mono text-xs text-ink-2">{meta}</span>}
