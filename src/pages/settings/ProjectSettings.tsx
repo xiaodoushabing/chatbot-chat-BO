@@ -101,10 +101,7 @@ function SettingsBody() {
 
   return (
     <>
-      <PageHeader
-        title="Project Settings"
-        sub={`Point ${project.name} at a SharePoint working folder and promote its subfolders to topics. Everything downstream — sources, runs, approvals — hangs off this structure.`}
-      />
+      <PageHeader title="Project Settings" />
 
       {!isOwner && (
         <div
@@ -123,15 +120,7 @@ function SettingsBody() {
         {/* ── SharePoint root ── */}
         <section aria-labelledby="root-heading" className="rounded-(--radius-card) border border-line p-5">
           <SectionHeader title="SharePoint root" meta={<span id="root-heading">created {fmtDateTime(project.createdAt)} by {project.createdBy}</span>} />
-          <Field
-            label="Root folder URL"
-            htmlFor={rootInputId}
-            hint={
-              rootEditable
-                ? 'The working folder whose subfolders become topics.'
-                : undefined
-            }
-          >
+          <Field label="Root folder URL" htmlFor={rootInputId}>
             <div className="flex items-start gap-2">
               <Input
                 id={rootInputId}
@@ -178,13 +167,12 @@ function SettingsBody() {
           {isOwner && rootLockedByTopics && (
             <p className="mt-3 flex items-center gap-1.5 text-xs text-ink-2">
               <Lock size={12} className="shrink-0 text-ink-3" aria-hidden />
-              Locked while topics exist — all {plural(projectTopics.length, 'topic')} resolve their
-              folders under this root, so changing it would orphan them.
+              Locked — {plural(projectTopics.length, 'topic')} depend on this root.
             </p>
           )}
           {isOwner && rootUnlocked && projectTopics.length > 0 && (
             <p className="mt-3 text-xs font-medium text-warn">
-              Root unlocked for editing. Existing topic folder paths will not move with it.
+              Unlocked. Existing topic paths won't move with it.
             </p>
           )}
         </section>
@@ -212,11 +200,6 @@ function SettingsBody() {
             title="Topics"
             meta={<span id="topics-heading">{plural(projectTopics.length, 'topic')}</span>}
           />
-          <p className="mb-3 max-w-prose text-sm text-ink-2">
-            Each topic maps to one subfolder of the root. Its documents and URL manifests become the
-            source set for generation.
-          </p>
-
           {projectTopics.length > 0 && (
             <div className="mb-3 max-w-xs">
               <SearchField value={query} onChange={setQuery} placeholder="Search topics" />
@@ -473,14 +456,10 @@ function EnumeratePanel({
           {scanning ? 'Scanning…' : folders === null ? 'Scan root' : 'Rescan'}
         </Button>
       </div>
-      <p className="mb-3 max-w-prose text-xs text-ink-2">
-        Scans the folders directly under the root and lists them for promotion — the fastest way to
-        add several topics at once.
-      </p>
       {!rootTested && (
         <p className="mb-3 flex items-center gap-1.5 text-xs font-medium text-warn" role="status">
           <Lock size={12} className="shrink-0" aria-hidden />
-          Run Test URL on the root first — scanning needs a verified root this session.
+          Run Test URL first to enable scanning.
         </p>
       )}
 
@@ -499,10 +478,7 @@ function EnumeratePanel({
         <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-(--radius-card) border border-dashed border-line px-6 py-10 text-center">
           <FolderSearch size={20} className="text-ink-3" aria-hidden />
           <p className="text-sm font-semibold text-ink">Nothing scanned yet</p>
-          <p className="max-w-xs text-xs text-ink-2">
-            Discovered subfolders will appear here as a checklist, with folders that are already
-            topics marked.
-          </p>
+          <p className="max-w-xs text-xs text-ink-2">Discovered subfolders will appear here.</p>
         </div>
       ) : folders.length === 0 ? (
         <EmptyState
@@ -600,11 +576,7 @@ function ManualCreatePanel({ rootUrl }: { rootUrl: string }) {
 
   return (
     <div className="flex flex-col rounded-(--radius-card) border border-line p-5">
-      <h3 className="mb-1 text-sm font-semibold text-ink">Create topic manually</h3>
-      <p className="mb-4 max-w-prose text-xs text-ink-2">
-        Point a topic at one specific subfolder when you already know its URL — useful for folders
-        added to SharePoint after the last scan.
-      </p>
+      <h3 className="mb-4 text-sm font-semibold text-ink">Create topic manually</h3>
       <form
         className="flex flex-col gap-4"
         onSubmit={e => {

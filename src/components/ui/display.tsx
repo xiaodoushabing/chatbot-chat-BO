@@ -140,7 +140,45 @@ export function PageHeader({
 export function SectionHeader({ title, meta, actions }: { title: string; meta?: ReactNode; actions?: ReactNode }) {
   return (
     <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-      <h2 className="text-md font-semibold text-ink">{title}</h2>
+      <div data-impeccable-variants="5739ce58" data-impeccable-variant-count="4" style={{ display: "contents" }}>
+        {/* impeccable-variants-start 5739ce58 */}
+        {/* Original */}
+        <div data-impeccable-variant="original">
+          <h2 className="text-md font-semibold text-ink">{title}</h2>
+        </div>
+        {/* Variants: insert below this line */}
+        <style data-impeccable-css="5739ce58">{`
+          @scope ([data-impeccable-variant="1"]) {
+            :scope > h2 { font-weight:800; letter-spacing:-0.015em; font-size:calc(15px + var(--p-scale,0.4) * 6px); color:var(--ink); }
+          }
+          @scope ([data-impeccable-variant="2"]) {
+            :scope > h2 { display:flex; align-items:center; gap:8px; font-weight:750; font-size:16px; letter-spacing:-0.005em; color:var(--ink); }
+            :scope > h2 .sh2-mark { width:7px; height:7px; border-radius:2px; background:var(--accent); flex-shrink:0; }
+          }
+          @scope ([data-impeccable-variant="3"]) {
+            :scope > h2 { font-family:var(--font-mono); font-weight:700; font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent); }
+          }
+          @scope ([data-impeccable-variant="4"]) {
+            :scope > h2 { display:inline-block; font-weight:750; font-size:16px; letter-spacing:-0.005em; color:var(--ink); padding-bottom:4px; border-bottom:calc(1.5px + var(--p-weight,0.5) * 1.5px) solid var(--accent); }
+          }
+        `}</style>
+        <div data-impeccable-variant="1" data-impeccable-params='[{"id":"scale","kind":"range","min":0,"max":1,"step":0.1,"default":0.4,"label":"Size"}]'>
+          <h2>{title}</h2>
+        </div>
+        <div data-impeccable-variant="2" style={{ display: 'none' }}>
+          <h2>
+            <span className="sh2-mark" aria-hidden />
+            {title}
+          </h2>
+        </div>
+        <div data-impeccable-variant="3" style={{ display: 'none' }}>
+          <h2>{title}</h2>
+        </div>
+        <div data-impeccable-variant="4" style={{ display: 'none' }} data-impeccable-params='[{"id":"weight","kind":"range","min":0,"max":1,"step":0.1,"default":0.5,"label":"Underline weight"}]'>
+          <h2>{title}</h2>
+        </div>
+        {/* impeccable-variants-end 5739ce58 */}
+      </div>
       {meta && <span className="font-mono text-xs text-ink-2">{meta}</span>}
       {actions && <div className="ml-auto flex items-center gap-2">{actions}</div>}
     </div>
