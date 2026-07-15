@@ -301,26 +301,37 @@ export function Tabs<T extends string>({
   value: T;
   onChange: (v: T) => void;
 }) {
+  // Pill tabs (matches active-nav language). Distinct from SectionHeader's
+  // carmine underline so tabs and section titles never read as the same thing.
   return (
-    <div role="tablist" className="flex gap-1 border-b border-line">
-      {tabs.map(t => (
-        <button
-          key={t.value}
-          role="tab"
-          aria-selected={t.value === value}
-          onClick={() => onChange(t.value)}
-          className={cn(
-            'relative px-3.5 pb-2.5 pt-1 text-sm font-semibold transition-colors duration-150',
-            t.value === value ? 'text-ink' : 'text-ink-2 hover:text-ink',
-          )}
-        >
-          {t.label}
-          {typeof t.count === 'number' && (
-            <span className="ml-1.5 font-mono text-xs text-ink-3">{t.count}</span>
-          )}
-          {t.value === value && <span className="absolute inset-x-1 -bottom-px h-0.5 rounded-full bg-accent" aria-hidden />}
-        </button>
-      ))}
+    <div role="tablist" className="flex flex-wrap items-center gap-1">
+      {tabs.map(t => {
+        const active = t.value === value;
+        return (
+          <button
+            key={t.value}
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(t.value)}
+            className={cn(
+              'flex items-center gap-2 rounded-(--radius-field) px-3.5 py-2 text-sm font-semibold transition-colors duration-150',
+              active ? 'bg-accent-wash text-accent' : 'text-ink-2 hover:bg-surface-2 hover:text-ink',
+            )}
+          >
+            {t.label}
+            {typeof t.count === 'number' && (
+              <span
+                className={cn(
+                  'rounded-full px-1.5 py-0.5 font-mono text-2xs font-semibold tabular-nums',
+                  active ? 'bg-accent/15 text-accent' : 'bg-surface-3 text-ink-3',
+                )}
+              >
+                {t.count}
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
