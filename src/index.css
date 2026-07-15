@@ -65,15 +65,15 @@
   --font-sans: 'Instrument Sans Variable', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', monospace;
 
-  /* fixed rem scale, ratio ≈1.2 (see DESIGN.md) */
-  --text-2xs: 0.6875rem; /* 11 — pills, badges */
-  --text-xs: 0.75rem; /* 12 — meta, column headers */
-  --text-sm: 0.8125rem; /* 13 — table cells, secondary */
-  --text-base: 0.875rem; /* 14 — body, controls */
-  --text-md: 1rem; /* 16 — section heads */
-  --text-lg: 1.1875rem; /* 19 — panel titles */
-  --text-xl: 1.4375rem; /* 23 — page titles */
-  --text-2xl: 1.75rem; /* 28 — login only */
+  /* fixed rem scale, ratio ≈1.2, scaled 1.5x per client request (see DESIGN.md) */
+  --text-2xs: 1.03125rem; /* 11 → 16.5 — pills, badges */
+  --text-xs: 1.125rem; /* 12 → 18 — meta, column headers */
+  --text-sm: 1.21875rem; /* 13 → 19.5 — table cells, secondary */
+  --text-base: 1.3125rem; /* 14 → 21 — body, controls */
+  --text-md: 1.5rem; /* 16 → 24 — section heads */
+  --text-lg: 1.78125rem; /* 19 → 28.5 — panel titles */
+  --text-xl: 2.15625rem; /* 23 → 34.5 — page titles */
+  --text-2xl: 2.625rem; /* 28 → 42 — login only */
 
   --radius-ctl: 4px;
   --radius-field: 6px;
