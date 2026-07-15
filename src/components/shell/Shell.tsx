@@ -61,8 +61,8 @@ function ProjectSwitcher() {
         className="flex h-10 items-center gap-2 rounded-(--radius-field) px-2.5 transition-colors hover:bg-surface-2"
       >
         <span className="text-base font-medium text-ink-3">Project:</span>
-        <span className="border-b-2 border-accent pb-px text-lg font-bold text-ink">{current.name}</span>
-        <ChevronsUpDown size={15} className="text-ink-3" aria-hidden />
+        <span className="border-b-[1.5px] border-accent pb-px text-lg font-bold text-ink">{current.name}</span>
+        <ChevronsUpDown size={16} className="text-ink-3" aria-hidden />
       </button>
       {open && (
         <div
@@ -112,7 +112,7 @@ function UserMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={`Account menu — ${user.name}`}
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-2xs font-bold text-on-accent transition-transform hover:scale-105"
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-2xs font-bold text-on-accent transition-transform hover:scale-105"
       >
         {user.initials}
       </button>
@@ -172,24 +172,24 @@ export default function Shell() {
     <div className="flex h-screen flex-col">
       <div className="h-[3px] shrink-0 bg-accent" aria-hidden />
 
-      <header className="flex h-14 shrink-0 items-center gap-4 border-b border-line bg-bg px-4">
-        <span className="flex items-center gap-2 text-sm font-bold tracking-tight text-ink">
-          <span className="flex h-6 w-6 items-center justify-center rounded-(--radius-ctl) bg-accent text-on-accent">
-            <Sparkles size={13} aria-hidden />
+      <header className="flex h-20 shrink-0 items-center gap-4 border-b border-line bg-bg px-5">
+        <span className="flex items-center gap-2.5 text-md font-bold tracking-tight text-ink">
+          <span className="flex h-9 w-9 items-center justify-center rounded-(--radius-ctl) bg-accent text-on-accent">
+            <Sparkles size={18} aria-hidden />
           </span>
           <span className={cn(collapsed && 'sr-only')}>Intent Studio</span>
         </span>
         <ProjectSwitcher />
         <div className="ml-auto flex items-center gap-2.5">
-          <span className="rounded-full bg-accent-wash px-2.5 py-1 text-2xs font-bold tracking-wide text-accent uppercase">
+          <span className="rounded-full bg-accent-wash px-3 py-1.5 text-2xs font-bold tracking-wide text-accent uppercase">
             {ROLE_LABEL[user.role]}
           </span>
           <button
             onClick={toggleTheme}
             aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
-            className="flex h-8 w-8 items-center justify-center rounded-(--radius-ctl) text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+            className="flex h-9 w-9 items-center justify-center rounded-(--radius-ctl) text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
           >
-            {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+            {theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}
           </button>
           <UserMenu />
         </div>
