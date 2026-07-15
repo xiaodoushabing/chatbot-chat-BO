@@ -81,8 +81,8 @@ export function RunStatusPill({ status }: { status: RunStatus }) {
 export function IntentStatePill({ state }: { state: IntentState }) {
   const map: Record<IntentState, [Tone, string]> = {
     draft: ['neutral', 'Draft'],
-    staged: ['info', 'Staged'],
-    pending_approval: ['warn', 'Pending approval'],
+    staged: ['warn', 'Staged'],
+    pending_approval: ['info', 'Pending approval'],
     live: ['ok', 'Live'],
     rejected: ['err', 'Rejected'],
     deleted: ['neutral', 'Deleted'],
@@ -93,7 +93,7 @@ export function IntentStatePill({ state }: { state: IntentState }) {
 
 export function ApprovalStatusPill({ status }: { status: ApprovalStatus }) {
   const map: Record<ApprovalStatus, [Tone, string]> = {
-    pending: ['warn', 'Pending'],
+    pending: ['info', 'Pending'],
     approved: ['ok', 'Approved'],
     rejected: ['err', 'Rejected'],
     withdrawn: ['neutral', 'Withdrawn'],
@@ -267,8 +267,8 @@ export function ProgressBar({ value, max, className }: { value: number; max: num
       className={cn('h-1.5 overflow-hidden rounded-full bg-surface-3', className)}
     >
       <div
-        className="h-full rounded-full bg-accent transition-[width] duration-300 ease-(--ease-out)"
-        style={{ width: `${pct}%` }}
+        className="h-full w-full origin-left rounded-full bg-accent transition-transform duration-300 ease-(--ease-out)"
+        style={{ transform: `scaleX(${pct / 100})` }}
       />
     </div>
   );

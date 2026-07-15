@@ -1,5 +1,6 @@
 import type { ReactNode, ThHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
+import { Button } from './controls';
 
 /* Guided Canvas table: a white 22px card with a soft shadow. Compose:
    <TableShell><thead><Tr><Th…/></Tr></thead><tbody><Tr…><Td…/></Tr></tbody></TableShell> */
@@ -87,23 +88,15 @@ export function Pagination({
         {from}–{to} of {total}
       </span>
       <div className="flex items-center gap-1.5">
-        <button
-          disabled={page === 0}
-          onClick={() => onPage(page - 1)}
-          className="rounded-(--radius-field) border border-line bg-bg px-3 py-1.5 text-xs font-semibold text-ink-2 shadow-(--shadow-soft) transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 hover:text-ink disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
-        >
+        <Button variant="secondary" size="sm" disabled={page === 0} onClick={() => onPage(page - 1)}>
           Previous
-        </button>
+        </Button>
         <span className="px-2 font-mono text-xs text-ink-2">
           {page + 1} / {pageCount}
         </span>
-        <button
-          disabled={page >= pageCount - 1}
-          onClick={() => onPage(page + 1)}
-          className="rounded-(--radius-field) border border-line bg-bg px-3 py-1.5 text-xs font-semibold text-ink-2 shadow-(--shadow-soft) transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 hover:text-ink disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
-        >
+        <Button variant="secondary" size="sm" disabled={page >= pageCount - 1} onClick={() => onPage(page + 1)}>
           Next
-        </button>
+        </Button>
       </div>
     </div>
   );

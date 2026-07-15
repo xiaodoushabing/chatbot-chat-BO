@@ -139,9 +139,21 @@ export function ToastHost() {
             transition={{ duration: 0.34, ease: EASE }}
             className="pointer-events-auto flex max-w-md items-center gap-2.5 rounded-full bg-ink px-4 py-2.5 text-canvas shadow-(--shadow-pop)"
           >
-            {t.kind === 'ok' && <CheckCircle2 size={16} className="shrink-0 text-live" aria-hidden />}
-            {t.kind === 'err' && <XCircle size={16} className="shrink-0 text-err" aria-hidden />}
-            {t.kind === 'info' && <Info size={16} className="shrink-0 text-info" aria-hidden />}
+            {t.kind === 'ok' && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ok-bg text-ok">
+                <CheckCircle2 size={12} aria-hidden />
+              </span>
+            )}
+            {t.kind === 'err' && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-err-bg text-err">
+                <XCircle size={12} aria-hidden />
+              </span>
+            )}
+            {t.kind === 'info' && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-info-bg text-info">
+                <Info size={12} aria-hidden />
+              </span>
+            )}
             <p className="text-sm font-semibold">{t.message}</p>
             <IconButton
               label="Dismiss"

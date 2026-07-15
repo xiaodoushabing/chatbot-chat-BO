@@ -319,13 +319,13 @@ function IntentDrawer({
         intent && (
           <span className="flex items-center gap-2">
             {intentTopic && (
-              <span className="rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs text-ink-2">
+              <span className="rounded-full border border-line bg-surface-2 px-2 py-0.5 text-2xs font-semibold text-ink-2">
                 {intentTopic.name}
               </span>
             )}
             <IntentStatePill state={intent.state} />
             {intent.isRevision && (
-              <span className="rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs font-medium text-ink-2">
+              <span className="rounded-full border border-line bg-surface-2 px-2 py-0.5 text-2xs font-semibold text-ink-2">
                 revision
               </span>
             )}
@@ -394,7 +394,7 @@ function IntentDrawer({
                 {intentSources.map(s => (
                   <li
                     key={s.id}
-                    className="flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs text-ink-2"
+                    className="flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-xs text-ink-2"
                   >
                     {s.kind === 'url' ? (
                       <Link2 size={12} className="shrink-0 text-ink-3" aria-hidden />
@@ -418,7 +418,7 @@ function IntentDrawer({
               {intent.utterances.map(u => (
                 <li
                   key={u}
-                  className="rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs text-ink-2"
+                  className="rounded-full border border-line bg-surface-2 px-2 py-0.5 text-xs text-ink-2"
                 >
                   {u}
                 </li>
@@ -439,7 +439,7 @@ function IntentDrawer({
                   runId ? (
                     <Link
                       to={`/studio/runs/${runId}`}
-                      className="font-mono text-xs text-accent underline-offset-2 hover:underline focus-visible:underline"
+                      className="font-mono text-xs text-accent underline-offset-2 transition-colors hover:underline focus-visible:underline"
                     >
                       {runId}
                     </Link>

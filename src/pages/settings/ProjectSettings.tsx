@@ -509,7 +509,7 @@ function EnumeratePanel({
                       className={
                         already
                           ? 'flex items-center gap-3 border-b border-line px-3 py-2.5 opacity-55 last:border-b-0'
-                          : 'flex cursor-pointer items-center gap-3 border-b border-line px-3 py-2.5 transition-colors duration-150 last:border-b-0 hover:bg-surface-2'
+                          : 'flex cursor-pointer items-center gap-3 border-b border-line px-3 py-2.5 transition-colors duration-150 ease-(--ease-out) last:border-b-0 hover:bg-surface-2'
                       }
                     >
                       <Checkbox

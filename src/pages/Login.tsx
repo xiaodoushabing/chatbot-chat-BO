@@ -1,18 +1,21 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
-import { Eye, EyeOff } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Eye, EyeOff, Sparkles } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
 import { useStore } from '../state/store';
-import { cn } from '../lib/cn';
+import { Button, Field, Input } from '../components/ui/controls';
 
-/* The original login, restored per client request: OCBC gradient backdrop,
-   decorative orbs, red wordmark block, glass card, staggered entrance. */
+/* Guided Canvas login — warm canvas ground with a soft top-right glow,
+   drifting luminous violet/warm orbs, a white softly-elevated glass card,
+   and the gradient-violet Sparkles brand mark. Staggered entrance,
+   reduced-motion safe. */
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+const EASE = [0.22, 0.61, 0.36, 1] as const;
 
 export default function Login() {
   const { login } = useStore();
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [pending, setPending] = useState(false);
@@ -27,66 +30,77 @@ export default function Login() {
     }, 700);
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Gradient backdrop */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-white to-slate-50" />
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-[#E3000F]/5" />
+  const enter = (delay: number) => ({
+    initial: reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 },
+    animate: reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 },
+    transition: { duration: 0.5, delay, ease: EASE },
+  });
 
-      {/* Decorative orbs */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-[#E3000F]/5 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full bg-slate-200/60 blur-3xl pointer-events-none" />
+  return (
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-canvas px-4">
+      {/* Soft top-right glow */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(900px 560px at 88% -8%, var(--accent-wash) 0%, transparent 62%)',
+        }}
+        aria-hidden
+      />
+
+      {/* Drifting luminous orbs — indigo-violet + warm neutral */}
+      <motion.div
+        className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-accent/10 blur-3xl"
+        animate={reduceMotion ? undefined : { x: [0, 44, 0], y: [0, -32, 0] }}
+        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+        aria-hidden
+      />
+      <motion.div
+        className="pointer-events-none absolute -right-32 bottom-1/4 h-96 w-96 rounded-full bg-surface-3/80 blur-3xl"
+        animate={reduceMotion ? undefined : { x: [0, -38, 0], y: [0, 28, 0] }}
+        transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
+        aria-hidden
+      />
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
+        animate={reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: EASE }}
-        className="w-full max-w-md relative z-10"
+        className="relative z-10 w-full max-w-md"
       >
-        {/* Logo + branding */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1, ease: EASE }}
-          className="text-center mb-10"
-        >
-          <div className="flex items-center justify-center gap-3 mb-5">
-            <div
-              className="h-14 flex items-center justify-center px-3 rounded-lg"
-              style={{ background: '#E3000F' }}
-              aria-label="OCBC"
+        {/* Brand */}
+        <motion.div {...enter(0.1)} className="mb-10 text-center">
+          <div className="mb-5 flex items-center justify-center gap-3.5">
+            <span
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-(--radius-field) text-on-accent shadow-(--shadow-accent)"
+              style={{ backgroundImage: 'linear-gradient(145deg, var(--accent), var(--accent-press))' }}
+              aria-hidden
             >
-              <span className="font-black text-white text-2xl tracking-[0.18em]">OCBC</span>
-            </div>
-            <div className="border-l-2 border-slate-300 pl-4 text-left">
-              <div className="font-bold text-lg text-slate-900 leading-tight">GDO Chatbot</div>
-              <div className="font-bold text-md text-slate-900 leading-tight mt-0.5">Backoffice</div>
-            </div>
+              <Sparkles size={24} />
+            </span>
+            <span className="text-left leading-tight">
+              <span className="block font-display text-lg font-semibold tracking-[-0.02em] text-ink">
+                Intent Studio
+              </span>
+              <span className="block text-xs tracking-wide text-ink-3">Knowledge Operations</span>
+            </span>
           </div>
-          <p className="text-base text-slate-600 leading-relaxed font-medium">
-            Sign in to manage the OCBC chatbot knowledge platform.
+          <p className="text-base leading-relaxed text-ink-2">
+            Sign in to manage the chatbot knowledge platform.
           </p>
         </motion.div>
 
-        {/* Card */}
+        {/* Sign-in card */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+          animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-          className="relative"
+          className="rounded-(--radius-card) border border-line-soft bg-bg/80 p-10 shadow-(--shadow-pop) backdrop-blur-xl"
         >
-          <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent z-10" />
-
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl border border-white/80 shadow-[0_8px_40px_rgba(0,0,0,0.12)] p-10">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3, ease: EASE }}
-                className="flex flex-col gap-1.5"
-              >
-                <label htmlFor="username" className="text-sm font-bold text-slate-700">Username</label>
-                <input
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <motion.div {...enter(0.3)}>
+              <Field label="Username" htmlFor="username">
+                <Input
                   id="username"
                   type="text"
                   value={username}
@@ -94,23 +108,14 @@ export default function Login() {
                   required
                   autoComplete="username"
                   placeholder="Enter username"
-                  className={cn(
-                    'w-full border border-slate-200/60 rounded-xl px-4 py-3 text-sm text-slate-900',
-                    'focus:outline-none focus:ring-2 focus:ring-[#E3000F]/30 focus:border-[#E3000F]/40',
-                    'bg-white/80 transition-all placeholder:text-slate-400',
-                  )}
                 />
-              </motion.div>
+              </Field>
+            </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.4, ease: EASE }}
-                className="flex flex-col gap-1.5"
-              >
-                <label htmlFor="password" className="text-sm font-bold text-slate-700">Password</label>
+            <motion.div {...enter(0.4)}>
+              <Field label="Password" htmlFor="password">
                 <div className="relative">
-                  <input
+                  <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
@@ -118,41 +123,30 @@ export default function Login() {
                     required
                     autoComplete="current-password"
                     placeholder="Enter password"
-                    className={cn(
-                      'w-full border border-slate-200/60 rounded-xl px-4 py-3 pr-10 text-sm text-slate-900',
-                      'focus:outline-none focus:ring-2 focus:ring-[#E3000F]/30 focus:border-[#E3000F]/40',
-                      'bg-white/80 transition-all placeholder:text-slate-400',
-                    )}
+                    className="pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-(--radius-ctl) text-ink-3 transition-colors duration-150 ease-(--ease-out) hover:text-ink"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-              </motion.div>
+              </Field>
+            </motion.div>
 
-              <motion.button
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.5, ease: EASE }}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={pending}
-                className="w-full bg-[#E3000F] text-white font-bold py-3 rounded-xl text-sm hover:bg-red-700 hover:shadow-lg hover:shadow-red-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-100 mt-1"
-              >
-                {pending ? 'Signing in…' : 'Sign In'}
-              </motion.button>
-            </form>
+            <motion.div {...enter(0.5)}>
+              <Button type="submit" variant="primary" loading={pending} className="mt-1 h-10 w-full">
+                {pending ? 'Signing in…' : 'Sign in'}
+              </Button>
+            </motion.div>
+          </form>
 
-            <p className="mt-6 text-center text-xs text-slate-500">
-              Prototype sign-in — any credentials work
-            </p>
-          </div>
+          <p className="mt-6 text-center text-2xs text-ink-3">
+            Prototype sign-in — any credentials work
+          </p>
         </motion.div>
       </motion.div>
     </div>

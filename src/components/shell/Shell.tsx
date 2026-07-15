@@ -254,7 +254,7 @@ export default function Shell() {
           <button
             onClick={toggleTheme}
             aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
-            className="flex h-9 w-9 items-center justify-center rounded-(--radius-field) border border-line bg-bg text-ink-2 shadow-(--shadow-soft) transition-colors duration-150 ease-(--ease-out) hover:text-ink"
+            className="flex h-9 w-9 items-center justify-center rounded-(--radius-field) border border-line bg-bg text-ink-2 shadow-(--shadow-soft) transition-[transform,box-shadow,color] duration-200 ease-(--ease-out) hover:-translate-y-px hover:text-ink hover:shadow-(--shadow-2)"
           >
             {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
           </button>

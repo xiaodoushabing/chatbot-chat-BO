@@ -145,11 +145,13 @@ function IntentCard({
   const editable = canAct && (intent.state === 'draft' || intent.state === 'staged');
   const isLong = intent.response.length > LONG_RESPONSE;
   return (
-    <article
+    <motion.article
+      whileHover={reduce ? undefined : { y: -3 }}
+      transition={{ duration: 0.2, ease: EASE }}
       aria-label={`Intent: ${intent.question}`}
       className={cn(
-        'rounded-(--radius-card) border bg-bg px-4 py-3.5 shadow-(--shadow-soft) transition-[box-shadow,border-color,background-color] duration-150 ease-(--ease-out) hover:shadow-(--shadow-2)',
-        selected ? 'border-accent/60 bg-accent/4' : 'border-line',
+        'rounded-(--radius-card) border bg-bg px-5 py-4 shadow-(--shadow-soft) transition-[box-shadow,border-color,background-color] duration-200 ease-(--ease-out) hover:shadow-(--shadow-2)',
+        selected ? 'border-accent/60 bg-accent-wash/40' : 'border-line',
       )}
     >
       {/* Header row: checkbox (draft only) · topic tag · state pill · edit */}
@@ -235,7 +237,7 @@ function IntentCard({
           <Mono>{fmtDateTime(intent.createdAt)}</Mono>
         </span>
       </div>
-    </article>
+    </motion.article>
   );
 }
 

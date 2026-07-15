@@ -202,7 +202,7 @@ export default function StepGenerate({
           </svg>
           <div className="absolute inset-0 grid place-items-center text-center">
             <div>
-              <div className="font-display text-2xl font-medium tabular-nums text-ink" aria-live="polite">
+              <div className="font-display text-[3.5rem] leading-none font-medium tracking-[-0.02em] tabular-nums text-ink" aria-live="polite">
                 {count}
               </div>
               <div className="mt-1 text-2xs font-bold tracking-wider text-ink-3 uppercase">

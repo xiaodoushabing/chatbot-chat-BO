@@ -179,7 +179,7 @@ export function SearchField({
         placeholder={placeholder}
         aria-label={placeholder}
         className={cn(
-          'h-9.5 w-full rounded-full border border-line bg-bg pl-10 pr-4 text-sm text-ink placeholder:text-ink-3 shadow-(--shadow-soft)',
+          'h-9.5 w-full rounded-(--radius-field) border border-line bg-bg pl-10 pr-4 text-sm text-ink placeholder:text-ink-3 shadow-(--shadow-soft)',
           'transition-colors duration-150 ease-(--ease-out) hover:border-ink-3/45',
           'focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30',
         )}
