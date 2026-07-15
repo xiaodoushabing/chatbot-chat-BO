@@ -14,7 +14,7 @@ import {
 import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
 import type { IndexStatus, Source, Topic } from '../../data/types';
-import { fmtDateTime, plural } from '../../lib/format';
+import { fmtDate, fmtDateTime, plural } from '../../lib/format';
 import { Button, Checkbox, SearchField, SegmentedControl, Select } from '../../components/ui/controls';
 import {
   EmptyState,
@@ -444,10 +444,10 @@ function SourcesPanel({
                       </span>
                     </Td>
                     <Td className="whitespace-nowrap text-ink-2">
-                      {s.kind === 'url' ? 'URL' : 'SharePoint file'}
+                      {s.kind === 'url' ? 'URL' : 'SharePoint'}
                     </Td>
                     <Td mono className="whitespace-nowrap">
-                      {fmtDateTime(s.modifiedAt)}
+                      {fmtDate(s.modifiedAt)}
                     </Td>
                     <Td>
                       <IndexStatusPill status={s.indexStatus} />
