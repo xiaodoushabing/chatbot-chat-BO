@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { ArrowLeft, ArrowRight, Check, ChevronsUpDown, FolderOpen } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
@@ -292,15 +292,15 @@ export default function IntentStudio() {
           <WizardRail current={step} />
 
           <div className="relative">
-            <AnimatePresence mode="wait" custom={direction} initial={false}>
+            {/* Keyed remount animates each step IN on mount. No exit-gating
+                (mode="wait") — a stalled exit must never block the next step. */}
               <motion.div
                 key={step}
                 custom={direction}
                 variants={stepVariants(reduce)}
                 initial="enter"
                 animate="center"
-                exit="exit"
-                transition={{ duration: reduce ? 0.15 : 0.42, ease: EASE }}
+                transition={{ duration: reduce ? 0.15 : 0.4, ease: EASE }}
               >
                 {step === 0 && (
                   <StepSources
@@ -336,7 +336,6 @@ export default function IntentStudio() {
                   />
                 )}
               </motion.div>
-            </AnimatePresence>
           </div>
 
           {/* Wizard footer */}
