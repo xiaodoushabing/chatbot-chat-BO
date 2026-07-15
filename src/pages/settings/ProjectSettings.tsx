@@ -117,9 +117,10 @@ function SettingsBody() {
       )}
 
       <div className="max-w-[1200px]">
-        {/* ── SharePoint root ── */}
-        <section aria-labelledby="root-heading" className="rounded-(--radius-card) border border-line p-5">
+        {/* ── SharePoint root ── (header outside the card, consistent with the sections below) */}
+        <section aria-labelledby="root-heading">
           <SectionHeader title="SharePoint root" meta={<span id="root-heading">created {fmtDateTime(project.createdAt)} by {project.createdBy}</span>} />
+          <div className="rounded-(--radius-card) border border-line p-6">
           <Field label="Root folder URL" htmlFor={rootInputId}>
             <div className="flex items-start gap-2">
               <Input
@@ -175,6 +176,7 @@ function SettingsBody() {
               Unlocked. Existing topic paths won't move with it.
             </p>
           )}
+          </div>
         </section>
 
         {/* ── Add topics (owner only): side-by-side panels ── */}
