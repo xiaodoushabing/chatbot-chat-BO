@@ -141,11 +141,13 @@ export function PageHeader({
    underline when the header sits INSIDE a card/container (avoids the boxed-in look). */
 export function SectionHeader({
   title,
+  count,
   meta,
   actions,
   plain,
 }: {
   title: string;
+  count?: number;
   meta?: ReactNode;
   actions?: ReactNode;
   plain?: boolean;
@@ -160,6 +162,11 @@ export function SectionHeader({
       >
         {title}
       </h2>
+      {typeof count === 'number' && (
+        <span className="self-center rounded-full bg-surface-3 px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-ink-2">
+          {count}
+        </span>
+      )}
       {meta && <span className="font-mono text-xs text-ink-3">{meta}</span>}
       {actions && <div className="ml-auto flex items-center gap-2 self-center">{actions}</div>}
     </div>

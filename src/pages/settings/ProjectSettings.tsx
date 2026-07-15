@@ -181,11 +181,8 @@ function SettingsBody() {
 
         {/* ── Add topics (owner only): side-by-side panels ── */}
         {isOwner && (
-          <section aria-labelledby="add-topics-heading" className="mt-10">
-            <SectionHeader
-              title="Add topics"
-              meta={<span id="add-topics-heading">two paths, same result</span>}
-            />
+          <section className="mt-10">
+            <SectionHeader title="Add topics" />
             <div className="grid gap-4 lg:grid-cols-2">
               <EnumeratePanel
                 projectTopics={projectTopics}
@@ -197,11 +194,8 @@ function SettingsBody() {
         )}
 
         {/* ── Topics table ── */}
-        <section aria-labelledby="topics-heading" className="mt-10">
-          <SectionHeader
-            title="Topics"
-            meta={<span id="topics-heading">{plural(projectTopics.length, 'topic')}</span>}
-          />
+        <section className="mt-10">
+          <SectionHeader title="Topics" count={projectTopics.length} />
           {projectTopics.length > 0 && (
             <div className="mb-3 max-w-xs">
               <SearchField value={query} onChange={setQuery} placeholder="Search topics" />
