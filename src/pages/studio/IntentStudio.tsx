@@ -1,12 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowLeft, ArrowRight, Check, ChevronsUpDown, DatabaseZap, FolderOpen, RefreshCw } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  ChevronsUpDown,
+  DatabaseZap,
+  FileSpreadsheet,
+  FileText,
+  FolderOpen,
+  Link2,
+  RefreshCw,
+} from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
 import type { Source, Topic } from '../../data/types';
-import { fmtDateTime, plural } from '../../lib/format';
+import { fmtDate, fmtDateTime, plural } from '../../lib/format';
 import { Button } from '../../components/ui/controls';
-import { Collapsible, EmptyState, PageHeader, Pill } from '../../components/ui/display';
+import { Collapsible, EmptyState, IndexStatusPill, PageHeader, Pill, Tabs } from '../../components/ui/display';
 import WizardRail from './WizardRail';
 import StepSources from './StepSources';
 import StepConfigure, { type GenConfig } from './StepConfigure';
@@ -14,9 +25,9 @@ import StepGenerate from './StepGenerate';
 import StepReview from './StepReview';
 import RunRail from './RunRail';
 
-/* ── Manage sources ── source handling (keep the list current + prepare docs
-   for the AI), kept SEPARATE from the generate wizard below. */
-function ManageSourcesPanel({
+/* ── Manage sources section — source handling (keep the list current + prepare
+   docs for the AI). Its own tab, SEPARATE from the Generate wizard. */
+function ManageSources({
   topicId,
   topicSources,
   lastSynced,
@@ -34,6 +45,7 @@ function ManageSourcesPanel({
       (s.indexStatus === 'not_indexed' || s.indexStatus === 'stale') &&
       (!isContributor || s.accessible),
   );
+  const readyCount = topicSources.filter(s => s.indexStatus === 'indexed').length;
   const preparing = topicSources.some(s => s.indexStatus === 'indexing');
 
   const check = async () => {
@@ -43,45 +55,80 @@ function ManageSourcesPanel({
   };
 
   return (
-    <div className="mx-auto mb-6 max-w-4xl">
-      <Collapsible
-        title="Manage sources"
-        defaultOpen={notReady.length > 0}
-        meta={
-          topicSources.length === 0
-            ? undefined
-            : `${plural(topicSources.length, 'source')} · ${notReady.length > 0 ? `${notReady.length} not ready` : 'all ready'}`
-        }
+    <div className="mx-auto max-w-4xl">
+      <section
+        aria-label="Manage sources"
+        className="rounded-(--radius-card) border border-line bg-bg p-6 shadow-(--shadow-2) sm:p-7"
       >
-        <div className="rounded-(--radius-card) border border-line bg-bg p-5 shadow-(--shadow-soft)">
-          <p className="max-w-prose text-sm text-ink-2">
-            Keep this topic's file list current and prepare documents so the AI can generate from
-            them. This is separate from choosing which sources to use in a run.
-          </p>
-          <p className="mt-2 font-mono text-xs text-ink-3">
+        <h2 className="font-display text-lg font-medium tracking-[-0.01em] text-ink">Manage sources</h2>
+        <p className="mt-1 max-w-prose text-sm text-ink-2">
+          Keep this topic's file list current and prepare documents so the AI can generate from
+          them. This is separate from choosing which sources to use in a run.
+        </p>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2.5">
+          <Button size="sm" loading={checking} onClick={check}>
+            {!checking && <RefreshCw size={13} aria-hidden />}
+            Check SharePoint for changes
+          </Button>
+          <Button
+            size="sm"
+            variant="primary"
+            disabled={notReady.length === 0 || preparing}
+            onClick={() => syncToIndex(notReady.map(s => s.id))}
+          >
+            <DatabaseZap size={13} aria-hidden />
+            {preparing
+              ? 'Preparing…'
+              : notReady.length === 0
+                ? 'All sources ready'
+                : `Prepare ${plural(notReady.length, 'source')}`}
+          </Button>
+          <span className="ml-auto font-mono text-xs text-ink-3">
             {lastSynced ? `Last checked ${fmtDateTime(lastSynced)}` : 'Never checked'}
-          </p>
-          <div className="mt-4 flex flex-wrap items-center gap-2.5">
-            <Button size="sm" loading={checking} onClick={check}>
-              {!checking && <RefreshCw size={13} aria-hidden />}
-              Check SharePoint for changes
-            </Button>
-            <Button
-              size="sm"
-              variant="primary"
-              disabled={notReady.length === 0 || preparing}
-              onClick={() => syncToIndex(notReady.map(s => s.id))}
-            >
-              <DatabaseZap size={13} aria-hidden />
-              {preparing
-                ? 'Preparing…'
-                : notReady.length === 0
-                  ? 'All sources ready'
-                  : `Prepare ${plural(notReady.length, 'source')}`}
-            </Button>
-          </div>
+          </span>
         </div>
-      </Collapsible>
+
+        {topicSources.length === 0 ? (
+          <EmptyState
+            icon={FolderOpen}
+            title="No sources yet"
+            body="Drop documents into the topic's SharePoint folder, then check for changes to pull them in."
+          />
+        ) : (
+          <>
+            <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-line-soft pt-4">
+              <Pill tone="ok">{plural(readyCount, 'source')} ready</Pill>
+              {notReady.length > 0 && <Pill tone="warn">{notReady.length} need preparing</Pill>}
+            </div>
+            <ul className="mt-4 flex flex-col gap-2">
+              {topicSources.map(s => {
+                const Icon = s.kind === 'url' ? Link2 : s.isSpreadsheet ? FileSpreadsheet : FileText;
+                return (
+                  <li
+                    key={s.id}
+                    className="flex items-center gap-3 rounded-(--radius-md) border border-line bg-canvas/40 px-4 py-3"
+                  >
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-(--radius-ctl) bg-surface-2 text-ink-2">
+                      <Icon size={16} aria-hidden />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-ink">{s.name}</span>
+                      <span className="block truncate text-xs text-ink-3">
+                        {s.kind === 'url'
+                          ? 'Public URL'
+                          : `SharePoint · ${s.isSpreadsheet ? 'Spreadsheet' : 'Document'}`}{' '}
+                        · <span className="font-mono">{fmtDate(s.modifiedAt)}</span>
+                      </span>
+                    </span>
+                    <IndexStatusPill status={s.indexStatus} />
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        )}
+      </section>
     </div>
   );
 }
@@ -224,6 +271,7 @@ export default function IntentStudio() {
   const stale = topicSources.filter(s => s.indexStatus === 'stale').length;
 
   // Wizard state.
+  const [tab, setTab] = useState<'generate' | 'sources'>('generate');
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -373,13 +421,34 @@ export default function IntentStudio() {
 
       {topic && (
         <>
-          <ManageSourcesPanel
-            topicId={topic.id}
-            topicSources={topicSources}
-            lastSynced={topic.lastSyncedAt}
-            isContributor={user.role === 'contributor'}
-          />
-          <div ref={wizardTopRef} className="mx-auto max-w-4xl scroll-mt-6">
+          <div className="mx-auto mb-7 max-w-4xl">
+            <Tabs
+              value={tab}
+              onChange={setTab}
+              tabs={[
+                { value: 'generate', label: 'Generate' },
+                {
+                  value: 'sources',
+                  label: 'Manage sources',
+                  count: notIndexed + stale > 0 ? notIndexed + stale : undefined,
+                },
+              ]}
+            />
+          </div>
+
+          {tab === 'sources' && (
+            <ManageSources
+              topicId={topic.id}
+              topicSources={topicSources}
+              lastSynced={topic.lastSyncedAt}
+              isContributor={user.role === 'contributor'}
+            />
+          )}
+
+          <div
+            ref={wizardTopRef}
+            className={cn('mx-auto max-w-4xl scroll-mt-6', tab !== 'generate' && 'hidden')}
+          >
             <WizardRail current={step} />
 
           <div className="relative">

@@ -184,7 +184,7 @@ export default function StepSources({
           <p className="mt-3 flex items-center gap-2 rounded-(--radius-field) bg-warn-bg px-3.5 py-2.5 text-xs font-medium text-warn">
             <Sparkles size={14} className="shrink-0" aria-hidden />
             {plural(notReady, 'source')} {notReady === 1 ? "isn't" : "aren't"} ready yet — use{' '}
-            <span className="font-semibold">Manage&nbsp;sources</span> above to prepare them.
+            <span className="font-semibold">Manage&nbsp;sources</span> tab to prepare them.
           </p>
         )}
       </div>
@@ -228,7 +228,7 @@ export default function StepSources({
         <EmptyState
           icon={FolderOpen}
           title="No sources in this topic yet"
-          body="Drop documents into the topic's SharePoint folder, or add URLs to its manifest, then use Manage sources above to check SharePoint for changes."
+          body="Drop documents into the topic's SharePoint folder, or add URLs to its manifest, then use the Manage sources tab to check SharePoint for changes."
         />
       ) : (
         <>
