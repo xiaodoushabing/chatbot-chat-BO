@@ -280,14 +280,14 @@ export default function IntentStudio() {
   const [reviewSel, setReviewSel] = useState<Set<string>>(new Set());
   const patch = (p: Partial<GenConfig>) => setConfig(c => ({ ...c, ...p }));
 
-  // On step change, bring the top of the new step into view so it reads from the top.
+  // On a real step change, bring the top of the new step into view. Comparing the
+  // actual step value (not a boolean flag) means this never fires on mount — so it
+  // can't fight the page-level scroll-to-top, and survives StrictMode's double effect.
   const wizardTopRef = useRef<HTMLDivElement>(null);
-  const stepScrolled = useRef(false);
+  const lastStep = useRef(step);
   useEffect(() => {
-    if (!stepScrolled.current) {
-      stepScrolled.current = true;
-      return;
-    }
+    if (lastStep.current === step) return;
+    lastStep.current = step;
     wizardTopRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   }, [step, reduce]);
 
@@ -426,12 +426,12 @@ export default function IntentStudio() {
               value={tab}
               onChange={setTab}
               tabs={[
-                { value: 'generate', label: 'Generate' },
                 {
                   value: 'sources',
                   label: 'Manage sources',
                   count: notIndexed + stale > 0 ? notIndexed + stale : undefined,
                 },
+                { value: 'generate', label: 'Generate' },
               ]}
             />
           </div>

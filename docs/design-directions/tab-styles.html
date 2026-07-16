@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tab styles — 6 directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+:root[data-theme="light"]{
+  --canvas:#eef1f0; --canvas-2:#e4eae8; --bg:#ffffff; --surface-2:#e7eceb; --surface-3:#dde5e2;
+  --ink:#16211f; --ink-2:#4a5a56; --ink-3:#6a7b76;
+  --accent:#c62b3a; --accent-press:#a01f2c; --on-accent:#ffffff; --accent-wash:#f8e3e5; --accent-wash-2:#f2ccd0;
+  --line:#dbe3e0;
+  --shadow-soft:0 1px 2px rgba(16,40,38,.05),0 1px 3px rgba(16,40,38,.04);
+  --shadow-2:0 4px 10px rgba(16,40,38,.05),0 12px 26px rgba(16,40,38,.07);
+  --shadow-accent:0 8px 22px rgba(198,43,58,.26);
+  --groove:inset 0 1px 3px rgba(16,40,38,.10),inset 0 -1px 0 rgba(255,255,255,.5);
+}
+:root[data-theme="dark"]{
+  --canvas:#17100f; --canvas-2:#0f0908; --bg:#221816; --surface-2:#2b201e; --surface-3:#332624;
+  --ink:#f0e7e5; --ink-2:#b9a9a6; --ink-3:#8f817e;
+  --accent:#e8556a; --accent-press:#ef6b7d; --on-accent:#2a0a0e; --accent-wash:#33191d; --accent-wash-2:#43222a;
+  --line:#3a2b28;
+  --shadow-soft:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.35);
+  --shadow-2:0 4px 12px rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.4);
+  --shadow-accent:0 8px 24px rgba(232,85,106,.30);
+  --groove:inset 0 1px 3px rgba(0,0,0,.5),inset 0 -1px 0 rgba(255,255,255,.03);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Hanken Grotesk',system-ui,sans-serif;
+  background:var(--canvas); color:var(--ink);
+  -webkit-font-smoothing:antialiased; padding:56px 40px 120px;
+  transition:background .3s ease,color .3s ease;
+}
+.wrap{max-width:1160px;margin:0 auto}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:8px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:34px;letter-spacing:-.02em;line-height:1.05}
+.sub{color:var(--ink-2);font-size:15px;margin-top:10px;max-width:60ch;line-height:1.5}
+.themebtn{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink-2);
+  background:var(--bg);border:1px solid var(--line);border-radius:11px;
+  padding:9px 16px;cursor:pointer;box-shadow:var(--shadow-soft);white-space:nowrap;
+  transition:transform .2s,box-shadow .2s,color .2s;
+}
+.themebtn:hover{transform:translateY(-1px);color:var(--ink);box-shadow:var(--shadow-2)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px;margin-top:44px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{
+  background:var(--canvas);border:1px solid var(--line);border-radius:20px;
+  padding:26px 26px 30px;position:relative;overflow:hidden;
+}
+.card-head{display:flex;align-items:baseline;gap:10px;margin-bottom:22px}
+.num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--accent);
+  background:var(--accent-wash);padding:3px 8px;border-radius:7px}
+.name{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:18px;letter-spacing:-.01em}
+.desc{color:var(--ink-3);font-size:12.5px;margin-left:auto;text-align:right;max-width:40%;line-height:1.35}
+.stage{padding:6px 2px 2px}
+/* faux content panel that some styles connect into */
+.panel{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow-soft);margin-top:14px}
+.panel .ph{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:15px;letter-spacing:-.01em}
+.panel p{color:var(--ink-2);font-size:13px;margin-top:5px;line-height:1.45}
+button.tab{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.count{font-variant-numeric:tabular-nums;font-weight:700}
+
+/* ─────────── 1 · Editorial underline ─────────── */
+.v1{display:flex;gap:30px;border-bottom:1.5px solid var(--line);padding-bottom:0}
+.v1 .tab{position:relative;padding:6px 2px 14px;font-size:15px;font-weight:600;color:var(--ink-3);display:flex;align-items:center;gap:8px;transition:color .18s}
+.v1 .tab:hover{color:var(--ink-2)}
+.v1 .tab[aria-selected=true]{color:var(--accent)}
+.v1 .tab::after{content:"";position:absolute;left:0;right:0;bottom:-1.5px;height:2.5px;border-radius:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .28s cubic-bezier(.22,.61,.36,1)}
+.v1 .tab[aria-selected=true]::after{transform:scaleX(1)}
+.v1 .count{font-size:11.5px;padding:1px 7px;border-radius:20px;background:var(--surface-3);color:var(--ink-3)}
+.v1 .tab[aria-selected=true] .count{background:var(--accent-wash);color:var(--accent)}
+
+/* ─────────── 2 · Connected folder ─────────── */
+.v2{display:flex;gap:4px;padding-left:4px;position:relative;z-index:2}
+.v2 .tab{padding:12px 20px 13px;font-size:14.5px;font-weight:600;color:var(--ink-3);display:flex;align-items:center;gap:8px;
+  border:1px solid transparent;border-bottom:none;border-radius:12px 12px 0 0;background:transparent;transition:color .18s,background .18s;position:relative;top:1px}
+.v2 .tab:hover{color:var(--ink-2);background:color-mix(in srgb,var(--bg) 45%,transparent)}
+.v2 .tab[aria-selected=true]{color:var(--ink);background:var(--bg);border-color:var(--line);box-shadow:0 -3px 8px rgba(16,40,38,.04)}
+.v2 .tab[aria-selected=true]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--bg)}
+.v2 .tab[aria-selected=true]{border-top:2px solid var(--accent);padding-top:11px}
+.v2-panel{margin-top:-1px;border-radius:0 14px 14px 14px;position:relative;z-index:1}
+.v2 .count{font-size:11.5px;padding:1px 7px;border-radius:20px;background:var(--surface-3);color:var(--ink-3)}
+.v2 .tab[aria-selected=true] .count{background:var(--accent-wash);color:var(--accent)}
+
+/* ─────────── 3 · Branded segment (recessed) ─────────── */
+.v3{display:inline-flex;gap:4px;padding:5px;background:var(--canvas-2);border-radius:13px;box-shadow:var(--groove)}
+.v3 .tab{padding:9px 18px;font-size:14px;font-weight:600;color:var(--ink-2);border-radius:9px;display:flex;align-items:center;gap:8px;transition:all .2s cubic-bezier(.22,.61,.36,1)}
+.v3 .tab:hover:not([aria-selected=true]){color:var(--ink)}
+.v3 .tab[aria-selected=true]{background:var(--accent);color:var(--on-accent);box-shadow:var(--shadow-accent)}
+.v3 .count{font-size:11.5px;padding:1px 7px;border-radius:20px;background:var(--surface-3);color:var(--ink-3)}
+.v3 .tab[aria-selected=true] .count{background:rgba(255,255,255,.24);color:var(--on-accent)}
+
+/* ─────────── 4 · Ghost → solid buttons ─────────── */
+.v4{display:flex;gap:10px}
+.v4 .tab{padding:9px 18px;font-size:14px;font-weight:600;color:var(--ink-2);border-radius:11px;border:1px solid var(--line);background:var(--bg);display:flex;align-items:center;gap:8px;box-shadow:var(--shadow-soft);transition:all .2s cubic-bezier(.22,.61,.36,1)}
+.v4 .tab:hover:not([aria-selected=true]){transform:translateY(-1px);color:var(--ink);border-color:var(--accent-wash-2)}
+.v4 .tab[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);box-shadow:var(--shadow-accent)}
+.v4 .count{font-size:11.5px;padding:1px 7px;border-radius:20px;background:var(--surface-3);color:var(--ink-3)}
+.v4 .tab[aria-selected=true] .count{background:rgba(255,255,255,.24);color:var(--on-accent)}
+
+/* ─────────── 5 · Display type + marker ─────────── */
+.v5{display:flex;gap:34px;align-items:center}
+.v5 .tab{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:22px;letter-spacing:-.02em;color:var(--ink-3);display:flex;align-items:center;gap:10px;padding:4px 0;transition:color .2s}
+.v5 .tab:hover:not([aria-selected=true]){color:var(--ink-2)}
+.v5 .tab[aria-selected=true]{color:var(--ink)}
+.v5 .marker{width:9px;height:9px;border-radius:3px;background:var(--surface-3);transition:all .25s cubic-bezier(.22,.61,.36,1)}
+.v5 .tab[aria-selected=true] .marker{background:var(--accent);box-shadow:0 0 0 4px var(--accent-wash)}
+.v5 .count{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--ink-3);align-self:flex-start;margin-top:2px}
+.v5 .tab[aria-selected=true] .count{color:var(--accent)}
+
+/* ─────────── 6 · Notched panel (caret owns the surface) ─────────── */
+.v6{display:flex;gap:6px;position:relative;z-index:2;padding-left:2px}
+.v6 .tab{padding:11px 20px;font-size:14.5px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;gap:8px;border-radius:12px;background:var(--surface-2);transition:all .2s cubic-bezier(.22,.61,.36,1);position:relative}
+.v6 .tab:hover:not([aria-selected=true]){color:var(--ink)}
+.v6 .tab[aria-selected=true]{background:var(--bg);color:var(--accent);box-shadow:var(--shadow-2)}
+.v6 .tab[aria-selected=true]::after{content:"";position:absolute;left:50%;bottom:-6px;width:12px;height:12px;background:var(--bg);transform:translateX(-50%) rotate(45deg);box-shadow:3px 3px 6px rgba(16,40,38,.05)}
+.v6-panel{margin-top:14px;position:relative;z-index:1}
+.v6 .count{font-size:11.5px;padding:1px 7px;border-radius:20px;background:var(--surface-3);color:var(--ink-3)}
+.v6 .tab[aria-selected=true] .count{background:var(--accent-wash);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="pagehead">
+    <div>
+      <h1>Tab styles — 6 directions</h1>
+      <p class="sub">Same content in every card (Intent&nbsp;Studio's <em>Manage&nbsp;sources / Generate</em>). Click a tab to feel the switch. Toggle the theme to check both. Tell me the number you want.</p>
+    </div>
+    <button class="themebtn" id="themebtn" onclick="toggleTheme()">◐ Dark theme</button>
+  </div>
+
+  <div class="grid">
+
+    <!-- 1 -->
+    <div class="card">
+      <div class="card-head"><span class="num">01</span><span class="name">Editorial underline</span><span class="desc">No container. A sliding crimson rule marks the active view. Calm, timeless.</span></div>
+      <div class="stage">
+        <div class="v1" role="tablist" data-group>
+          <button class="tab" role="tab" aria-selected="true">Manage sources<span class="count">4</span></button>
+          <button class="tab" role="tab" aria-selected="false">Generate</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="card">
+      <div class="card-head"><span class="num">02</span><span class="name">Connected folder</span><span class="desc">Literal tabs — the active one fuses into the panel it opens.</span></div>
+      <div class="stage">
+        <div class="v2" role="tablist" data-group>
+          <button class="tab" role="tab" aria-selected="true">Manage sources<span class="count">4</span></button>
+          <button class="tab" role="tab" aria-selected="false">Generate</button>
+        </div>
+        <div class="panel v2-panel"><div class="ph">Manage sources</div><p>Check SharePoint for changes and prepare documents for generation.</p></div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="card">
+      <div class="card-head"><span class="num">03</span><span class="name">Branded segment</span><span class="desc">Recessed track; active fills with crimson. Confident, compact.</span></div>
+      <div class="stage">
+        <div class="v3" role="tablist" data-group>
+          <button class="tab" role="tab" aria-selected="true">Manage sources<span class="count">4</span></button>
+          <button class="tab" role="tab" aria-selected="false">Generate</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="card">
+      <div class="card-head"><span class="num">04</span><span class="name">Ghost → solid</span><span class="desc">Free-standing buttons; active is a solid crimson action.</span></div>
+      <div class="stage">
+        <div class="v4" role="tablist" data-group>
+          <button class="tab" role="tab" aria-selected="true">Manage sources<span class="count">4</span></button>
+          <button class="tab" role="tab" aria-selected="false">Generate</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="card">
+      <div class="card-head"><span class="num">05</span><span class="name">Display type + marker</span><span class="desc">Big Bricolage labels, a glowing square marks the live view. Magazine feel.</span></div>
+      <div class="stage">
+        <div class="v5" role="tablist" data-group>
+          <button class="tab" role="tab" aria-selected="true"><span class="marker"></span>Manage sources<span class="count">4</span></button>
+          <button class="tab" role="tab" aria-selected="false"><span class="marker"></span>Generate</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="card">
+      <div class="card-head"><span class="num">06</span><span class="name">Notched panel</span><span class="desc">Active tab lifts to white and points a caret at the surface it owns.</span></div>
+      <div class="stage">
+        <div class="v6" role="tablist" data-group>
+          <button class="tab" role="tab" aria-selected="true">Manage sources<span class="count">4</span></button>
+          <button class="tab" role="tab" aria-selected="false">Generate</button>
+        </div>
+        <div class="panel v6-panel"><div class="ph">Manage sources</div><p>Check SharePoint for changes and prepare documents for generation.</p></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('[data-group]').forEach(g=>{
+  g.addEventListener('click',e=>{
+    const t=e.target.closest('.tab'); if(!t)return;
+    g.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected', b===t?'true':'false'));
+    // swap panel copy where a panel exists
+    const card=g.closest('.stage'); const panel=card&&card.querySelector('.panel');
+    if(panel){const label=t.textContent.replace(/\d+$/,'').trim();
+      panel.querySelector('.ph').textContent=label;
+      panel.querySelector('p').textContent = label==='Generate'
+        ? 'Configure a run, generate draft Q&A, then review before staging.'
+        : 'Check SharePoint for changes and prepare documents for generation.';}
+  });
+});
+function toggleTheme(){
+  const r=document.documentElement, dark=r.getAttribute('data-theme')==='dark';
+  r.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('themebtn').textContent = dark?'◐ Dark theme':'◑ Light theme';
+}
+</script>
+</body>
+</html>

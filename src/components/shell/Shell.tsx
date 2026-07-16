@@ -216,6 +216,13 @@ export default function Shell() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const reduce = useReducedMotion();
+  const mainRef = useRef<HTMLElement>(null);
+
+  // Land at the top of every page on navigation — never inherit the previous
+  // route's scroll position.
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0, left: 0 });
+  }, [location.pathname]);
 
   return (
     <div
@@ -330,7 +337,7 @@ export default function Shell() {
       </nav>
 
       {/* Main */}
-      <main className="min-w-0 overflow-y-auto" style={{ gridArea: 'main' }}>
+      <main ref={mainRef} className="min-w-0 overflow-y-auto" style={{ gridArea: 'main' }}>
         {reduce ? (
           <div className="mx-auto max-w-[1440px] px-10 py-9">
             <Outlet />

@@ -30,6 +30,7 @@ import {
   Mono,
   PageHeader,
   SectionHeader,
+  Tabs,
 } from '../../components/ui/display';
 import { TableShell, Th, Tr, Td } from '../../components/ui/table';
 import { Drawer, Modal } from '../../components/ui/overlay';
@@ -317,6 +318,7 @@ export default function Review() {
   const setTopicFilter = (v: string) =>
     setSearchParams(v === 'all' ? {} : { topic: v }, { replace: true });
 
+  const [tab, setTab] = useState<'staged' | 'submissions'>('staged');
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -412,7 +414,21 @@ export default function Review() {
         </div>
       )}
 
+      {!isChecker && (
+        <div className="mb-6">
+          <Tabs
+            value={tab}
+            onChange={setTab}
+            tabs={[
+              { value: 'staged', label: 'Staged', count: staged.length || undefined },
+              { value: 'submissions', label: 'My submissions', count: mySubmissions.length || undefined },
+            ]}
+          />
+        </div>
+      )}
+
       {/* ── Staged intents ── */}
+      {(isChecker || tab === 'staged') && (
       <section aria-label="Staged intents">
         <SectionHeader title="Staged intents" meta={plural(staged.length, 'intent')} />
         <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -538,10 +554,11 @@ export default function Review() {
           </>
         )}
       </section>
+      )}
 
       {/* ── My submissions (pending → withdraw; approved/rejected viewable with note) ── */}
-      {!isChecker && (
-        <section aria-label="My submissions" className="mt-10">
+      {!isChecker && tab === 'submissions' && (
+        <section aria-label="My submissions">
           <SectionHeader title="My submissions" meta={plural(mySubmissions.length, 'request')} />
           {mySubmissions.length === 0 ? (
             <EmptyState

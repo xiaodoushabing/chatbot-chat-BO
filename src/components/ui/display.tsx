@@ -300,10 +300,10 @@ export function Tabs<T extends string>({
   value: T;
   onChange: (v: T) => void;
 }) {
-  /* Soft pill tabs — reserved for true view-switching. Active = accent-wash chip
-     with accent text, echoing the active-nav language. */
+  /* Editorial underline — text tabs on a hairline baseline, with a crimson rule
+     that slides under the active view. No container; reads as a page-level switch. */
   return (
-    <div role="tablist" className="flex flex-wrap items-center gap-1">
+    <div role="tablist" className="flex flex-wrap items-center gap-x-8 border-b border-line">
       {tabs.map(t => {
         const active = t.value === value;
         return (
@@ -313,8 +313,10 @@ export function Tabs<T extends string>({
             aria-selected={active}
             onClick={() => onChange(t.value)}
             className={cn(
-              'flex items-center gap-2 rounded-(--radius-field) px-3.5 py-2 text-sm font-semibold transition-colors duration-150 ease-(--ease-out)',
-              active ? 'bg-accent-wash text-accent' : 'text-ink-2 hover:bg-surface-2 hover:text-ink',
+              'relative flex items-center gap-2 px-0.5 pt-1.5 pb-3.5 text-sm font-semibold',
+              'transition-colors duration-150 ease-(--ease-out)',
+              'focus-visible:rounded-(--radius-ctl) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+              active ? 'text-accent' : 'text-ink-3 hover:text-ink-2',
             )}
           >
             {t.label}
@@ -322,12 +324,20 @@ export function Tabs<T extends string>({
               <span
                 className={cn(
                   'rounded-full px-1.5 py-0.5 text-2xs font-semibold tabular-nums',
-                  active ? 'bg-accent/15 text-accent' : 'bg-surface-3 text-ink-3',
+                  active ? 'bg-accent-wash text-accent' : 'bg-surface-3 text-ink-3',
                 )}
               >
                 {t.count}
               </span>
             )}
+            <span
+              aria-hidden
+              className={cn(
+                'absolute inset-x-0 -bottom-px h-0.5 origin-left rounded-full bg-accent',
+                'transition-transform duration-300 ease-(--ease-out)',
+                active ? 'scale-x-100' : 'scale-x-0',
+              )}
+            />
           </button>
         );
       })}
