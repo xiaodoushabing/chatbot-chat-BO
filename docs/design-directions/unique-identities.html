@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>More distinctive identities — same guided structure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#e9e7e2;color:#1b1b1b;font:15px/1.55 "Hanken Grotesk",system-ui,sans-serif}
+  .wrap{max-width:1080px;margin:0 auto;padding:44px 24px 100px}
+  .intro h1{font-size:26px;letter-spacing:-.02em;margin:0 0 8px}
+  .intro p{color:#5a564e;max-width:74ch;margin:0 0 6px}
+  .note{font-size:13px;background:#fff;border:1px solid #dcd8cf;border-radius:8px;padding:10px 14px;max-width:78ch;color:#4a463e}
+  section.dir{margin-top:46px}
+  .dhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+  .dkey{font-size:12px;font-weight:800;padding:2px 9px;border-radius:6px;background:#1b1b1b;color:#fff}
+  .dhead h2{font-size:21px;margin:0;letter-spacing:-.01em}
+  .mood{color:#5a564e;font-size:13.5px;margin:0 0 8px;max-width:82ch}
+  .fonts{font-size:12.5px;color:#6a665e}
+  .sw{display:inline-block;width:20px;height:20px;border-radius:5px;border:1px solid rgba(0,0,0,.15);vertical-align:-4px;margin-right:3px}
+  .frame{border:1px solid #d5d1c8;border-radius:14px;overflow:hidden;box-shadow:0 6px 26px rgba(30,26,18,.08)}
+  .scroll{overflow-x:auto}
+
+  /* ---------- shared mock skeleton (tokens set per .mock) ---------- */
+  .mock{min-width:940px;background:var(--content);color:var(--ink);font-family:var(--body);display:grid;grid-template-columns:220px 1fr;min-height:520px}
+  .nav{background:var(--nav);border-right:1px solid var(--nav-line);padding:20px 14px;display:flex;flex-direction:column;gap:3px}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding:0 6px}
+  .brand .m{width:32px;height:32px;border-radius:9px;background:var(--mark);display:grid;place-items:center;color:var(--mark-ink);font-weight:800;font-size:15px;box-shadow:var(--mark-sh)}
+  .brand .bn{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-.01em;color:var(--nav-ink)}
+  .brand .bs{font-size:11px;color:var(--nav-sub);margin-top:-2px}
+  .ng{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--nav-sub);padding:14px 8px 6px}
+  .ni{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:9px;color:var(--nav-ink);font-weight:500;font-size:14px;position:relative}
+  .ni .ic{width:16px;height:16px;border-radius:4px;background:currentColor;opacity:.55}
+  .ni.on{background:var(--nav-on);color:var(--nav-on-ink);font-weight:700}
+  .ni.on .ic{opacity:1;background:var(--accent)}
+  .ni.on::before{content:"";position:absolute;left:-14px;top:50%;transform:translateY(-50%);width:3px;height:20px;border-radius:3px;background:var(--accent)}
+  .ni .bg{margin-left:auto;font-size:11px;font-weight:800;background:var(--accent-wash);color:var(--accent);padding:2px 8px;border-radius:99px}
+
+  .main{padding:28px 30px}
+  .top{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .proj{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:7px 12px;box-shadow:var(--card-sh)}
+  .proj .pj{width:24px;height:24px;border-radius:7px;background:var(--accent-wash);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:12px}
+  .proj .pn{font-weight:600;font-size:14px}
+  .proj .pc{font-size:11px;color:var(--sub)}
+  .spacer{flex:1}
+  .cta{background:var(--accent);color:var(--on-accent);border:none;border-radius:11px;padding:10px 16px;font-weight:700;font-size:14px;font-family:inherit;box-shadow:var(--accent-sh)}
+  .av{width:34px;height:34px;border-radius:50%;background:var(--mark);color:var(--mark-ink);display:grid;place-items:center;font-weight:800;font-size:12px}
+
+  .ptitle{font-family:var(--display);font-size:30px;font-weight:var(--disp-w,700);letter-spacing:-.02em;color:var(--ink);margin:0 0 3px}
+  .psub{color:var(--sub);font-size:14px;margin:0 0 22px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r,18px);box-shadow:var(--card-sh);padding:22px 24px}
+  .pipe .ph{font-size:13px;font-weight:700;color:var(--sub);margin-bottom:18px}
+  .flow{display:flex;gap:0}
+  .fst{flex:1;text-align:center}
+  .fnum{font-family:var(--display);font-size:38px;font-weight:var(--disp-w,700);line-height:1;letter-spacing:-.02em}
+  .fst .fl{font-size:12px;font-weight:600;color:var(--sub);margin-top:8px}
+  .fst .fd{width:10px;height:10px;border-radius:50%;margin:14px auto 0}
+  .c1{color:var(--s-draft)} .c1 .fd{background:var(--s-draft)}
+  .c2{color:var(--s-staged)} .c2 .fd{background:var(--s-staged)}
+  .c3{color:var(--s-pending)} .c3 .fd{background:var(--s-pending)}
+  .c4{color:var(--s-live)} .c4 .fd{background:var(--s-live)}
+
+  .row{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-top:18px}
+  .rail{display:flex;align-items:center;gap:0;margin-bottom:16px}
+  .rn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:var(--card);border:2px solid var(--line);color:var(--sub)}
+  .rn.done{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .rn.cur{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 4px var(--accent-wash)}
+  .rl{flex:1;height:2px;background:var(--line);margin:0 8px}
+  .rl.done{background:var(--accent)}
+  .rlab{font-size:12px;font-weight:600;color:var(--sub);margin-left:7px}
+  .src{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--card)}
+  .src.sel{border-color:var(--accent);background:var(--accent-wash)}
+  .chk{width:20px;height:20px;border-radius:6px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-size:12px;font-weight:800}
+  .src .sn{font-weight:600;font-size:13.5px}
+  .src .ss{font-size:11px;color:var(--sub)}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;margin-left:auto}
+  .pill.ok{color:var(--s-live);background:var(--live-bg)}
+  .ring{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%}
+  .ring svg{transform:rotate(-90deg)}
+  .rc{font-family:var(--display);font-size:40px;font-weight:var(--disp-w,700);line-height:1}
+  .rcl{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+
+  /* ============ V1 · Drafting Studio ============ */
+  .t-draft{
+    --content:#eef1f0; --card:#ffffff; --ink:#16211f; --sub:#5a6b66; --line:#dde5e2;
+    --nav:#0e3b3c; --nav-line:#154a4b; --nav-ink:#dfeeec; --nav-sub:#7ba7a3; --nav-on:#15504f; --nav-on-ink:#ffffff;
+    --accent:#e0872b; --accent-wash:#f8ecd9; --on-accent:#231303; --accent-sh:0 8px 20px rgba(224,135,43,.28);
+    --mark:linear-gradient(145deg,#e0872b,#c86f18); --mark-ink:#fff; --mark-sh:0 6px 16px rgba(224,135,43,.35);
+    --card-sh:0 2px 10px rgba(16,40,38,.05); --display:"Bricolage Grotesque"; --body:"Hanken Grotesk"; --r:16px;
+    --s-draft:#6c7a76; --s-staged:#b06a12; --s-pending:#0e6b6d; --s-live:#1c7a52; --live-bg:#dff3ea;
+  }
+  /* ============ V2 · Signal ============ */
+  .t-signal{
+    --content:#ffffff; --card:#ffffff; --ink:#0d0d0f; --sub:#5c5c66; --line:#e6e6ea;
+    --nav:#0d0d0f; --nav-line:#222; --nav-ink:#e9e9ee; --nav-sub:#8a8a94; --nav-on:#1a1a1f; --nav-on-ink:#fff;
+    --accent:#2b4bff; --accent-wash:#e8ecff; --on-accent:#fff; --accent-sh:0 8px 22px rgba(43,75,255,.3);
+    --mark:#2b4bff; --mark-ink:#fff; --mark-sh:0 6px 16px rgba(43,75,255,.32);
+    --card-sh:none; --display:"Syne"; --disp-w:800; --body:"Hanken Grotesk"; --r:10px;
+    --s-draft:#6c6c76; --s-staged:#a35a00; --s-pending:#2b4bff; --s-live:#0a7d46; --live-bg:#dcf5e7;
+  }
+  .t-signal .card{border-width:1.5px}
+  /* ============ V3 · Nocturne ============ */
+  .t-noct{
+    --content:#131418; --card:#1c1e24; --ink:#eceef2; --sub:#9aa0ab; --line:#2b2e36;
+    --nav:#0e0f13; --nav-line:#22242b; --nav-ink:#d4d8e0; --nav-sub:#6d7380; --nav-on:#1e2129; --nav-on-ink:#fff;
+    --accent:#c6f04a; --accent-wash:#26301a; --on-accent:#161a09; --accent-sh:0 8px 22px rgba(198,240,74,.22);
+    --mark:#c6f04a; --mark-ink:#161a09; --mark-sh:0 6px 16px rgba(198,240,74,.28);
+    --card-sh:0 2px 12px rgba(0,0,0,.4); --display:"Space Grotesk"; --disp-w:700; --body:"Hanken Grotesk"; --r:14px;
+    --s-draft:#8a909c; --s-staged:#e0b04a; --s-pending:#9db4ff; --s-live:#8ee06a; --live-bg:#1c2a17;
+  }
+
+  /* ============ RED variants ============ */
+  /* 1R · Drafting — red (committed oxblood nav) */
+  .t-draft-r{
+    --content:#eef0f0; --card:#ffffff; --ink:#1c1a1a; --sub:#6a6360; --line:#e3ddda;
+    --nav:#571620; --nav-line:#6b2029; --nav-ink:#f0dcde; --nav-sub:#b98a8f; --nav-on:#6d2029; --nav-on-ink:#ffffff;
+    --accent:#c62b3a; --accent-wash:#f8e3e5; --on-accent:#ffffff; --accent-sh:0 8px 20px rgba(198,43,58,.28);
+    --mark:linear-gradient(145deg,#c62b3a,#a01f2c); --mark-ink:#fff; --mark-sh:0 6px 16px rgba(198,43,58,.35);
+    --card-sh:0 2px 10px rgba(40,20,20,.05); --display:"Bricolage Grotesque"; --body:"Hanken Grotesk"; --r:16px;
+    --s-draft:#7a726f; --s-staged:#b06a12; --s-pending:#0e6b6d; --s-live:#1c7a52; --live-bg:#dff3ea;
+  }
+  /* 2R · Signal — red */
+  .t-signal-r{
+    --content:#ffffff; --card:#ffffff; --ink:#0d0d0f; --sub:#5c5c66; --line:#e6e6ea;
+    --nav:#0d0d0f; --nav-line:#222; --nav-ink:#e9e9ee; --nav-sub:#8a8a94; --nav-on:#1a1a1f; --nav-on-ink:#fff;
+    --accent:#e5352b; --accent-wash:#fde6e4; --on-accent:#fff; --accent-sh:0 8px 22px rgba(229,53,43,.3);
+    --mark:#e5352b; --mark-ink:#fff; --mark-sh:0 6px 16px rgba(229,53,43,.32);
+    --card-sh:none; --display:"Syne"; --disp-w:800; --body:"Hanken Grotesk"; --r:10px;
+    --s-draft:#6c6c76; --s-staged:#a35a00; --s-pending:#e5352b; --s-live:#0a7d46; --live-bg:#dcf5e7;
+  }
+  .t-signal-r .card{border-width:1.5px}
+  /* 3R · Nocturne — red */
+  .t-noct-r{
+    --content:#141317; --card:#1e1c20; --ink:#efeaea; --sub:#a39a9a; --line:#312d31;
+    --nav:#100e11; --nav-line:#251f22; --nav-ink:#e0d6d6; --nav-sub:#7a6f6f; --nav-on:#241f22; --nav-on-ink:#fff;
+    --accent:#ff5d54; --accent-wash:#331f1d; --on-accent:#2a0b08; --accent-sh:0 8px 22px rgba(255,93,84,.24);
+    --mark:#ff5d54; --mark-ink:#2a0b08; --mark-sh:0 6px 16px rgba(255,93,84,.3);
+    --card-sh:0 2px 12px rgba(0,0,0,.4); --display:"Space Grotesk"; --disp-w:700; --body:"Hanken Grotesk"; --r:14px;
+    --s-draft:#948a8a; --s-staged:#e0b04a; --s-pending:#ff9d95; --s-live:#8ee06a; --live-bg:#2a1a17;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <h1>More distinctive — same guided structure, new identity</h1>
+    <p>Each keeps everything you approved in Guided Canvas (grouped nav, the wizard, the numerals, the motion) — only the <b>identity</b> changes, to escape the warm-cream + Fraunces-serif + soft-violet look that reads "AI default / Claude-like." Fonts load live so you can judge the type. Pick one and I'll reskin the real app in it.</p>
+  </div>
+
+  <section class="dir">
+    <div class="dhead"><span class="dkey">1</span><h2>Drafting Studio</h2><span class="fonts">Bricolage Grotesque + Hanken Grotesk</span></div>
+    <p class="mood">Escapes cream by going <b>cool porcelain</b> content with a <b>committed deep-teal nav column</b> (the signature move), and carries warmth in a confident <b>marigold</b> accent — not the ground. Bricolage Grotesque gives titles + numerals real character. Architect's-desk precise, memorable, unmistakably not a default.
+      <span class="sw" style="background:#0e3b3c"></span><span class="sw" style="background:#eef1f0"></span><span class="sw" style="background:#e0872b"></span><span class="sw" style="background:#1c7a52"></span></p>
+    <div class="frame"><div class="scroll"><div class="mock t-draft" data-mock></div></div></div>
+  </section>
+
+  <section class="dir">
+    <div class="dhead"><span class="dkey">2</span><h2>Signal</h2><span class="fonts">Syne + Hanken Grotesk</span></div>
+    <p class="mood">Bright <b>true-white</b> paper (chroma 0, no warmth), near-black ink, a <b>graphite side rail</b>, and <b>one electric cobalt</b> as the single confident signal — used decisively, not softened. Syne is a genuinely distinctive display face; crisp near-square corners, no pillow. Editorial-technical, Swiss-signal, high-conviction.
+      <span class="sw" style="background:#0d0d0f"></span><span class="sw" style="background:#ffffff"></span><span class="sw" style="background:#2b4bff"></span><span class="sw" style="background:#0a7d46"></span></p>
+    <div class="frame"><div class="scroll"><div class="mock t-signal" data-mock></div></div></div>
+  </section>
+
+  <section class="dir">
+    <div class="dhead"><span class="dkey">3</span><h2>Nocturne</h2><span class="fonts">Space Grotesk + Hanken Grotesk</span></div>
+    <p class="mood">Commit to <b>dark-first</b>: a deep neutral instrument ground (no warm cream anywhere), light ink, and a <b>luminous chartreuse</b> signal reserved for the goal-state. Premium after-hours control-room feel, easy on the eyes for long sessions, and the furthest thing from the light-warm-AI look. (Still ships a light theme too.)
+      <span class="sw" style="background:#131418"></span><span class="sw" style="background:#1c1e24"></span><span class="sw" style="background:#c6f04a"></span><span class="sw" style="background:#9db4ff"></span></p>
+    <div class="frame"><div class="scroll"><div class="mock t-noct" data-mock></div></div></div>
+  </section>
+
+  <div class="intro" style="margin-top:64px;border-top:2px solid #1b1b1b;padding-top:26px">
+    <h1>The same three, in red</h1>
+    <p>Each direction with a red accent instead. For Drafting the committed nav column goes deep oxblood (its signature colored-nav, in red); Signal and Nocturne swap their accent to vermilion / luminous coral-red.</p>
+  </div>
+
+  <section class="dir">
+    <div class="dhead"><span class="dkey">1 · Red</span><h2>Drafting Studio</h2><span class="fonts">deep-oxblood nav + crimson accent · Bricolage Grotesque</span></div>
+    <div class="frame"><div class="scroll"><div class="mock t-draft-r" data-mock></div></div></div>
+  </section>
+
+  <section class="dir">
+    <div class="dhead"><span class="dkey">2 · Red</span><h2>Signal</h2><span class="fonts">graphite rail + vermilion signal · Syne</span></div>
+    <div class="frame"><div class="scroll"><div class="mock t-signal-r" data-mock></div></div></div>
+  </section>
+
+  <section class="dir">
+    <div class="dhead"><span class="dkey">3 · Red</span><h2>Nocturne</h2><span class="fonts">dark instrument + luminous coral-red · Space Grotesk</span></div>
+    <div class="frame"><div class="scroll"><div class="mock t-noct-r" data-mock></div></div></div>
+  </section>
+</div>
+
+<template id="mock">
+  <div class="nav">
+    <div class="brand"><span class="m">◆</span><span><span class="bn">Intent Studio</span><span class="bs">Knowledge Operations</span></span></div>
+    <div class="ng">Build</div>
+    <div class="ni on"><span class="ic"></span>Dashboard</div>
+    <div class="ni"><span class="ic"></span>Project Settings</div>
+    <div class="ni"><span class="ic"></span>Intent Studio</div>
+    <div class="ng">Govern</div>
+    <div class="ni"><span class="ic"></span>Review<span class="bg">12</span></div>
+    <div class="ni"><span class="ic"></span>Approvals</div>
+    <div class="ni"><span class="ic"></span>Intent Library</div>
+  </div>
+  <div class="main">
+    <div class="top">
+      <div class="proj"><span class="pj">CP</span><span><span class="pn">Cards &amp; Payments</span><br><span class="pc">4 topics</span></span></div>
+      <span class="spacer"></span>
+      <button class="cta">Generate intents</button>
+      <span class="av">LT</span>
+    </div>
+    <h1 class="ptitle">Good afternoon, Priya</h1>
+    <p class="psub">A calm read on where Cards &amp; Payments stands today.</p>
+    <div class="card pipe">
+      <div class="ph">Pipeline</div>
+      <div class="flow">
+        <div class="fst c1"><div class="fnum">48</div><div class="fl">Draft</div><div class="fd"></div></div>
+        <div class="fst c2"><div class="fnum">19</div><div class="fl">Staged</div><div class="fd"></div></div>
+        <div class="fst c3"><div class="fnum">7</div><div class="fl">Pending</div><div class="fd"></div></div>
+        <div class="fst c4"><div class="fnum">214</div><div class="fl">Live</div><div class="fd"></div></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="card">
+        <div class="rail">
+          <div class="rn done">✓</div><div class="rl done"></div>
+          <div class="rn cur">2</div><div class="rl"></div>
+          <div class="rn">3</div><div class="rl"></div>
+          <div class="rn">4</div>
+        </div>
+        <div class="src sel"><span class="chk">✓</span><span><span class="sn">Travel_Claims_FAQ_2026.docx</span><br><span class="ss">SharePoint · 12 Jul 2026</span></span><span class="pill ok">Indexed</span></div>
+        <div class="src"><span class="chk" style="background:transparent;border:2px solid var(--line)"></span><span><span class="sn">Baggage_Delay_Payouts.pdf</span><br><span class="ss">SharePoint · 02 Jul 2026</span></span><span class="pill ok">Indexed</span></div>
+      </div>
+      <div class="card ring">
+        <svg width="120" height="120" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="98"/></svg>
+        <div class="rc" style="margin-top:-78px">24</div>
+        <div class="rcl" style="margin-top:44px">intents drafted</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  const tpl=document.getElementById("mock");
+  document.querySelectorAll("[data-mock]").forEach(el=>el.appendChild(tpl.content.cloneNode(true)));
+</script>
+</body>
+</html>

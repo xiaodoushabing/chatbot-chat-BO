@@ -225,7 +225,7 @@ export default function Shell() {
     >
       {/* Brand */}
       <div
-        className={cn('flex items-center gap-3 border-b border-r border-line px-5', collapsed && 'justify-center px-0')}
+        className={cn('flex items-center gap-3 border-b border-r border-nav-line bg-nav px-5', collapsed && 'justify-center px-0')}
         style={{ gridArea: 'brand' }}
       >
         <span
@@ -236,8 +236,8 @@ export default function Shell() {
           <Sparkles size={19} />
         </span>
         <span className={cn('leading-tight', collapsed && 'sr-only')}>
-          <span className="block font-display text-md font-semibold tracking-[-0.02em] text-ink">Intent Studio</span>
-          <span className="block text-2xs tracking-wide text-ink-3">Knowledge Operations</span>
+          <span className="block font-display text-md font-semibold tracking-[-0.02em] text-nav-ink">Intent Studio</span>
+          <span className="block text-2xs tracking-wide text-nav-sub">Knowledge Operations</span>
         </span>
       </div>
 
@@ -265,14 +265,14 @@ export default function Shell() {
       {/* Grouped nav */}
       <nav
         aria-label="Primary"
-        className={cn('flex flex-col gap-1 overflow-y-auto border-r border-line py-4', collapsed ? 'px-3' : 'px-4')}
+        className={cn('flex flex-col gap-1 overflow-y-auto border-r border-nav-line bg-nav py-4', collapsed ? 'px-3' : 'px-4')}
         style={{ gridArea: 'nav' }}
       >
         {NAV_GROUPS.map(group => (
           <div key={group.label} className="flex flex-col gap-1">
             <p
               className={cn(
-                'px-3 pt-3 pb-1 text-2xs font-bold tracking-[0.08em] text-ink-3 uppercase',
+                'px-3 pt-3 pb-1 text-2xs font-bold tracking-[0.08em] text-nav-sub uppercase',
                 collapsed && 'sr-only',
               )}
             >
@@ -286,14 +286,14 @@ export default function Shell() {
                       'group relative flex items-center gap-3 rounded-(--radius-field) px-3 py-2.5 text-sm font-medium',
                       'transition-[transform,background-color,color,box-shadow] duration-200 ease-(--ease-out)',
                       isActive
-                        ? 'bg-bg font-semibold text-accent shadow-(--shadow-soft)'
-                        : 'text-ink-2 hover:translate-x-0.5 hover:bg-bg/60 hover:text-ink',
+                        ? 'bg-nav-on font-semibold text-nav-accent'
+                        : 'text-nav-ink hover:translate-x-0.5 hover:bg-nav-on/50 hover:text-nav-on-ink',
                       collapsed && 'justify-center px-0',
                     )}
                   >
                     <span
                       className={cn(
-                        'absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 origin-center rounded-full bg-accent',
+                        'absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 origin-center rounded-full bg-nav-accent',
                         'transition-transform duration-300 ease-(--ease-out)',
                         isActive ? 'scale-y-100' : 'scale-y-0',
                       )}
@@ -315,7 +315,7 @@ export default function Shell() {
           onClick={() => setCollapsed(v => !v)}
           aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
           className={cn(
-            'mt-auto flex items-center gap-3 rounded-(--radius-field) px-3 py-2.5 text-sm font-medium text-ink-3 transition-colors duration-150 ease-(--ease-out) hover:bg-bg hover:text-ink',
+            'mt-auto flex items-center gap-3 rounded-(--radius-field) px-3 py-2.5 text-sm font-medium text-nav-sub transition-colors duration-150 ease-(--ease-out) hover:bg-nav-on hover:text-nav-on-ink',
             collapsed && 'justify-center px-0',
           )}
         >

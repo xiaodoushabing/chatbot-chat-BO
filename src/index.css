@@ -1,63 +1,74 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/bricolage-grotesque';
 @import '@fontsource-variable/hanken-grotesk';
 @import '@fontsource-variable/jetbrains-mono';
 
 /* ─────────────────────────────────────────────────────────────
-   Guided Canvas — warm off-white canvas, white cards, indigo-violet
-   accent, Fraunces display + Hanken Grotesk UI. Committed light.
+   Drafting Studio — cool porcelain content, white cards, a committed
+   deep-teal nav column, a warm amber accent (warmth in the accent,
+   not the ground), Bricolage Grotesque display + Hanken Grotesk UI.
+   Light + dark, both first-class.
    ───────────────────────────────────────────────────────────── */
 :root {
-  --canvas: #f5f3ee; /* warm off-white page */
-  --canvas-2: #efebe3; /* deeper warm edge */
+  --canvas: #eef1f0; /* cool porcelain page */
+  --canvas-2: #e4eae8;
   --bg: #ffffff; /* card / surface */
-  --surface-2: #f0ece3; /* soft warm well (seg tracks, subtle fills) */
-  --surface-3: #e9e4da; /* deeper well */
+  --surface-2: #e7eceb; /* cool well */
+  --surface-3: #dde5e2;
 
-  --ink: #242019; /* warm near-black */
-  --ink-2: #57524a; /* muted (AA on white) */
-  --ink-3: #6e6a60; /* captions (AA on white) */
-  --border: #e7e2d8; /* warm hairline */
-  --border-soft: #f0ece3;
+  --ink: #16211f; /* deep teal-ink */
+  --ink-2: #4a5a56;
+  --ink-3: #6a7b76;
+  --border: #dbe4e1;
+  --border-soft: #e7eceb;
 
-  --accent: #4b41c4; /* considered indigo-violet */
-  --accent-press: #3a31a6;
+  --accent: #b3651a; /* warm amber (readable on white) */
+  --accent-press: #96550f;
   --on-accent: #ffffff;
-  --accent-wash: #ecebfb; /* pale violet wash */
-  --accent-wash-2: #dedcf7;
+  --accent-wash: #f7ecdc;
+  --accent-wash-2: #f0dfc4;
 
-  /* governance state palette (named to match the intent lifecycle) */
-  --draft: #65615a;
-  --draft-bg: #eeebe3;
-  --staged: #8a5b10; /* ochre */
-  --staged-bg: #fbf0dc;
-  --pending: #4b41c4;
-  --pending-bg: #ecebfb;
-  --live: #0a6e4b; /* emerald */
-  --live-bg: #ddf3e9;
+  /* committed deep-teal nav column */
+  --nav: #0e3b3c;
+  --nav-2: #0b3132;
+  --nav-ink: #dfeeec;
+  --nav-sub: #7ba7a3;
+  --nav-line: #17494a;
+  --nav-on: #16504f;
+  --nav-on-ink: #ffffff;
+  --nav-accent: #e6913a; /* bright marigold, high-contrast on teal */
 
-  /* semantic aliases (kept for existing component code) */
-  --ok: #0a6e4b;
-  --ok-bg: #ddf3e9;
-  --warn: #8a5b10;
-  --warn-bg: #fbf0dc;
-  --err: #b32218;
+  /* governance lifecycle */
+  --draft: #6c7a76;
+  --draft-bg: #e7ece9;
+  --staged: #9a6510; /* gold */
+  --staged-bg: #f7ecda;
+  --pending: #0e6b6d; /* teal */
+  --pending-bg: #dcefef;
+  --live: #1c7a52; /* green */
+  --live-bg: #ddf3ea;
+
+  --ok: #1c7a52;
+  --ok-bg: #ddf3ea;
+  --warn: #9a6510;
+  --warn-bg: #f7ecda;
+  --err: #b3241c;
   --err-bg: #fbe6e3;
-  --info: #4b41c4;
-  --info-bg: #ecebfb;
+  --info: #0e6b6d;
+  --info-bg: #dcefef;
 
-  --radius-ctl: 11px;
-  --radius-field: 12px;
-  --radius-md: 16px;
-  --radius-card: 22px;
+  --radius-ctl: 9px;
+  --radius-field: 11px;
+  --radius-md: 14px;
+  --radius-card: 18px;
 
   --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
   --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
 
-  --shadow-soft: 0 1px 2px rgba(40, 34, 22, 0.05), 0 1px 3px rgba(40, 34, 22, 0.04);
-  --shadow-2: 0 4px 10px rgba(40, 34, 22, 0.05), 0 12px 26px rgba(40, 34, 22, 0.06);
-  --shadow-pop: 0 10px 24px rgba(40, 34, 22, 0.08), 0 26px 60px rgba(40, 34, 22, 0.1);
-  --shadow-accent: 0 10px 26px rgba(75, 65, 196, 0.24);
+  --shadow-soft: 0 1px 2px rgba(16, 40, 38, 0.05), 0 1px 3px rgba(16, 40, 38, 0.04);
+  --shadow-2: 0 4px 10px rgba(16, 40, 38, 0.05), 0 12px 26px rgba(16, 40, 38, 0.07);
+  --shadow-pop: 0 10px 24px rgba(16, 40, 38, 0.09), 0 26px 60px rgba(16, 40, 38, 0.12);
+  --shadow-accent: 0 8px 22px rgba(179, 101, 26, 0.26);
 
   --z-dropdown: 10;
   --z-sticky: 20;
@@ -67,48 +78,57 @@
   --z-tooltip: 60;
 }
 
-/* Guided Canvas — dark: the same warm, calm identity after hours. */
+/* Drafting Studio — dark: the same instrument after hours. */
 .dark {
-  --canvas: #1a1712;
-  --canvas-2: #131109;
-  --bg: #24211b; /* elevated warm card */
-  --surface-2: #2c281f;
-  --surface-3: #34302a;
+  --canvas: #101817;
+  --canvas-2: #0a1110;
+  --bg: #18211f;
+  --surface-2: #1f2926;
+  --surface-3: #26312d;
 
-  --ink: #efe9de;
-  --ink-2: #b7b0a2;
-  --ink-3: #928a7d;
-  --border: #39342b;
-  --border-soft: #2c281f;
+  --ink: #e8efec;
+  --ink-2: #a9b8b3;
+  --ink-3: #82928d;
+  --border: #2b3733;
+  --border-soft: #1f2926;
 
-  --accent: #9488f7; /* luminous violet */
-  --accent-press: #a89ef9;
-  --on-accent: #17132e; /* dark ink on light violet */
-  --accent-wash: #2a2447;
-  --accent-wash-2: #342d59;
+  --accent: #e0913e; /* brighter amber for dark */
+  --accent-press: #ec9f4f;
+  --on-accent: #241403;
+  --accent-wash: #2c2417;
+  --accent-wash-2: #3a2f1e;
 
-  --draft: #a49d90;
-  --draft-bg: #2c281f;
-  --staged: #e0a94e;
-  --staged-bg: #382c1a;
-  --pending: #9488f7;
-  --pending-bg: #2a2447;
+  --nav: #0a2b2c;
+  --nav-2: #072121;
+  --nav-ink: #cfe3e0;
+  --nav-sub: #6a938f;
+  --nav-line: #103a3a;
+  --nav-on: #103a3a;
+  --nav-on-ink: #ffffff;
+  --nav-accent: #e6a24f;
+
+  --draft: #90a09a;
+  --draft-bg: #1f2926;
+  --staged: #d9a24a;
+  --staged-bg: #33291a;
+  --pending: #4fbfc2;
+  --pending-bg: #123030;
   --live: #4cc98d;
-  --live-bg: #16342633;
+  --live-bg: #14302666;
 
   --ok: #4cc98d;
-  --ok-bg: #16342633;
-  --warn: #e0a94e;
-  --warn-bg: #382c1a;
+  --ok-bg: #14302666;
+  --warn: #d9a24a;
+  --warn-bg: #33291a;
   --err: #f0897e;
   --err-bg: #3a1d1a;
-  --info: #9488f7;
-  --info-bg: #2a2447;
+  --info: #4fbfc2;
+  --info-bg: #123030;
 
   --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.35);
   --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.45), 0 14px 30px rgba(0, 0, 0, 0.4);
   --shadow-pop: 0 12px 28px rgba(0, 0, 0, 0.5), 0 28px 64px rgba(0, 0, 0, 0.55);
-  --shadow-accent: 0 10px 28px rgba(75, 65, 196, 0.4);
+  --shadow-accent: 0 8px 24px rgba(224, 145, 62, 0.28);
 }
 
 @theme inline {
@@ -129,6 +149,15 @@
   --color-accent-wash: var(--accent-wash);
   --color-accent-wash-2: var(--accent-wash-2);
 
+  --color-nav: var(--nav);
+  --color-nav-2: var(--nav-2);
+  --color-nav-ink: var(--nav-ink);
+  --color-nav-sub: var(--nav-sub);
+  --color-nav-line: var(--nav-line);
+  --color-nav-on: var(--nav-on);
+  --color-nav-on-ink: var(--nav-on-ink);
+  --color-nav-accent: var(--nav-accent);
+
   --color-draft: var(--draft);
   --color-draft-bg: var(--draft-bg);
   --color-staged: var(--staged);
@@ -148,18 +177,17 @@
   --color-info-bg: var(--info-bg);
 
   --font-sans: 'Hanken Grotesk Variable', system-ui, sans-serif;
-  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', monospace;
 
-  /* readable modern scale */
-  --text-2xs: 0.75rem; /* 12 */
-  --text-xs: 0.8125rem; /* 13 */
-  --text-sm: 0.875rem; /* 14 */
-  --text-base: 0.9375rem; /* 15 — body */
-  --text-md: 1.0625rem; /* 17 */
-  --text-lg: 1.375rem; /* 22 — display titles */
-  --text-xl: 1.875rem; /* 30 — page titles */
-  --text-2xl: 2.5rem; /* 40 */
+  --text-2xs: 0.75rem;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-base: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.875rem;
+  --text-2xl: 2.5rem;
 
   --radius-ctl: var(--radius-ctl);
   --radius-field: var(--radius-field);
@@ -183,7 +211,7 @@ html.dark {
 body {
   @apply text-ink font-sans text-base antialiased;
   background:
-    radial-gradient(1200px 700px at 88% -10%, #fbfaf6 0%, rgba(251, 250, 246, 0) 60%),
+    radial-gradient(1100px 680px at 90% -12%, #f7faf9 0%, rgba(247, 250, 249, 0) 60%),
     var(--canvas);
   min-height: 100vh;
   text-rendering: optimizeLegibility;
@@ -191,7 +219,7 @@ body {
 }
 .dark body {
   background:
-    radial-gradient(1200px 700px at 88% -10%, rgba(75, 65, 196, 0.1) 0%, rgba(75, 65, 196, 0) 60%),
+    radial-gradient(1100px 680px at 90% -12%, rgba(224, 145, 62, 0.06) 0%, rgba(224, 145, 62, 0) 60%),
     var(--canvas);
 }
 
