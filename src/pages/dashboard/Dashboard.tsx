@@ -48,7 +48,7 @@ function FlowStrip({ intents }: { intents: Intent[] }) {
   const stages: Array<{ key: keyof typeof STAGE_TONE; label: string; count: number; to: string; hint: string }> = [
     { key: 'draft', label: 'Draft', count: count('draft'), to: '/studio', hint: 'awaiting staging in Studio' },
     { key: 'staged', label: 'Staged', count: count('staged'), to: '/review', hint: 'in Review' },
-    { key: 'pending', label: 'Pending approval', count: count('pending_approval'), to: '/approvals', hint: 'with checkers' },
+    { key: 'pending', label: 'Pending', count: count('pending_approval'), to: '/approvals', hint: 'with checkers' },
     { key: 'live', label: 'Live', count: count('live'), to: '/library', hint: 'in the Intent Library' },
   ];
 
@@ -83,15 +83,17 @@ function FlowStrip({ intents }: { intents: Intent[] }) {
           );
         })}
       </div>
-      <div className="relative mx-[6%] mt-1 h-[3px] overflow-hidden rounded-full bg-line-soft">
-        <div
-          aria-hidden
-          className="absolute inset-0 origin-left rounded-full transition-transform duration-[1100ms] ease-(--ease-out)"
-          style={{
-            background: 'linear-gradient(90deg, var(--draft), var(--staged), var(--pending), var(--live))',
-            transform: go ? 'scaleX(1)' : 'scaleX(0)',
-          }}
-        />
+      <div className="mt-2 flex items-center gap-1.5 px-[3%]" aria-hidden>
+        {stages.map((s, i) => (
+          <div
+            key={s.key}
+            className={cn(
+              'h-[3px] flex-1 origin-left rounded-full transition-transform duration-500 ease-(--ease-out)',
+              STAGE_TONE[s.key].dot,
+            )}
+            style={{ transform: go ? 'scaleX(1)' : 'scaleX(0)', transitionDelay: `${i * 110}ms` }}
+          />
+        ))}
       </div>
     </div>
   );
@@ -403,8 +405,8 @@ export default function Dashboard() {
             <p className="mb-6 text-xs text-ink-3">Every intent, from first draft to live in the chatbot.</p>
             <FlowStrip intents={projectIntents} />
             {recentlyTouched > 0 && (
-              <div className="mt-6 flex items-center gap-2.5 rounded-(--radius-field) bg-accent-wash px-4 py-3 text-xs font-semibold text-accent">
-                <TrendingUp size={15} className="shrink-0" aria-hidden />
+              <div className="mt-6 flex items-center gap-2.5 rounded-(--radius-field) bg-surface-2 px-4 py-3 text-xs font-medium text-ink-2">
+                <TrendingUp size={15} className="shrink-0 text-accent" aria-hidden />
                 {plural(recentlyTouched, 'intent')} touched in the past 7 days.
               </div>
             )}

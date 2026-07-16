@@ -22,21 +22,21 @@
   --border: #dbe4e1;
   --border-soft: #e7eceb;
 
-  --accent: #b3651a; /* warm amber (readable on white) */
-  --accent-press: #96550f;
+  --accent: #c62b3a; /* crimson (readable on white) */
+  --accent-press: #a01f2c;
   --on-accent: #ffffff;
-  --accent-wash: #f7ecdc;
-  --accent-wash-2: #f0dfc4;
+  --accent-wash: #f8e3e5;
+  --accent-wash-2: #f2ccd0;
 
-  /* committed deep-teal nav column */
-  --nav: #0e3b3c;
-  --nav-2: #0b3132;
-  --nav-ink: #dfeeec;
-  --nav-sub: #7ba7a3;
-  --nav-line: #17494a;
-  --nav-on: #16504f;
+  /* committed deep-oxblood nav column */
+  --nav: #571620;
+  --nav-2: #4a121b;
+  --nav-ink: #f1dcde;
+  --nav-sub: #c39399;
+  --nav-line: #6b2029;
+  --nav-on: #6d2029;
   --nav-on-ink: #ffffff;
-  --nav-accent: #e6913a; /* bright marigold, high-contrast on teal */
+  --nav-accent: #f2939e; /* light rose, high-contrast on oxblood */
 
   /* governance lifecycle */
   --draft: #6c7a76;
@@ -68,7 +68,7 @@
   --shadow-soft: 0 1px 2px rgba(16, 40, 38, 0.05), 0 1px 3px rgba(16, 40, 38, 0.04);
   --shadow-2: 0 4px 10px rgba(16, 40, 38, 0.05), 0 12px 26px rgba(16, 40, 38, 0.07);
   --shadow-pop: 0 10px 24px rgba(16, 40, 38, 0.09), 0 26px 60px rgba(16, 40, 38, 0.12);
-  --shadow-accent: 0 8px 22px rgba(179, 101, 26, 0.26);
+  --shadow-accent: 0 8px 22px rgba(198, 43, 58, 0.26);
 
   --z-dropdown: 10;
   --z-sticky: 20;
@@ -80,32 +80,32 @@
 
 /* Drafting Studio — dark: the same instrument after hours. */
 .dark {
-  --canvas: #101817;
-  --canvas-2: #0a1110;
-  --bg: #18211f;
-  --surface-2: #1f2926;
-  --surface-3: #26312d;
+  --canvas: #17100f;
+  --canvas-2: #0f0908;
+  --bg: #221816;
+  --surface-2: #2b201e;
+  --surface-3: #332624;
 
-  --ink: #e8efec;
-  --ink-2: #a9b8b3;
-  --ink-3: #82928d;
-  --border: #2b3733;
-  --border-soft: #1f2926;
+  --ink: #f0e7e5;
+  --ink-2: #b9a9a6;
+  --ink-3: #8f817e;
+  --border: #352826;
+  --border-soft: #2b201e;
 
-  --accent: #e0913e; /* brighter amber for dark */
-  --accent-press: #ec9f4f;
-  --on-accent: #241403;
-  --accent-wash: #2c2417;
-  --accent-wash-2: #3a2f1e;
+  --accent: #e8556a; /* brighter crimson-rose for dark */
+  --accent-press: #ef6b7d;
+  --on-accent: #2a0a0e;
+  --accent-wash: #33191d;
+  --accent-wash-2: #43222a;
 
-  --nav: #0a2b2c;
-  --nav-2: #072121;
-  --nav-ink: #cfe3e0;
-  --nav-sub: #6a938f;
-  --nav-line: #103a3a;
-  --nav-on: #103a3a;
+  --nav: #3e0f16;
+  --nav-2: #300a10;
+  --nav-ink: #ecd4d7;
+  --nav-sub: #a87c82;
+  --nav-line: #4e141c;
+  --nav-on: #4e141c;
   --nav-on-ink: #ffffff;
-  --nav-accent: #e6a24f;
+  --nav-accent: #f2939e;
 
   --draft: #90a09a;
   --draft-bg: #1f2926;
