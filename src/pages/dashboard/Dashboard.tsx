@@ -397,7 +397,7 @@ export default function Dashboard() {
       />
 
       <div className="flex flex-col gap-10">
-        <div className="grid grid-cols-1 items-start gap-[22px] lg:grid-cols-[1.55fr_1fr]">
+        <div className="grid grid-cols-1 items-start gap-[22px] lg:grid-cols-[minmax(0,1.95fr)_minmax(0,1fr)]">
           <section aria-label="Intent pipeline" className={CARD}>
             <SectionHeader title="Pipeline" plain />
             <p className="mb-6 text-xs text-ink-3">Every intent, from first draft to live in the chatbot.</p>
