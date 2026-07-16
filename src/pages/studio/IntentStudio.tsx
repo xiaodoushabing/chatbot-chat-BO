@@ -159,6 +159,17 @@ export default function IntentStudio() {
   const [reviewSel, setReviewSel] = useState<Set<string>>(new Set());
   const patch = (p: Partial<GenConfig>) => setConfig(c => ({ ...c, ...p }));
 
+  // On step change, bring the top of the new step into view so it reads from the top.
+  const wizardTopRef = useRef<HTMLDivElement>(null);
+  const stepScrolled = useRef(false);
+  useEffect(() => {
+    if (!stepScrolled.current) {
+      stepScrolled.current = true;
+      return;
+    }
+    wizardTopRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }, [step, reduce]);
+
   const topicKey = topic?.id;
   useEffect(() => {
     setStep(0);
@@ -288,7 +299,7 @@ export default function IntentStudio() {
       />
 
       {topic && (
-        <div className="mx-auto max-w-4xl">
+        <div ref={wizardTopRef} className="mx-auto max-w-4xl scroll-mt-6">
           <WizardRail current={step} />
 
           <div className="relative">

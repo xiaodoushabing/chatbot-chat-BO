@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { AlertTriangle, ArrowRight, CheckCircle2, ClipboardCheck, Inbox, Sparkles, TrendingUp } from 'lucide-react';
 import { useStore } from '../../state/store';
@@ -39,11 +39,6 @@ const STAGE_TONE = {
 } as const;
 
 function FlowStrip({ intents }: { intents: Intent[] }) {
-  const [go, setGo] = useState(false);
-  useEffect(() => {
-    setGo(true);
-  }, []);
-
   const count = (state: Intent['state']) => intents.filter(i => i.state === state).length;
   const stages: Array<{ key: keyof typeof STAGE_TONE; label: string; count: number; to: string; hint: string }> = [
     { key: 'draft', label: 'Draft', count: count('draft'), to: '/studio', hint: 'awaiting staging in Studio' },
@@ -53,46 +48,30 @@ function FlowStrip({ intents }: { intents: Intent[] }) {
   ];
 
   return (
-    <div>
-      <div role="navigation" aria-label="Intent pipeline" className="flex items-stretch gap-1">
-        {stages.map(s => {
-          const tone = STAGE_TONE[s.key];
-          return (
-            <Link
-              key={s.key}
-              to={s.to}
-              aria-label={`${plural(s.count, `${s.label.toLowerCase()} intent`)} — ${s.hint}`}
-              className="group min-w-0 flex-1 rounded-(--radius-field) px-2 py-2.5 text-center transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
-            >
-              <span
-                className={cn(
-                  'block font-display text-2xl leading-none font-semibold tracking-[-0.02em] tabular-nums transition-transform duration-200 ease-(--ease-out) group-hover:scale-[1.06]',
-                  tone.text,
-                )}
-              >
-                {s.count}
-              </span>
-              <span className="mt-2.5 block text-2xs font-semibold tracking-wide text-ink-2 uppercase">{s.label}</span>
-              <span className="mt-1 block h-3.5 text-2xs text-ink-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 max-lg:hidden">
-                {s.hint}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
-      {/* Flow track — one segment per stage in its own colour, filling with a small stagger. */}
-      <div className="mt-3 flex items-center gap-1.5" aria-hidden>
-        {stages.map((s, i) => (
-          <div
+    <div role="navigation" aria-label="Intent pipeline" className="flex items-stretch gap-2">
+      {stages.map(s => {
+        const tone = STAGE_TONE[s.key];
+        return (
+          <Link
             key={s.key}
-            className={cn(
-              'h-[3px] flex-1 origin-left rounded-full transition-transform duration-500 ease-(--ease-out)',
-              STAGE_TONE[s.key].dot,
-            )}
-            style={{ transform: go ? 'scaleX(1)' : 'scaleX(0)', transitionDelay: `${i * 110}ms` }}
-          />
-        ))}
-      </div>
+            to={s.to}
+            aria-label={`${plural(s.count, `${s.label.toLowerCase()} intent`)} — ${s.hint}`}
+            title={s.hint}
+            className="group min-w-0 flex-1 rounded-(--radius-field) px-3 py-4 text-center transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
+          >
+            <span
+              className={cn(
+                'block font-display text-[2.75rem] leading-none font-semibold tracking-[-0.02em] tabular-nums transition-transform duration-200 ease-(--ease-out) group-hover:scale-[1.04]',
+                tone.text,
+              )}
+            >
+              {s.count}
+            </span>
+            <span className="mt-3 block text-xs font-semibold tracking-wide text-ink-2 uppercase">{s.label}</span>
+            <span className={cn('mx-auto mt-3.5 block h-2.5 w-2.5 rounded-full', tone.dot)} aria-hidden />
+          </Link>
+        );
+      })}
     </div>
   );
 }
@@ -118,19 +97,19 @@ function AttentionList({ items }: { items: AttentionItem[] }) {
     );
   }
   return (
-    <ul className="flex flex-col gap-0.5">
+    <ul className="flex flex-col gap-2.5">
       {items.map(item => (
         <li key={item.id}>
           <Link
             to={item.to}
-            className="group flex items-center gap-3 rounded-(--radius-field) px-3 py-3 transition-[background-color,transform] duration-200 ease-(--ease-out) hover:translate-x-0.5 hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
+            className="group flex items-start gap-3.5 rounded-(--radius-md) border border-line bg-canvas/50 px-4 py-3.5 transition-[background-color,border-color,transform,box-shadow] duration-200 ease-(--ease-out) hover:-translate-y-px hover:border-accent/30 hover:bg-bg hover:shadow-(--shadow-soft) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
           >
-            {item.pill}
+            <span className="mt-0.5 shrink-0">{item.pill}</span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-semibold text-ink">{item.title}</span>
-              <span className="block truncate text-xs text-ink-3">{item.meta}</span>
+              <span className="block text-sm font-semibold text-ink">{item.title}</span>
+              <span className="mt-0.5 block text-xs text-ink-3 line-clamp-2">{item.meta}</span>
             </span>
-            <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-accent">
+            <span className="mt-0.5 flex shrink-0 items-center gap-1 text-xs font-semibold text-accent">
               {item.action}
               <ArrowRight size={12} className="transition-transform duration-150 ease-(--ease-out) group-hover:translate-x-0.5" aria-hidden />
             </span>
@@ -396,31 +375,32 @@ export default function Dashboard() {
         }
       />
 
-      <div className="flex flex-col gap-10">
-        <div className="grid grid-cols-1 items-start gap-[22px] lg:grid-cols-[minmax(0,1.95fr)_minmax(0,1fr)]">
-          <section aria-label="Intent pipeline" className={CARD}>
+      <div className="flex flex-col gap-8">
+        {/* Pipeline — full width */}
+        <section aria-label="Intent pipeline" className={CARD}>
+          <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
             <SectionHeader title="Pipeline" plain />
-            <p className="mb-6 text-xs text-ink-3">Every intent, from first draft to live in the chatbot.</p>
-            <FlowStrip intents={projectIntents} />
             {recentlyTouched > 0 && (
-              <div className="mt-6 flex items-center gap-2.5 rounded-(--radius-field) bg-surface-2 px-4 py-3 text-xs font-medium text-ink-2">
-                <TrendingUp size={15} className="shrink-0 text-accent" aria-hidden />
-                {plural(recentlyTouched, 'intent')} touched in the past 7 days.
-              </div>
+              <span className="flex items-center gap-1.5 text-xs font-medium text-ink-3">
+                <TrendingUp size={13} className="text-accent" aria-hidden />
+                {plural(recentlyTouched, 'intent')} touched this week
+              </span>
             )}
-          </section>
+          </div>
+          <FlowStrip intents={projectIntents} />
+        </section>
 
-          <section aria-label="Needs my attention" className={CARD}>
-            <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
-              <h2 className="flex items-center gap-2 text-md font-semibold tracking-[-0.005em] text-ink">
-                <AlertTriangle size={16} className="text-staged" aria-hidden />
-                Needs your attention
-              </h2>
-              {attentionMeta && <span className="font-mono text-xs text-ink-3">{attentionMeta}</span>}
-            </div>
-            <AttentionList items={attention} />
-          </section>
-        </div>
+        {/* Needs your attention — its own row */}
+        <section aria-label="Needs my attention" className={CARD}>
+          <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
+            <h2 className="flex items-center gap-2 text-md font-semibold tracking-[-0.005em] text-ink">
+              <AlertTriangle size={16} className="text-staged" aria-hidden />
+              Needs your attention
+            </h2>
+            {attentionMeta && <span className="font-mono text-xs text-ink-3">{attentionMeta}</span>}
+          </div>
+          <AttentionList items={attention} />
+        </section>
 
         <section aria-label="Recent runs">
           <SectionHeader

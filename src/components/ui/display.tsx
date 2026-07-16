@@ -50,10 +50,10 @@ export function Pill({
 
 export function IndexStatusPill({ status }: { status: IndexStatus }) {
   const map: Record<IndexStatus, [Tone, string, LucideIcon]> = {
-    indexed: ['ok', 'Indexed', CheckCircle2],
-    not_indexed: ['warn', 'Not indexed', Circle],
-    indexing: ['info', 'Indexing', Loader2],
-    stale: ['warn', 'Stale', Clock3],
+    indexed: ['ok', 'Ready', CheckCircle2],
+    not_indexed: ['warn', 'Not ready', Circle],
+    indexing: ['info', 'Preparing…', Loader2],
+    stale: ['warn', 'Out of date', Clock3],
   };
   const [tone, label, icon] = map[status];
   return (
