@@ -54,36 +54,34 @@ function FlowStrip({ intents }: { intents: Intent[] }) {
 
   return (
     <div>
-      <div role="navigation" aria-label="Intent pipeline" className="flex items-stretch">
-        {stages.map((s, i) => {
+      <div role="navigation" aria-label="Intent pipeline" className="flex items-stretch gap-1">
+        {stages.map(s => {
           const tone = STAGE_TONE[s.key];
           return (
-            <div key={s.key} className="flex min-w-0 flex-1 items-stretch">
-              {i > 0 && <span className="my-2 w-px shrink-0 bg-line-soft" aria-hidden />}
-              <Link
-                to={s.to}
-                aria-label={`${plural(s.count, `${s.label.toLowerCase()} intent`)} — ${s.hint}`}
-                className="group min-w-0 flex-1 rounded-(--radius-ctl) px-2 py-2 text-center transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
+            <Link
+              key={s.key}
+              to={s.to}
+              aria-label={`${plural(s.count, `${s.label.toLowerCase()} intent`)} — ${s.hint}`}
+              className="group min-w-0 flex-1 rounded-(--radius-field) px-2 py-2.5 text-center transition-colors duration-150 ease-(--ease-out) hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent)"
+            >
+              <span
+                className={cn(
+                  'block font-display text-2xl leading-none font-semibold tracking-[-0.02em] tabular-nums transition-transform duration-200 ease-(--ease-out) group-hover:scale-[1.06]',
+                  tone.text,
+                )}
               >
-                <span
-                  className={cn(
-                    'block font-display text-2xl leading-none font-medium tracking-[-0.02em] tabular-nums transition-transform duration-200 ease-(--ease-out) group-hover:scale-[1.05]',
-                    tone.text,
-                  )}
-                >
-                  {s.count}
-                </span>
-                <span className="mt-2 block text-2xs font-semibold tracking-wide text-ink-2 uppercase">{s.label}</span>
-                <span className={cn('mx-auto mt-3 block h-2.5 w-2.5 rounded-full shadow-[0_0_0_4px_var(--bg)]', tone.dot)} aria-hidden />
-                <span className="mt-1.5 block h-3.5 text-2xs text-ink-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 max-lg:hidden">
-                  {s.hint}
-                </span>
-              </Link>
-            </div>
+                {s.count}
+              </span>
+              <span className="mt-2.5 block text-2xs font-semibold tracking-wide text-ink-2 uppercase">{s.label}</span>
+              <span className="mt-1 block h-3.5 text-2xs text-ink-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 max-lg:hidden">
+                {s.hint}
+              </span>
+            </Link>
           );
         })}
       </div>
-      <div className="mt-2 flex items-center gap-1.5 px-[3%]" aria-hidden>
+      {/* Flow track — one segment per stage in its own colour, filling with a small stagger. */}
+      <div className="mt-3 flex items-center gap-1.5" aria-hidden>
         {stages.map((s, i) => (
           <div
             key={s.key}
