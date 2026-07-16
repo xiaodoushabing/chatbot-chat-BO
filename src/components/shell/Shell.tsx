@@ -24,9 +24,12 @@ import { ToastHost } from '../ui/overlay';
 /* Grouped primary navigation — BUILD (make intents) then GOVERN (review them). */
 const NAV_GROUPS: { label: string; items: { to: string; label: string; icon: typeof LayoutDashboard; end?: boolean }[] }[] = [
   {
+    label: '',
+    items: [{ to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true }],
+  },
+  {
     label: 'Build',
     items: [
-      { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
       { to: '/settings', label: 'Project Settings', icon: FolderCog },
       { to: '/studio', label: 'Intent Studio', icon: Sparkles },
     ],
@@ -268,16 +271,18 @@ export default function Shell() {
         className={cn('flex flex-col gap-1 overflow-y-auto border-r border-nav-line bg-nav py-4', collapsed ? 'px-3' : 'px-4')}
         style={{ gridArea: 'nav' }}
       >
-        {NAV_GROUPS.map(group => (
-          <div key={group.label} className="flex flex-col gap-1">
-            <p
-              className={cn(
-                'px-3 pt-3 pb-1 text-2xs font-bold tracking-[0.08em] text-nav-sub uppercase',
-                collapsed && 'sr-only',
-              )}
-            >
-              {group.label}
-            </p>
+        {NAV_GROUPS.map((group, gi) => (
+          <div key={group.label || `group-${gi}`} className="flex flex-col gap-1">
+            {group.label && (
+              <p
+                className={cn(
+                  'px-3 pt-3 pb-1 text-2xs font-bold tracking-[0.08em] text-nav-sub uppercase',
+                  collapsed && 'sr-only',
+                )}
+              >
+                {group.label}
+              </p>
+            )}
             {group.items.map(item => (
               <NavLink key={item.to} to={item.to} end={item.end} title={item.label} className="block">
                 {({ isActive }) => (

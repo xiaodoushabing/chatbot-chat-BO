@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowLeft, ArrowRight, Check, ChevronsUpDown, FolderOpen } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronsUpDown, DatabaseZap, FolderOpen, RefreshCw } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
-import type { Topic } from '../../data/types';
-import { fmtDateTime } from '../../lib/format';
+import type { Source, Topic } from '../../data/types';
+import { fmtDateTime, plural } from '../../lib/format';
 import { Button } from '../../components/ui/controls';
 import { Collapsible, EmptyState, PageHeader, Pill } from '../../components/ui/display';
 import WizardRail from './WizardRail';
@@ -13,6 +13,78 @@ import StepConfigure, { type GenConfig } from './StepConfigure';
 import StepGenerate from './StepGenerate';
 import StepReview from './StepReview';
 import RunRail from './RunRail';
+
+/* ── Manage sources ── source handling (keep the list current + prepare docs
+   for the AI), kept SEPARATE from the generate wizard below. */
+function ManageSourcesPanel({
+  topicId,
+  topicSources,
+  lastSynced,
+  isContributor,
+}: {
+  topicId: string;
+  topicSources: Source[];
+  lastSynced: string | null;
+  isContributor: boolean;
+}) {
+  const { refreshSources, syncToIndex } = useStore();
+  const [checking, setChecking] = useState(false);
+  const notReady = topicSources.filter(
+    s =>
+      (s.indexStatus === 'not_indexed' || s.indexStatus === 'stale') &&
+      (!isContributor || s.accessible),
+  );
+  const preparing = topicSources.some(s => s.indexStatus === 'indexing');
+
+  const check = async () => {
+    setChecking(true);
+    await refreshSources(topicId);
+    setChecking(false);
+  };
+
+  return (
+    <div className="mx-auto mb-6 max-w-4xl">
+      <Collapsible
+        title="Manage sources"
+        defaultOpen={notReady.length > 0}
+        meta={
+          topicSources.length === 0
+            ? undefined
+            : `${plural(topicSources.length, 'source')} · ${notReady.length > 0 ? `${notReady.length} not ready` : 'all ready'}`
+        }
+      >
+        <div className="rounded-(--radius-card) border border-line bg-bg p-5 shadow-(--shadow-soft)">
+          <p className="max-w-prose text-sm text-ink-2">
+            Keep this topic's file list current and prepare documents so the AI can generate from
+            them. This is separate from choosing which sources to use in a run.
+          </p>
+          <p className="mt-2 font-mono text-xs text-ink-3">
+            {lastSynced ? `Last checked ${fmtDateTime(lastSynced)}` : 'Never checked'}
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-2.5">
+            <Button size="sm" loading={checking} onClick={check}>
+              {!checking && <RefreshCw size={13} aria-hidden />}
+              Check SharePoint for changes
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
+              disabled={notReady.length === 0 || preparing}
+              onClick={() => syncToIndex(notReady.map(s => s.id))}
+            >
+              <DatabaseZap size={13} aria-hidden />
+              {preparing
+                ? 'Preparing…'
+                : notReady.length === 0
+                  ? 'All sources ready'
+                  : `Prepare ${plural(notReady.length, 'source')}`}
+            </Button>
+          </div>
+        </div>
+      </Collapsible>
+    </div>
+  );
+}
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
 
@@ -115,6 +187,7 @@ const INITIAL_CONFIG = (tonality: string): GenConfig => ({
 export default function IntentStudio() {
   const {
     projectId,
+    user,
     topics,
     sources,
     runs,
@@ -299,8 +372,15 @@ export default function IntentStudio() {
       />
 
       {topic && (
-        <div ref={wizardTopRef} className="mx-auto max-w-4xl scroll-mt-6">
-          <WizardRail current={step} />
+        <>
+          <ManageSourcesPanel
+            topicId={topic.id}
+            topicSources={topicSources}
+            lastSynced={topic.lastSyncedAt}
+            isContributor={user.role === 'contributor'}
+          />
+          <div ref={wizardTopRef} className="mx-auto max-w-4xl scroll-mt-6">
+            <WizardRail current={step} />
 
           <div className="relative">
             {/* Keyed remount animates each step IN on mount. No exit-gating
@@ -412,7 +492,8 @@ export default function IntentStudio() {
               <RunRail topicRuns={topicRuns} activeRun={null} onDismiss={() => {}} />
             </Collapsible>
           </div>
-        </div>
+          </div>
+        </>
       )}
     </>
   );

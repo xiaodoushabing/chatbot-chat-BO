@@ -1,153 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import {
-  ChevronDown,
-  DatabaseZap,
-  FileSpreadsheet,
-  FileText,
-  FolderOpen,
-  Link2,
-  Lock,
-  RefreshCw,
-} from 'lucide-react';
+import { FileSpreadsheet, FileText, FolderOpen, Link2, Lock, Sparkles } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { useStore } from '../../state/store';
 import type { IndexStatus, Source } from '../../data/types';
 import { fmtDate, plural } from '../../lib/format';
-import { Button, Checkbox, SearchField, SegmentedControl, Select } from '../../components/ui/controls';
+import { Button, Checkbox, SearchField, Select } from '../../components/ui/controls';
 import { EmptyState, IndexStatusPill, TableSkeleton } from '../../components/ui/display';
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
 
-/* ── Two-axis sync control ── (kept from the original engine, restyled as a
-   separate step-header control — it is NOT part of the generate action). */
-
-type SyncCategory = 'all' | 'sharepoint' | 'url';
-type SyncLevel = 'shallow' | 'vector';
-
-function SyncControl({
-  topicId,
-  topicSources,
-  selected,
-  isContributor,
-}: {
-  topicId: string;
-  topicSources: Source[];
-  selected: Set<string>;
-  isContributor: boolean;
-}) {
-  const { refreshSources, syncToIndex } = useStore();
-  const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState<SyncCategory>('all');
-  const [level, setLevel] = useState<SyncLevel>('shallow');
-  const [busy, setBusy] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
-    document.addEventListener('mousedown', onDown);
-    window.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [open]);
-
-  const candidates = topicSources.filter(
-    s =>
-      (category === 'all' || s.kind === category) &&
-      (!isContributor || s.accessible) &&
-      (s.indexStatus === 'not_indexed' || s.indexStatus === 'stale'),
-  );
-  const selectedCandidates = candidates.filter(s => selected.has(s.id));
-  const vectorTargets = selectedCandidates.length > 0 ? selectedCandidates : candidates;
-  const scopeNote =
-    selectedCandidates.length > 0 ? 'from your source selection' : 'across the whole category';
-
-  const execute = async () => {
-    if (level === 'shallow') {
-      setBusy(true);
-      await refreshSources(topicId);
-      setBusy(false);
-    } else {
-      syncToIndex(vectorTargets.map(s => s.id));
-    }
-    setOpen(false);
-  };
-
-  return (
-    <div ref={ref} className="relative">
-      <Button size="sm" onClick={() => setOpen(v => !v)} aria-haspopup="dialog" aria-expanded={open}>
-        <DatabaseZap size={12} aria-hidden />
-        Sync
-        <ChevronDown
-          size={12}
-          className={cn('transition-transform duration-150', open && 'rotate-180')}
-          aria-hidden
-        />
-      </Button>
-      {open && (
-        <div
-          role="dialog"
-          aria-label="Sync sources"
-          className="absolute right-0 top-9.5 z-(--z-dropdown) w-84 rounded-(--radius-card) border border-line bg-bg p-4 shadow-(--shadow-pop)"
-        >
-          <div className="flex flex-col gap-4">
-            <fieldset className="flex flex-col gap-1.5">
-              <legend className="text-2xs font-bold tracking-wider text-ink-3 uppercase">
-                1 · Source category
-              </legend>
-              <SegmentedControl<SyncCategory>
-                options={[
-                  { value: 'all', label: 'All sources' },
-                  { value: 'sharepoint', label: 'SharePoint' },
-                  { value: 'url', label: 'URLs' },
-                ]}
-                value={category}
-                onChange={setCategory}
-              />
-            </fieldset>
-            <fieldset className="flex flex-col gap-1.5">
-              <legend className="text-2xs font-bold tracking-wider text-ink-3 uppercase">
-                2 · Sync level
-              </legend>
-              <SegmentedControl<SyncLevel>
-                options={[
-                  { value: 'shallow', label: 'Shallow listing' },
-                  { value: 'vector', label: 'Vector ingestion' },
-                ]}
-                value={level}
-                onChange={setLevel}
-              />
-              <p className="text-xs text-ink-2">
-                {level === 'shallow'
-                  ? 'Re-enumerates names and paths from SharePoint into the cache. Fast; does not touch the vector index.'
-                  : `Embeds content for GenAI matching. Targets the not-indexed and stale sources ${scopeNote}.`}
-              </p>
-            </fieldset>
-            <Button
-              variant="primary"
-              className="w-full"
-              loading={busy}
-              disabled={level === 'vector' && vectorTargets.length === 0}
-              onClick={execute}
-            >
-              {level === 'shallow'
-                ? 'Refresh file listing'
-                : vectorTargets.length === 0
-                  ? 'Nothing to ingest'
-                  : `Ingest ${plural(vectorTargets.length, 'source')}`}
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 /* ── A single selectable source row ── */
 
@@ -254,14 +116,16 @@ export default function StepSources({
   selected: Set<string>;
   setSelected: (next: Set<string>) => void;
 }) {
-  const { user, enumeratedTopics, markEnumerated, refreshSources, toast } = useStore();
+  const { user, enumeratedTopics, markEnumerated, toast } = useStore();
   const reduce = !!useReducedMotion();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [refreshing, setRefreshing] = useState(false);
   const enumerating = !enumeratedTopics[topicId];
   const isContributor = user.role === 'contributor';
+  const notReady = topicSources.filter(
+    s => s.indexStatus === 'not_indexed' || s.indexStatus === 'stale',
+  ).length;
 
   useEffect(() => {
     setSearch('');
@@ -305,38 +169,24 @@ export default function StepSources({
     setSelected(next);
   };
 
-  const doRefresh = async () => {
-    setRefreshing(true);
-    await refreshSources(topicId);
-    setRefreshing(false);
-  };
-
   return (
     <section
       aria-label="Select sources"
       className="rounded-(--radius-card) border border-line bg-bg p-6 shadow-(--shadow-2) sm:p-7"
     >
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h2 className="font-display text-lg font-medium tracking-[-0.01em] text-ink">
-            Select sources
-          </h2>
-          <p className="mt-1 text-sm text-ink-2">
-            Choose the documents and URLs to generate from. Only indexed sources can be used by GenAI.
+      <div className="mb-5">
+        <h2 className="font-display text-lg font-medium tracking-[-0.01em] text-ink">Select sources</h2>
+        <p className="mt-1 text-sm text-ink-2">
+          Choose the documents and URLs to generate from. Only sources marked{' '}
+          <span className="font-semibold text-ink">Ready</span> can be used.
+        </p>
+        {notReady > 0 && (
+          <p className="mt-3 flex items-center gap-2 rounded-(--radius-field) bg-warn-bg px-3.5 py-2.5 text-xs font-medium text-warn">
+            <Sparkles size={14} className="shrink-0" aria-hidden />
+            {plural(notReady, 'source')} {notReady === 1 ? "isn't" : "aren't"} ready yet — use{' '}
+            <span className="font-semibold">Manage&nbsp;sources</span> above to prepare them.
           </p>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <Button size="sm" loading={refreshing} onClick={doRefresh}>
-            {!refreshing && <RefreshCw size={12} aria-hidden />}
-            Refresh cache
-          </Button>
-          <SyncControl
-            topicId={topicId}
-            topicSources={topicSources}
-            selected={selected}
-            isContributor={isContributor}
-          />
-        </div>
+        )}
       </div>
 
       {!enumerating && topicSources.length > 0 && (
@@ -353,16 +203,16 @@ export default function StepSources({
             <option value="url">URLs</option>
           </Select>
           <Select
-            aria-label="Filter by ingestion state"
+            aria-label="Filter by readiness"
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value as StatusFilter)}
             className="w-40"
           >
-            <option value="all">All states</option>
-            <option value="indexed">Indexed</option>
-            <option value="not_indexed">Not indexed</option>
-            <option value="indexing">Indexing</option>
-            <option value="stale">Stale</option>
+            <option value="all">All statuses</option>
+            <option value="indexed">Ready</option>
+            <option value="not_indexed">Not ready</option>
+            <option value="indexing">Preparing</option>
+            <option value="stale">Out of date</option>
           </Select>
         </div>
       )}
@@ -378,12 +228,7 @@ export default function StepSources({
         <EmptyState
           icon={FolderOpen}
           title="No sources in this topic yet"
-          body="Drop documents into the topic's SharePoint folder, or add URLs to its manifest, then refresh the cache to pull them in."
-          action={
-            <Button size="sm" onClick={doRefresh} loading={refreshing}>
-              Refresh SharePoint cache
-            </Button>
-          }
+          body="Drop documents into the topic's SharePoint folder, or add URLs to its manifest, then use Manage sources above to check SharePoint for changes."
         />
       ) : (
         <>
