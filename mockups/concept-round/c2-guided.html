@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C2 Guided Script</title><link rel="stylesheet" href="wf.css">
+<style>
+.wrap{max-width:980px;margin:0 auto;padding:28px 32px 120px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0 26px}
+.st{border-top:4px solid var(--fill);padding-top:8px;font-size:13px;color:var(--t3)}
+.st.done{border-color:var(--t2);color:var(--t2)}
+.st.on{border-color:var(--t1);color:var(--t1);font-weight:600}
+.done-step{display:flex;gap:12px;align-items:center;padding:12px 16px;margin-bottom:12px}
+.foot{position:fixed;left:220px;right:0;bottom:0;background:var(--s);border-top:1px solid var(--b);padding:14px 32px;display:flex;align-items:center;gap:14px}
+</style></head><body>
+<div class="app">
+<nav class="nav"><div class="brand">Intent Studio</div>
+<a>Dashboard</a><div class="sec">Build</div><a>Project Settings</a><a>Intent Studio</a>
+<div class="sec">Govern</div><a>Review</a><a>Approvals</a><a class="on">UAT <span class="n">5</span></a><a>Intent Library</a></nav>
+<div>
+<div class="top"><span class="pill solid">Cards &amp; Payments</span><span class="sp"></span><span class="pill">UAT tester · Mei Chen</span></div>
+<div class="wrap">
+  <div class="row"><span class="lbl">UAT session · intent 2 of 5</span><span class="sp"></span><span class="muted">≈ 2 min each · </span><span class="btn">Skip for now</span></div>
+  <div class="bar" style="margin-top:10px"><i style="width:30%"></i></div>
+  <h1 style="margin-top:22px">How do I replace a lost card while overseas?</h1>
+  <div class="row muted" style="margin-top:4px">Credit Cards · New intent · submitted by Lisa Tan · checker Daniel Ong</div>
+
+  <div class="steps">
+    <div class="st done">1 · Know what it should say</div>
+    <div class="st on">2 · Ask it like a customer</div>
+    <div class="st">3 · Compare with today</div>
+    <div class="st">4 · Decide</div>
+  </div>
+
+  <div class="box done-step"><span class="pill on">✓</span><span><b>Intended answer read</b> <span class="muted">— lock in app, call 24h line, emergency card couriered overseas in 2 business days</span></span><span class="sp"></span><span class="muted">Show</span></div>
+
+  <div class="box" style="padding:22px">
+    <div class="row"><h2>Ask at least 3 different ways</h2><span class="sp"></span><span class="mono">2 / 3</span></div>
+    <p class="muted" style="margin:4px 0 16px">Type like a real customer — short, messy, typos welcome. Not sure what to ask? Use a suggested phrasing.</p>
+    <div class="col">
+      <div class="bubble me">lost my card in bangkok what do i do</div>
+      <div class="bubble bot">Lock your card instantly in the app under Cards › Lock. Call +65 6363 3333 (24h) and we'll courier an emergency replacement card to your overseas address within 2 business days, free of charge. <div style="margin-top:6px"><span class="pill">✓ matched this intent</span></div></div>
+      <div class="bubble me">can u send new card to my hotel</div>
+      <div class="bubble bot">Yes — when you call, give the hotel address and your stay dates. Emergency cards reach most cities within 2 business days. <div style="margin-top:6px"><span class="pill">✓ matched this intent</span></div></div>
+    </div>
+    <div class="row" style="margin:16px 0 8px;flex-wrap:wrap"><span class="lbl">Try</span><span class="pill">"emergency card while travelling"</span><span class="pill">"lost wallet in another country"</span><span class="pill">✦ ask it badly</span></div>
+    <div class="composer"><span class="in">Type a customer question…</span><span class="btn primary">Ask</span></div>
+  </div>
+  <div class="note" style="margin-top:14px">Step 3 replays every question as a side-by-side: <b>after approval</b> vs <b>customers today</b> · Step 4 = Approve to live / Reject with the failing question pre-filled</div>
+</div>
+<div class="foot"><span class="muted">Step 2 of 4 · ask 1 more question to continue</span><span class="sp"></span><span class="btn big">Back</span><span class="btn big primary" style="opacity:.45">Compare with today →</span></div>
+</div></div>
+</body></html>

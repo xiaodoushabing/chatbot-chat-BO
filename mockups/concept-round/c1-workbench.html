@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C1 Workbench</title><link rel="stylesheet" href="wf.css">
+<style>
+.wb{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 56px)}
+.queue{border-right:1px solid var(--b);background:var(--s2);padding:16px;overflow:auto}
+.qi{padding:10px 12px;border-radius:6px;border:1px solid transparent;margin-bottom:6px}
+.qi.on{background:var(--s);border-color:var(--b2)}
+.qi .q{font-weight:600;font-size:13px}
+.main{display:grid;grid-template-rows:auto 1fr auto auto;overflow:hidden}
+.aim{padding:18px 28px;border-bottom:1px solid var(--b);background:var(--s)}
+.thread{padding:20px 28px;overflow:auto;display:flex;flex-direction:column;gap:18px}
+.decide{border-top:1px solid var(--b);padding:14px 28px;background:var(--s);display:flex;align-items:center;gap:14px}
+.cover{display:grid;grid-template-columns:repeat(3,1fr);gap:0 18px;margin-top:10px}
+</style></head><body>
+<div class="app">
+<nav class="nav"><div class="brand">Intent Studio</div>
+<a>Dashboard</a><div class="sec">Build</div><a>Project Settings</a><a>Intent Studio</a>
+<div class="sec">Govern</div><a>Review</a><a>Approvals</a><a class="on">UAT <span class="n">5</span></a><a>Intent Library</a></nav>
+<div>
+<div class="top"><span class="pill solid">Cards &amp; Payments</span><span class="sp"></span><span class="pill">UAT tester · Mei Chen</span></div>
+<div class="wb">
+  <aside class="queue">
+    <div class="row" style="margin-bottom:12px"><h2>Pre-live</h2><span class="sp"></span><span class="mono muted">5 waiting</span></div>
+    <div class="box" style="padding:7px 10px;margin-bottom:14px;color:var(--t3)">All topics ▾</div>
+    <div class="lbl" style="margin:6px 0">Credit Cards</div>
+    <div class="qi on"><div class="q">How do I replace a lost card while overseas?</div><div class="row muted" style="font-size:12px;margin-top:4px">New intent · <span>3/6 covered</span></div><div class="bar" style="margin-top:6px"><i style="width:50%"></i></div></div>
+    <div class="qi"><div class="q">What is the annual fee waiver for the 365 card?</div><div class="muted" style="font-size:12px;margin-top:4px">Updates a live intent · not started</div></div>
+    <div class="qi"><div class="q">Can I raise my credit limit temporarily?</div><div class="muted" style="font-size:12px;margin-top:4px">New intent · not started</div></div>
+    <div class="qi" style="opacity:.6"><div class="q">How long does a refund take to reach my card?</div><div class="muted" style="font-size:12px;margin-top:4px">🔒 You submitted this — someone else must test it</div></div>
+    <div class="lbl" style="margin:14px 0 6px">Travel Insurance</div>
+    <div class="qi"><div class="q">Am I covered if my flight is cancelled due to weather?</div><div class="muted" style="font-size:12px;margin-top:4px">New intent · not started</div></div>
+  </aside>
+  <section class="main">
+    <div class="aim">
+      <div class="row"><span class="lbl">Testing</span><span class="pill">Credit Cards</span><span class="pill">New intent</span><span class="sp"></span><span class="muted" style="font-size:12px">Submitted by Lisa Tan · checker Daniel Ong</span></div>
+      <h1 style="margin-top:6px">How do I replace a lost card while overseas?</h1>
+      <div class="cover">
+        <div class="chk done"><b></b><span>lost my card abroad</span></div>
+        <div class="chk done"><b></b><span>replace card overseas</span></div>
+        <div class="chk done"><b></b><span>card stolen on holiday</span></div>
+        <div class="chk"><b></b><span>emergency card while travelling</span></div>
+        <div class="chk"><b></b><span>can you send a new card to my hotel</span></div>
+        <div class="chk"><b></b><span>lost wallet in another country</span></div>
+      </div>
+    </div>
+    <div class="thread">
+      <div class="bubble me">lost my card in bangkok what do i do</div>
+      <div class="cmp sig">
+        <div class="new"><div class="h"><span class="lbl">After approval · pre-live</span><span class="pill on">✓ this intent</span></div>
+          Lock your card instantly in the app under Cards › Lock. Call +65 6363 3333 (24h) and we'll courier an emergency replacement card to your overseas address within 2 business days, free of charge.</div>
+        <div class="old"><div class="h"><span class="lbl">Customers today · live</span><span class="pill">Report a lost card</span></div>
+          Lock your card in the app and call our hotline. A replacement card will be mailed to your registered address in 5–7 working days.</div>
+      </div>
+      <div class="bubble me">can u send new card to my hotel</div>
+      <div class="cmp">
+        <div class="new"><div class="h"><span class="lbl">After approval · pre-live</span><span class="pill on">✓ this intent</span></div>Yes — when you call, give the hotel address and your stay dates. Emergency cards reach most cities within 2 business days.</div>
+        <div class="old"><div class="h"><span class="lbl">Customers today · live</span><span class="pill">No match</span></div><span class="muted">Sorry, I didn't get that. Try rephrasing, or chat with an agent.</span></div>
+      </div>
+      <div class="note" style="align-self:center">Each question asked ticks off the closest utterance above · same answer on both sides = "no change" badge</div>
+    </div>
+    <div style="padding:0 28px 12px"><div class="composer"><span class="in">Ask the way a customer would…</span><span class="btn">✦ Suggest a phrasing</span><span class="btn primary">Ask</span></div></div>
+    <div class="decide">
+      <div><div style="font-weight:600">2 questions · 3 of 6 phrasings covered</div><div class="muted" style="font-size:12px">Transcript is attached to your decision as evidence</div></div>
+      <span class="sp"></span><span class="btn big">Reject → back to Review</span><span class="btn big primary">Approve to live</span>
+    </div>
+  </section>
+</div></div></div>
+</body></html>

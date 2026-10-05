@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UAT Concept Round</title>
+<style>
+:root{--bg:#f2f2f2;--s:#fff;--b:#d6d6d6;--t1:#1a1a1a;--t3:#5c5c5c}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.55 system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--t1);padding:32px 40px 60px}
+h1{font-size:28px;letter-spacing:-.01em}
+.sub{color:var(--t3);margin:6px 0 28px;max-width:900px}
+.c{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:20px 22px;margin-bottom:28px}
+.c h2{font-size:19px;margin-bottom:4px}
+.c p{color:var(--t3);margin-bottom:6px;max-width:1000px}
+.c p b{color:var(--t1)}
+.c a.shot{display:block;margin-top:14px;border:1px solid var(--b);border-radius:6px;overflow:hidden}
+.c img{display:block;width:100%}
+.open{font-size:13px;color:var(--t1)}
+</style></head><body>
+<h1>UAT tab — three interaction models</h1>
+<p class="sub">Grey wireframes, no styling yet: the question is <b>the shape of the work</b>, not the look. All three use the same content and the same signature (live vs pre-live comparison). Click a screenshot to open the full wireframe. Your current Approvals screen is at the bottom for reference.</p>
+
+<div class="c" style="border:2px solid var(--t1)"><h2>C4 · Pre-live chatbot (your direction)</h2>
+<p><b>Model:</b> a list of intents that changed in pre-live (New or Updated) next to a free-chat pre-live bot. Click an intent to test it: you see what changed (live today vs pre-live), phrasings to tap and ask, then <b>Pass → submit for live approval</b> or <b>Fail → back to Pending review</b>. The current (live-only) bot is set aside for v2, and its slot is kept in the layout.</p>
+<a class="shot" href="c4-overview.html"><img src="c4-overview.png" alt="C4 overview wireframe"></a>
+<a class="shot" href="c4-intent.html"><img src="c4-intent.png" alt="C4 intent test wireframe"></a></div>
+
+<div class="c"><h2>C1 · Workbench</h2>
+<p><b>Model:</b> queue on the left, aim at one intent, chat in the middle. Every question you ask returns <i>after approval</i> vs <i>customers today</i> side by side; the utterance checklist fills as you go; the decision bar is always visible.</p>
+<p><b>Optimises for:</b> speed and control. Testers jump freely between intents. Best for repeat testers clearing a queue.</p>
+<a class="shot" href="c1-workbench.html"><img src="c1-workbench.png" alt="C1 Workbench wireframe"></a></div>
+
+<div class="c"><h2>C2 · Guided test script</h2>
+<p><b>Model:</b> one intent at a time, four steps: know what it should say → ask it 3 ways → compare with today → decide. Then it automatically moves to the next intent.</p>
+<p><b>Optimises for:</b> first-time and non-technical testers. Hard to do it wrong, and the evidence is consistent. Costs a few more clicks for experienced testers.</p>
+<a class="shot" href="c2-guided.html"><img src="c2-guided.png" alt="C2 Guided wireframe"></a></div>
+
+<div class="c"><h2>C3 · Customer's-eye chat</h2>
+<p><b>Model:</b> a replica of the real chatbot widget. You chat freely like a customer across live and all pre-live intents. Pre-live answers are tagged, with a "what customers get today" flip. Every pre-live intent you trigger lands in a tray for approve or reject.</p>
+<p><b>Optimises for:</b> realism and catching collisions, such as a new intent taking a question that a live one used to answer. The weak point: there's no aiming, so some intents may never get tested.</p>
+<a class="shot" href="c3-customer-eye.html"><img src="c3-customer-eye.png" alt="C3 Customer's-eye wireframe"></a></div>
+
+<div class="c"><h2>Reference · current Approvals screen</h2>
+<a class="shot" href="../../docs/poc/baseline/approvals-light.png"><img src="../../docs/poc/baseline/approvals-light.png" alt="Current approvals screen"></a></div>
+</body></html>

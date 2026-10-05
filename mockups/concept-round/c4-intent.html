@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C4 Intent Test</title><link rel="stylesheet" href="wf.css">
+<style>
+.pg{display:grid;grid-template-columns:1fr 760px;gap:20px;padding:18px 24px 0;height:calc(100vh - 56px - 76px)}
+.left{display:flex;flex-direction:column;gap:14px;overflow:auto;min-height:0;padding-bottom:16px}
+.chg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--b2);border-radius:8px;overflow:hidden;font-size:13px}
+.chg>div{padding:12px 14px}.chg>div+div{border-left:1px solid var(--b)}
+.chg .old{background:var(--s2);color:var(--t2)}
+.decide{position:fixed;left:220px;right:0;bottom:0;height:76px;background:var(--s);border-top:1px solid var(--b);padding:0 24px;display:flex;align-items:center;gap:14px}
+</style></head><body>
+<div class="app">
+<nav class="nav"><div class="brand">Intent Studio</div>
+<a>Dashboard</a><div class="sec">Build</div><a>Project Settings</a><a>Intent Studio</a>
+<div class="sec">Govern</div><a>Review</a><a>Approvals</a><a class="on">UAT <span class="n">4</span></a><a>Intent Library</a></nav>
+<div>
+<div class="top"><span class="pill solid">Cards &amp; Payments</span><span class="muted">UAT › Intent 1 of 4</span><span class="sp"></span><span class="pill">UAT tester · Mei Chen</span></div>
+<div class="pg">
+  <section class="left">
+    <div class="row"><span class="pill solid">Updated</span><span class="pill">Credit Cards</span><span class="sp"></span><span class="muted" style="font-size:12px">by Lisa Tan · pre-live approved by Daniel Ong</span></div>
+    <h1>What is the annual fee waiver for the 365 card?</h1>
+    <div><div class="lbl" style="margin-bottom:6px">What changed</div>
+      <div class="chg sig">
+        <div class="old"><div class="lbl">Live today</div>Annual fee S$192.60, waived for the first year. Call us to request a waiver after that.</div>
+        <div><div class="lbl">Pre-live</div>Annual fee S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.</div>
+      </div></div>
+    <div class="box" style="padding:14px 16px"><div class="row"><div class="lbl">Try these phrasings · tap to ask</div><span class="sp"></span><span class="mono">2 / 6</span></div>
+      <div class="bar" style="margin:8px 0 10px"><i style="width:33%"></i></div>
+      <div class="chk done"><b></b><span>whats the annual fee for 365</span></div>
+      <div class="chk done"><b></b><span>365 card fee waiver</span></div>
+      <div class="chk"><b></b><span>do i have to pay yearly fee on my 365 card</span></div>
+      <div class="chk"><b></b><span>how to get annual fee waived</span></div>
+      <div class="chk"><b></b><span>365 card charges every year?</span></div>
+      <div class="chk"><b></b><span>can the 365 fee be waived after 1st year</span></div>
+      <div class="row" style="margin-top:8px"><span class="pill">✦ ask it badly</span><span class="muted" style="font-size:12px">Your own questions count too</span></div>
+    </div>
+  </section>
+  <section class="bots">
+    <div class="bot sig">
+      <div class="bh"><b>Pre-live bot</b><span class="pill solid">testing this intent</span></div>
+      <div class="bb">
+        <div class="bubble me">whats the annual fee for 365</div>
+        <div class="bubble bot">The 365 Card has an annual fee of S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.<div style="margin-top:6px"><span class="pill on">✓ matched this intent</span></div></div>
+        <div class="bubble me">365 card fee waiver</div>
+        <div class="bubble bot">The 365 Card has an annual fee of S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.<div style="margin-top:6px"><span class="pill on">✓ matched this intent</span></div></div>
+        <div class="bubble me">annual fee</div>
+        <div class="bubble bot">Which card do you mean? 365, Titanium or Rewards?<div style="margin-top:6px"><span class="pill">✕ matched "Card fees — clarify"</span> <span class="pill">⚑ flag for fail</span></div></div>
+      </div>
+      <div class="bf"><div class="composer"><span class="in">Ask like a customer…</span><span class="btn primary">Send</span></div></div>
+    </div>
+    <div class="bot ghost"><div style="font-weight:600;color:var(--t2)">Current bot (live only)</div><div style="font-size:13px;margin-top:6px;max-width:240px">v2: mirrors each question so both answers sit side by side.</div><div class="pill" style="margin-top:12px">Deferred · v2</div></div>
+  </section>
+</div>
+<div class="decide"><div><div style="font-weight:600">3 questions · 2 of 6 phrasings · 1 flagged</div><div class="muted" style="font-size:12px">The transcript is attached to your decision</div></div><span class="sp"></span>
+  <span class="btn big">Fail → back to Pending review</span><span class="btn big primary">Pass → submit for live approval</span></div>
+</div></div>
+</body></html>

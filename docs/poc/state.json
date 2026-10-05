@@ -4,11 +4,11 @@
     "key_ask": "A business user can verify a pre-live intent and make a confident approve/reject call in under 2 minutes, unaided",
     "demo_audience": "Same client stakeholders who approved earlier backoffice rounds; convinced by approving one and rejecting one intent unaided",
     "end_user": "UAT testers: anyone except the submitter of the intent for approval",
-    "interaction_model": null
+    "interaction_model": "Two chatbots (current + pre-live), pre-live built first: changed-intents queue (New/Updated) is the hero -> click an intent -> test in the pre-live bot beside a What-changed card -> Pass/Fail; passed intents are grouped into a versioned release; current bot slot reserved as a v2 rail"
   },
   "tier": "T2",
   "current_stage": 1,
-  "current_step": "concept-round",
+  "current_step": "variety-round",
   "checkpoint": "9db4461",
   "migrated": false,
   "iteration": {
@@ -25,8 +25,73 @@
     "locked": []
   },
   "concept": {
-    "candidates": [],
-    "locked": []
+    "candidates": [
+      {
+        "id": 1,
+        "name": "C1 Workbench",
+        "composition": "workbench",
+        "status": "eliminated",
+        "notes": [
+          {
+            "at": "2026-10-05T01:56:34+00:00",
+            "note": "cramped (mild) -> queue, 6-phrasing grid, chat and decision bar share one view; Approve fully active at 3/6 with no enough-bar; collapse queue once an intent is open, show coverage threshold beside Approve; UX laws: Fitts pass; Von Restorff fail -> heavy frame only on comparison card, solid fill only on Approve; Hick pass; Zeigarnik/goal-gradient pass; Miller pass; Generic look n/a (wireframe)",
+            "source": "reviewer",
+            "revision": 0
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "C2 Guided test script",
+        "composition": "guided-flow",
+        "status": "eliminated",
+        "notes": [
+          {
+            "at": "2026-10-05T01:56:34+00:00",
+            "note": "buried -> live-vs-pre-live comparison only appears at step 3; show live answer beside each pre-live reply in step 2 and merge steps 2+3; UX laws: Fitts pass; Von Restorff fail -> signature absent from view, emphasis on progress bars; Hick pass; Zeigarnik/goal-gradient pass; Miller pass; Generic look n/a (wireframe)",
+            "source": "reviewer",
+            "revision": 0
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "C3 Customer's-eye chat",
+        "composition": "customer-eye-chat",
+        "status": "eliminated",
+        "notes": [
+          {
+            "at": "2026-10-05T01:56:34+00:00",
+            "note": "scattered -> approve/reject per hit intent in side panel away from evidence, only hit-count coverage, live answer hidden behind toggle; one focused intent in panel with checklist + decision, auto-expand live answer; UX laws: Fitts fail -> two equal Approve buttons; Von Restorff fail -> competing emphasis; Hick fail -> four decision buttons at once; Zeigarnik/goal-gradient fail -> no per-intent coverage; Miller pass; Generic look n/a (wireframe)",
+            "source": "reviewer",
+            "revision": 0
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name": "C4 Pre-live chatbot",
+        "composition": "combined-customer-eye-chat",
+        "status": "locked",
+        "notes": [
+          {
+            "at": "2026-10-05T02:18:38+00:00",
+            "note": "buried -> overview free-chat bot outweighs the to-test queue; make queue the hero with one solid 'Test next (1 of 4)', demote overview bot; UX laws: Overview: Fitts fail -> four equal outlined Test buttons; Von Restorff fail -> bot frame, pill, bubbles, Send compete; Hick pass; Zeigarnik/goal-gradient pass; Miller pass; Intent: Fitts pass; Von Restorff fail -> heavy treatment on What-changed only, plain bot frame; Hick pass; Zeigarnik/goal-gradient pass; Miller pass; Generic look n/a (wireframe)",
+            "source": "reviewer",
+            "revision": 0
+          },
+          {
+            "at": "2026-10-05T02:32:44+00:00",
+            "note": "keep",
+            "source": "owner",
+            "revision": 0
+          }
+        ]
+      }
+    ],
+    "locked": [
+      4
+    ]
   },
   "build_mode": null,
   "wave": {
@@ -59,22 +124,22 @@
     {
       "id": 1,
       "name": "Design",
-      "status": "pending",
+      "status": "active",
       "artifact": null,
       "sub_skill": "design-jam",
       "steps": [
         {
           "name": "concept-round",
-          "status": "pending",
+          "status": "done",
           "artifact": null,
-          "dispatched": null,
+          "dispatched": "design-jam",
           "reason": null
         },
         {
           "name": "concept-locked",
-          "status": "pending",
+          "status": "done",
           "artifact": null,
-          "dispatched": null,
+          "dispatched": "design-jam",
           "reason": null
         },
         {

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C3 Customer Eye</title><link rel="stylesheet" href="wf.css">
+<style>
+.stage{display:grid;grid-template-columns:1fr 400px;height:calc(100vh - 56px)}
+.left{display:flex;justify-content:center;align-items:flex-start;padding:28px;background:var(--fill)}
+.phone{width:400px;height:720px;border:10px solid #2a2a2a;border-radius:36px;background:var(--s);display:flex;flex-direction:column;overflow:hidden}
+.ph-top{padding:14px 16px;border-bottom:1px solid var(--b);font-weight:600}
+.ph-body{flex:1;padding:14px;display:flex;flex-direction:column;gap:10px;overflow:auto;font-size:13px}
+.ph-body .bubble{max-width:86%}
+.tag{display:flex;gap:6px;margin-top:6px;font-size:11px}
+.flip{border:1.5px dashed var(--b2);border-radius:10px;padding:8px 10px;font-size:12px;color:var(--t2);background:var(--s2);align-self:flex-start;max-width:86%}
+.tray{border-left:1px solid var(--b);background:var(--s);padding:20px;overflow:auto}
+.hit{border:1px solid var(--b);border-radius:6px;padding:12px;margin-bottom:10px}
+</style></head><body>
+<div class="app">
+<nav class="nav"><div class="brand">Intent Studio</div>
+<a>Dashboard</a><div class="sec">Build</div><a>Project Settings</a><a>Intent Studio</a>
+<div class="sec">Govern</div><a>Review</a><a>Approvals</a><a class="on">UAT <span class="n">5</span></a><a>Intent Library</a></nav>
+<div>
+<div class="top"><span class="pill solid">Cards &amp; Payments</span><span class="pill">Chatting as: customer · live + 5 pre-live intents</span><span class="sp"></span><span class="pill">UAT tester · Mei Chen</span></div>
+<div class="stage">
+  <div class="left">
+    <div class="phone">
+      <div class="ph-top">Ask us anything <span class="muted" style="font-weight:400">· test mode</span></div>
+      <div class="ph-body">
+        <div class="bubble me">lost my card in bangkok what do i do</div>
+        <div class="bubble bot">Lock your card instantly in the app under Cards › Lock. Call +65 6363 3333 (24h) and we'll courier an emergency replacement card to your overseas address within 2 business days, free of charge.
+          <div class="tag"><span class="pill solid">pre-live</span><span class="pill sig">⇄ what customers get today</span></div></div>
+        <div class="flip"><b>Today (live):</b> Lock your card in the app and call our hotline. A replacement card will be mailed to your registered address in 5–7 working days.</div>
+        <div class="bubble me">whats the annual fee for 365</div>
+        <div class="bubble bot">The 365 Card has an annual fee of S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.
+          <div class="tag"><span class="pill solid">pre-live · updates live</span><span class="pill">⇄ today</span></div></div>
+        <div class="bubble me">how do i report stolen card</div>
+        <div class="bubble bot">…<div class="tag"><span class="pill solid">pre-live</span><span class="pill">⚠ used to go to "Report a lost card"</span></div></div>
+      </div>
+      <div style="padding:10px;border-top:1px solid var(--b)"><div class="composer"><span class="in">Type a message</span><span class="btn primary">Send</span></div></div>
+    </div>
+  </div>
+  <aside class="tray">
+    <div class="row"><h2>Pre-live hit this session</h2><span class="sp"></span><span class="mono muted">2 of 5</span></div>
+    <p class="muted" style="font-size:13px;margin:4px 0 14px">Chat freely. Any pre-live intent you trigger lands here for a decision.</p>
+    <div class="hit sig"><div style="font-weight:600">Replace a lost card while overseas</div><div class="muted" style="font-size:12px">Credit Cards · hit 2× · 1 stole a live question ⚠</div>
+      <div class="row" style="margin-top:10px"><span class="btn">Reject</span><span class="btn primary">Approve to live</span></div></div>
+    <div class="hit"><div style="font-weight:600">Annual fee waiver — 365 card</div><div class="muted" style="font-size:12px">Credit Cards · hit 1× · updates live</div>
+      <div class="row" style="margin-top:10px"><span class="btn">Reject</span><span class="btn primary">Approve to live</span></div></div>
+    <div class="lbl" style="margin:18px 0 8px">Not triggered yet</div>
+    <div class="chk"><b></b><span>Raise my credit limit temporarily</span></div>
+    <div class="chk"><b></b><span>Flight cancelled due to weather — covered?</span></div>
+    <div class="chk" style="opacity:.6"><b></b><span>🔒 Refund timing (you submitted it)</span></div>
+    <div class="note" style="margin-top:16px">Click an untriggered intent → see its sample utterances to try</div>
+  </aside>
+</div></div></div>
+</body></html>

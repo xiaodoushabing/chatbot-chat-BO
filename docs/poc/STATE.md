@@ -7,10 +7,11 @@ poc_forge_state: v1  (generated -- edit via poc-state.py)
 **End-user:** UAT testers: anyone except the submitter of the intent for approval
 **Adopted:** baseline docs/poc/baseline/ · boot: ok
 
-**Stage:** 1 Design (pending) | **Tier:** T2 | **Iteration:** 1
-**Current step:** concept-round
-**Next:** 1.concept-round (sub-skill: design-jam)
+**Stage:** 1 Design (active) | **Tier:** T2 | **Iteration:** 1
+**Current step:** variety-round
+**Next:** 1.variety-round (sub-skill: design-jam)
 
+Concept candidates: C1 Workbench (eliminated), C2 Guided test script (eliminated), C3 Customer's-eye chat (eliminated), C4 Pre-live chatbot (locked)
 ## Artifacts
 - brief: docs/poc/brief.md
 

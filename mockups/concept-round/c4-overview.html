@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C4 Pre-live Overview</title><link rel="stylesheet" href="wf.css">
+<style>
+.pg{display:grid;grid-template-columns:1fr 760px;gap:20px;padding:22px 24px;height:calc(100vh - 56px)}
+.left{display:flex;flex-direction:column;gap:14px;min-height:0}
+.stat{display:flex;gap:18px;font-size:13px}
+.stat b{font-family:'Bricolage Grotesque';font-size:20px;display:block}
+</style></head><body>
+<div class="app">
+<nav class="nav"><div class="brand">Intent Studio</div>
+<a>Dashboard</a><div class="sec">Build</div><a>Project Settings</a><a>Intent Studio</a>
+<div class="sec">Govern</div><a>Review</a><a>Approvals</a><a class="on">UAT <span class="n">4</span></a><a>Intent Library</a></nav>
+<div>
+<div class="top"><span class="pill solid">Cards &amp; Payments</span><span class="sp"></span><span class="pill">UAT tester · Mei Chen</span></div>
+<div class="pg">
+  <section class="left">
+    <div><h1>UAT · Pre-live</h1><p class="muted">Intents approved for pre-live. Test each one in the pre-live bot, then pass or fail it.</p></div>
+    <div class="stat box" style="padding:12px 16px"><div><b>7</b>changed</div><div><b>4</b>to test</div><div><b>2</b>passed</div><div><b>1</b>failed</div></div>
+    <div class="row"><span class="pill on">To test 4</span><span class="pill">Passed 2</span><span class="pill">Failed 1</span><span class="sp"></span><span class="box" style="padding:6px 10px;color:var(--t3)">All topics ▾</span></div>
+    <div class="box" style="overflow:auto">
+    <table class="tbl">
+      <tr><th>Change</th><th>Intent</th><th>Tested</th><th></th></tr>
+      <tr class="on"><td><span class="pill solid">Updated</span></td><td><b>What is the annual fee waiver for the 365 card?</b><div class="muted">Credit Cards · by Lisa Tan</div></td><td class="mono">0 / 6</td><td><span class="btn">Test →</span></td></tr>
+      <tr><td><span class="pill">New</span></td><td><b>How do I replace a lost card while overseas?</b><div class="muted">Credit Cards · by Lisa Tan</div></td><td class="mono">3 / 6</td><td><span class="btn">Test →</span></td></tr>
+      <tr><td><span class="pill">New</span></td><td><b>Can I raise my credit limit temporarily?</b><div class="muted">Credit Cards · by Arjun Rao</div></td><td class="mono">0 / 5</td><td><span class="btn">Test →</span></td></tr>
+      <tr style="opacity:.55"><td><span class="pill">New</span></td><td><b>How long does a refund take to reach my card?</b><div class="muted">🔒 You submitted this — another tester must test it</div></td><td class="mono">—</td><td></td></tr>
+    </table></div>
+    <div class="note">Change = <b>New</b> (no live equivalent) or <b>Updated</b> (replaces a live intent's answer). Clicking a row opens the intent test view.</div>
+  </section>
+  <section class="bots">
+    <div class="bot sig">
+      <div class="bh"><b>Pre-live bot</b><span class="pill solid">live + 7 pre-live</span><span class="sp"></span><span class="muted" style="font-size:12px">free chat</span></div>
+      <div class="bb">
+        <div class="bubble me">whats the annual fee for 365</div>
+        <div class="bubble bot">The 365 Card has an annual fee of S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.<div style="margin-top:6px"><span class="pill solid">pre-live · Updated</span> <span class="pill">365 annual fee waiver</span></div></div>
+        <div class="bubble me">lost wallet in japan</div>
+        <div class="bubble bot">Lock your card instantly in the app under Cards › Lock, then call +65 6363 3333 (24h). We'll courier an emergency card to you within 2 business days.<div style="margin-top:6px"><span class="pill solid">pre-live · New</span> <span class="pill">Replace lost card overseas</span></div></div>
+      </div>
+      <div class="bf"><div class="composer"><span class="in">Ask like a customer…</span><span class="btn primary">Send</span></div></div>
+    </div>
+    <div class="bot ghost"><div style="font-weight:600;color:var(--t2)">Current bot (live only)</div><div style="font-size:13px;margin-top:6px;max-width:240px">Coming next: the same question goes to both bots, so you see what customers get today next to the pre-live answer.</div><div class="pill" style="margin-top:12px">Deferred · v2</div></div>
+  </section>
+</div></div></div>
+</body></html>
