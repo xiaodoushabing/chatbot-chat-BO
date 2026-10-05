@@ -68,7 +68,23 @@ UatTest   { id, intent_id, tester, started_at, decided_at, result: pass|fail, re
 
 ## 5. Screens
 
-### 5.1 UAT tab (new; under GOVERN, between Approvals and Intent Library)
+### 5.0 Navigation (owner: pre-live and live are parallel processes)
+
+```
+Dashboard
+BUILD           Project Settings · Intent Studio
+PRE-LIVE · UAT  Review  (badge)  → page "Review for UAT"
+                Test    (badge)  → page "Test in UAT"
+LIVE            Review  (badge)  → page "Review for Live"
+                Library          → page "Live library"
+APPROVALS       Approvals (badge) → one page, categories: To UAT · To Live · History
+```
+
+- **Review is one page component used twice**, filtered by stage. "Review for UAT" is today's Review page: it lists *Pending review* intents, and its action is "Submit for approval to UAT". "Review for Live" lists *UAT passed* intents; its action is "Create release vN+1", and each card shows its test evidence.
+- **Badges** count the items waiting at that step.
+- **Phasing:** Phase 1 = the Test in UAT page, the statuses (§2), the engine contract (§4) and the error states (§6). Phase 2 = Review for Live, the To Live approval, and Library versions and rollback. Until Phase 2 ships, passed intents wait in UAT passed.
+
+### 5.1 Test in UAT (new page; nav PRE-LIVE · UAT → Test)
 
 - **Entry:** opens the test view with the first untested intent selected. There is no separate landing page.
 - **Layout:** the main nav collapses to icons on this tab only. Left to right: checklist panel, intent column, UAT bot ("Customer view"), and the "Current bot · coming in v2" rail.
@@ -77,7 +93,7 @@ UatTest   { id, intent_id, tester, started_at, decided_at, result: pass|fail, re
   - **Tag:** New (not in the live artefact) or Updated (same ID in the live artefact with a different answer).
   - **Status:** to test · testing now · passed · in release vN · failed · sent back.
   - Click a row to open it. "Next untested →" jumps to the next untested intent. Testing can happen in any order.
-  - **Owner only:** "Create release vN+1" in the footer. It opens the list of **UAT passed** intents with checkboxes; the owner submits the selected ones (status → 6).
+  - Footer: "N passed · ready in Review for Live →" (a link). Releases are created in Review for Live, not here.
 - **"What changed for customers":**
   - **Customers today** is the intent's answer from the live artefact. For a New intent it reads "No answer today".
   - **After release** is the UAT answer.
@@ -93,21 +109,21 @@ UatTest   { id, intent_id, tester, started_at, decided_at, result: pass|fail, re
   - **Fail** opens an inline reason box, pre-filled from the first flagged turn. Send back saves the `UatTest` and applies R1.
 - **Empty state:** "Nothing in UAT. Intents appear here once approved to UAT."
 
-### 5.2 Approvals
+### 5.2 Approvals (one page)
 
-- Two request types: **To UAT** (today's flow, unchanged) and **Release to live** (new).
+- Category tabs: **To UAT** (today's flow, unchanged), **To Live** (release requests, new) and **History**.
 - **Release detail:** the version, the submitter, and each intent with Customers today | After release. Each intent also shows its test evidence: tester, date, number of questions, and a link to the transcript.
 - Approve / Reject (with a note) applies §3 and R2. R4 is enforced: the submitter sees their own release with no decision buttons.
 
-### 5.3 Review
+### 5.3 Review for UAT / Review for Live (one component, two stages)
 
-- Rename "Staged" to "Pending review".
-- Intents returned by R1 show a "Failed in UAT" or "Rejected" tag, the reason, and a link to the transcript.
+- **Review for UAT:** today's Review page. Rename "Staged" to "Pending review". Intents returned by R1 show a "Failed in UAT" or "Rejected" tag, the reason, and a link to the transcript.
+- **Review for Live:** the same layout, listing **UAT passed** intents. Each card shows Customers today | After release and the test evidence (tester, date, questions, transcript link). Checkboxes, then **Create release vN+1**, which submits to Approvals → To Live (status → 6). Owner only.
 
 ### 5.4 Intent Library
 
 - The header reads "Live vN · since <date>".
-- A new **Releases** tab lists the history (version, status, intent count, who and when). Owners can start **Roll back to vN** on any superseded version (§3).
+- A **Releases** tab lists the history (version, status, intent count, who and when). Owners can start **Roll back to vN** on any superseded version (§3); it is submitted to Approvals → To Live.
 
 ### 5.5 Dashboard
 
@@ -133,11 +149,11 @@ UatTest   { id, intent_id, tester, started_at, decided_at, result: pass|fail, re
 
 ## 8. Acceptance: the demo script
 
-1. A tester opens **UAT**. The checklist shows every intent at statuses 4–6 with New/Updated tags.
+1. A tester opens **PRE-LIVE · UAT → Test**. The checklist shows every intent at statuses 4–6 with New/Updated tags.
 2. They open an **Updated** intent, turn on **Show changes**, ask 2–3 phrasings (each ✓ answered by this intent), and press **Pass**. The row shows passed, and the status is **UAT passed**.
 3. They open a second intent and ask a question that another intent answers. The answer is flagged automatically, **Fail** becomes primary with the reason pre-filled, and they press **Send back**. The intent appears in **Review** as Pending review, with the reason and the transcript.
-4. The owner opens **Create release vN+1**, ticks the passed intent and submits. It appears in **Approvals → Release to live**, and the owner can't approve it.
-5. A different user approves it. The **Library** shows **Live vN+1**, and the live chatbot serves the new answer.
+4. The owner opens **LIVE → Review** ("Review for Live"), ticks the passed intent and presses **Create release vN+1**. It appears in **Approvals → To Live**, and the owner can't approve it.
+5. A different user approves it. **LIVE → Library** shows **Live vN+1**, and the live chatbot serves the new answer.
 6. Each test decision (steps 2–3) takes under 2 minutes, unaided.
 
 ## 9. Workflow parity (adopt mode)
