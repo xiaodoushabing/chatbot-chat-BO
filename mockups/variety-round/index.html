@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UAT Variety Round</title>
+<style>
+:root{--bg:#eef1f0;--s:#fff;--b:#dbe4e1;--t1:#16211f;--t3:#566762}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17100f;--s:#221816;--b:#3a2c2a;--t1:#f0e7e5;--t3:#b9a9a6}}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.55 system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--t1);padding:32px 40px 60px}
+h1{font-size:30px;letter-spacing:-.01em}
+.sub{color:var(--t3);margin:8px 0 28px;max-width:940px}
+.c{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:22px;margin-bottom:28px}
+.c h2{font-size:20px;margin-bottom:6px}
+.c p{color:var(--t3);max-width:1040px;margin-bottom:4px}.c p b{color:var(--t1)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.pair a{display:block;border:1px solid var(--b);border-radius:8px;overflow:hidden}
+.pair img{display:block;width:100%}
+.links{margin-top:10px;font-size:13px}.links a{color:var(--t1);margin-right:16px}
+</style></head><body>
+<h1>UAT tab: three visual treatments</h1>
+<p class="sub">These are real screens in your crimson brand, all showing the same intent-test screen (concept C4 with the reviewer's fixes). Only the <b>shape</b>, the <b>density</b> and the treatment of <b>"What changed for customers"</b> differ between them. Each pair shows light on the left and dark on the right. Click a screenshot or link to open the live page.</p>
+
+<div class="c" style="border:2px solid var(--t1)"><h2>V4 · Ledger × Device (your mix)</h2>
+<p><b>What it combines:</b> V1's flat, dense style; V3's customer-view chatbot, with a lighter frame; and "What changed" as <b>Customers today | After release</b>. A <b>Show changes</b> toggle, off by default, switches on the colours: grey strike-through for what's removed, green highlight for what's added. To reduce how much is on screen at once, the phrasings you've already asked collapse into "✓ 3 asked".</p>
+<p>Top row: light mode, with Show changes off, then on. Bottom row: dark mode, off then on.</p>
+<div class="pair"><a href="proof.html?v=mix"><img src="mix-light.png" alt="Mix light, changes hidden"></a><a href="proof.html?v=mix&diff=1"><img src="mix-light-diff.png" alt="Mix light, changes shown"></a></div>
+<div class="pair"><a href="proof.html?v=mix&theme=dark"><img src="mix-dark.png" alt="Mix dark, changes hidden"></a><a href="proof.html?v=mix&theme=dark&diff=1"><img src="mix-dark-diff.png" alt="Mix dark, changes shown"></a></div></div>
+
+<div class="c"><h2>V1 · Ledger</h2>
+<p><b>Feel:</b> dense, flat, hairline borders, small radius. "What changed" is an <b>inline redline</b> (struck-out = live today, underlined = after release), like tracked changes in a contract.</p>
+<p><b>For the demo audience:</b> the fastest read of what actually changed. Very "instrument". It may feel severe to business users.</p>
+<div class="pair"><a href="proof.html?v=ledger"><img src="ledger-light.png" alt="Ledger light"></a><a href="proof.html?v=ledger&theme=dark"><img src="ledger-dark.png" alt="Ledger dark"></a></div></div>
+
+<div class="c"><h2>V2 · Studio</h2>
+<p><b>Feel:</b> your current app's own language: soft cards, large radius, generous spacing. "What changed" is shown as <b>stacked before/after cards</b>, with "After release" marked by a crimson edge.</p>
+<p><b>For the demo audience:</b> the closest match to the screens they already approved. It's calm and familiar, and it takes up the most vertical space.</p>
+<div class="pair"><a href="proof.html?v=studio"><img src="studio-light.png" alt="Studio light"></a><a href="proof.html?v=studio&theme=dark"><img src="studio-dark.png" alt="Studio dark"></a></div></div>
+
+<div class="c"><h2>V3 · Device</h2>
+<p><b>Feel:</b> the customer's view. The pre-live bot sits in a <b>phone frame</b>, as customers will see it in the app. "What changed" is shown as <b>today's reply → the reply after release</b>, drawn as chat bubbles.</p>
+<p><b>For the demo audience:</b> the most tangible ("this is what your customer gets"). The phone frame makes the chat column narrower.</p>
+<div class="pair"><a href="proof.html?v=device"><img src="device-light.png" alt="Device light"></a><a href="proof.html?v=device&theme=dark"><img src="device-dark.png" alt="Device dark"></a></div></div>
+
+<div class="c"><h2>Reference · your current Review screen</h2>
+<div class="pair"><a href="../../docs/poc/baseline/review-light.png"><img src="../../docs/poc/baseline/review-light.png" alt="Current review screen light"></a><a href="../../docs/poc/baseline/review-dark.png"><img src="../../docs/poc/baseline/review-dark.png" alt="Current review screen dark"></a></div></div>
+</body></html>

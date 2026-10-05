@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UAT Proof Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Hanken+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* App tokens (backoffice-ui-design/src/index.css) — brand kept */
+:root{
+  --canvas:#eef1f0;--bg:#fff;--surface-2:#e7eceb;--surface-3:#dde5e2;
+  --ink:#16211f;--ink-2:#4a5a56;--ink-3:#566762;--border:#dbe4e1;--border-soft:#e7eceb;
+  --accent:#c62b3a;--accent-press:#a01f2c;--on-accent:#fff;--accent-wash:#f8e3e5;--accent-wash-2:#f2ccd0;
+  --nav:#571620;--nav-ink:#f1dcde;--nav-sub:#c39399;--nav-line:#6b2029;--nav-on:#6d2029;--nav-accent:#f2939e;
+  --staged:#84560a;--staged-bg:#f7ecda;--pending:#0e6b6d;--pending-bg:#dcefef;--live:#1c7a52;--live-bg:#ddf3ea;
+  --prelive:#2c55a8;--prelive-bg:#e2eafa;
+  --err:#b3241c;--err-bg:#fbe6e3;
+  --shadow-soft:0 1px 2px rgba(16,40,38,.05),0 1px 3px rgba(16,40,38,.04);
+  --shadow-2:0 4px 10px rgba(16,40,38,.05),0 12px 26px rgba(16,40,38,.07);
+  --font-sans:'Hanken Grotesk',system-ui,sans-serif;--font-display:'Bricolage Grotesque',system-ui,sans-serif;--font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --device:#16211f;
+}
+.dark{
+  --canvas:#17100f;--bg:#221816;--surface-2:#2b201e;--surface-3:#332624;
+  --ink:#f0e7e5;--ink-2:#b9a9a6;--ink-3:#9a8b88;--border:#3a2c2a;--border-soft:#2b201e;
+  --accent:#e8556a;--accent-press:#ef6b7d;--on-accent:#2a0a0e;--accent-wash:#33191d;--accent-wash-2:#43222a;
+  --nav:#3e0f16;--nav-ink:#ecd4d7;--nav-sub:#a87c82;--nav-line:#4e141c;--nav-on:#4e141c;
+  --staged:#d9a24a;--staged-bg:#33291a;--pending:#4fbfc2;--pending-bg:#123030;--live:#4cc98d;--live-bg:#143026;
+  --prelive:#8fb0f2;--prelive-bg:#1a2440;
+  --err:#f0897e;--err-bg:#3a1d1a;
+  --shadow-soft:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.35);
+  --shadow-2:0 4px 12px rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.4);
+  --device:#0b0706;
+}
+/* Candidate axes: shape + density */
+.v-ledger{--r:6px;--r-ctl:5px;--pad:14px;--gap:12px;--lift:none;--fs:14px;--bub:6px}
+.v-studio{--r:18px;--r-ctl:9px;--pad:22px;--gap:20px;--lift:var(--shadow-soft);--fs:15px;--bub:16px}
+.v-device{--r:12px;--r-ctl:8px;--pad:18px;--gap:16px;--lift:var(--shadow-soft);--fs:15px;--bub:18px}
+
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font:400 var(--fs)/1.5 var(--font-sans);color:var(--ink);background:var(--canvas);font-feature-settings:"tnum"}
+h1,h2{font-family:var(--font-display);letter-spacing:-.015em;font-weight:650;text-wrap:balance}
+.app{display:grid;grid-template-columns:232px 1fr;height:100vh}
+/* nav (unchanged app chrome) */
+.nav{background:var(--nav);color:var(--nav-ink);display:flex;flex-direction:column;padding:16px 12px}
+.brand{display:flex;gap:10px;align-items:center;padding:4px 8px 18px;border-bottom:1px solid var(--nav-line);margin:0 -12px 12px;padding-left:20px}
+.brand .mk{width:34px;height:34px;border-radius:9px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:700;font-family:var(--font-display)}
+.brand b{display:block;font-family:var(--font-display);font-size:16px}.brand small{color:var(--nav-sub);font-size:12px}
+.nav .sec{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--nav-sub);margin:16px 12px 6px;font-weight:600}
+.nav a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;color:var(--nav-ink);text-decoration:none;font-size:14px;font-weight:500}
+.nav a.on{background:var(--nav-on);color:#fff;box-shadow:inset 3px 0 0 var(--nav-accent)}
+.nav a .n{margin-left:auto;font-size:11px;font-weight:700;background:var(--nav-accent);color:#3e0f16;border-radius:999px;padding:1px 7px}
+/* main */
+.main{display:grid;grid-template-rows:64px auto 1fr auto;min-width:0;height:100vh}
+.top{display:flex;align-items:center;gap:12px;padding:0 28px;border-bottom:1px solid var(--border)}
+.proj{display:flex;align-items:center;gap:10px;border:1px solid var(--border);background:var(--bg);border-radius:12px;padding:6px 12px 6px 6px}
+.proj i{width:28px;height:28px;border-radius:7px;background:var(--accent-wash);color:var(--accent);display:grid;place-items:center;font:700 11px var(--font-sans);font-style:normal}
+.proj b{font-size:13px;display:block;line-height:1.2}.proj small{font-size:11px;color:var(--ink-3)}
+.role{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--prelive);background:var(--prelive-bg);border-radius:999px;padding:4px 10px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--surface-3);display:grid;place-items:center;font-size:12px;font-weight:700}
+.crumbs{display:flex;align-items:center;gap:10px;padding:14px 28px 0;font-size:13px;color:var(--ink-3)}
+.crumbs b{color:var(--ink);font-weight:600}
+.crumbs .rel{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;border-radius:var(--r-ctl);border:1px solid var(--border);background:var(--bg);color:var(--ink);font:600 14px var(--font-sans);padding:8px 14px;white-space:nowrap}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--ink-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.lg{padding:12px 20px;font-size:15px}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;font-size:12px;font-weight:600;padding:3px 10px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-pre{color:var(--prelive);background:var(--prelive-bg)}
+.p-upd{color:var(--staged);background:var(--staged-bg)}
+.p-live{color:var(--live);background:var(--live-bg)}
+.tag{font-size:12px;color:var(--ink-2);border:1px solid var(--border);border-radius:999px;padding:2px 9px;background:var(--bg)}
+.mono{font-family:var(--font-mono);font-size:12px}
+.lbl{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+
+.work{display:grid;grid-template-columns:minmax(420px,1fr) minmax(440px,560px) 44px;gap:var(--gap);padding:16px 28px 20px;min-height:0}
+.col{display:flex;flex-direction:column;gap:var(--gap);min-height:0;overflow:auto;padding-right:4px}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--lift);padding:var(--pad)}
+.meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.meta .who{font-size:12px;color:var(--ink-3);margin-left:auto}
+h1{font-size:28px;line-height:1.18;margin-top:10px}
+.v-ledger h1{font-size:24px}
+
+/* SIGNATURE — What changed (one treatment per candidate) */
+.wc{position:relative}
+.wc .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.wc .hd .lbl{color:var(--ink)}
+.wc-ledger,.wc-studio,.wc-device{display:none}
+.v-ledger .wc-ledger,.v-studio .wc-studio,.v-device .wc-device{display:block}
+.v-ledger .wc{border:1px solid var(--ink);box-shadow:none}
+.wc-ledger p{font-size:15px;line-height:1.7}
+.wc-ledger del{color:var(--err);background:var(--err-bg);text-decoration-thickness:1.5px;padding:0 2px}
+.wc-ledger ins{color:var(--live);background:var(--live-bg);text-decoration:none;border-bottom:1.5px solid var(--live);padding:0 2px}
+.wc-ledger .legend{display:flex;gap:14px;margin-top:10px;font-size:12px;color:var(--ink-3)}
+.v-studio .wc{border-color:var(--accent-wash-2);box-shadow:var(--shadow-2)}
+.wc-studio .pair{display:grid;gap:10px}
+.wc-studio .side{border-radius:12px;padding:12px 14px}
+.wc-studio .old{background:var(--surface-2);color:var(--ink-2)}
+.wc-studio .new{background:var(--bg);border:1px solid var(--border);box-shadow:inset 3px 0 0 var(--accent)}
+.wc-studio .side .lbl{display:block;margin-bottom:4px}
+.v-device .wc{background:var(--surface-2);border-color:transparent}
+.wc-device .ba{display:grid;grid-template-columns:1fr 28px 1fr;align-items:center;gap:8px}
+.wc-device .b{background:var(--bg);border-radius:16px 16px 16px 4px;padding:10px 12px;font-size:14px;box-shadow:var(--shadow-soft)}
+.wc-device .b.old{color:var(--ink-2);background:var(--surface-3);box-shadow:none}
+.wc-device .arrow{text-align:center;color:var(--ink-3);font-size:18px}
+.wc-device .cap{display:grid;grid-template-columns:1fr 28px 1fr;gap:8px;margin-bottom:6px}
+
+/* phrasings */
+.ph .hd{display:flex;align-items:baseline;gap:8px}
+.ph .hd .cnt{margin-left:auto;color:var(--ink-2);font-size:13px;font-weight:600}
+.prog{height:6px;border-radius:999px;background:var(--surface-2);margin:10px 0 8px;overflow:hidden}
+.prog i{display:block;height:100%;width:50%;background:var(--prelive);border-radius:999px}
+.ut{display:flex;align-items:center;gap:10px;padding:7px 8px;margin:0 -8px;border-radius:8px;font-size:14px}
+.ut .bx{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border);flex:none;display:grid;place-items:center;font-size:11px;color:var(--bg)}
+.ut.done .bx{background:var(--prelive);border-color:var(--prelive)}
+.ut.done span{color:var(--ink-3)}
+.ut .ask{margin-left:auto;font-size:12px;color:var(--prelive);font-weight:600}
+.v-ledger .ut{padding:4px 8px}
+.ph .foot{display:flex;gap:10px;align-items:center;margin-top:8px;font-size:12px;color:var(--ink-3)}
+
+/* bot */
+.botwrap{min-height:0;display:flex}
+.bot{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--lift);overflow:hidden}
+.bot .bh{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.bot .bh b{font-family:var(--font-display);font-size:16px}
+.bot .bh .sw{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-3)}
+.sw .tg{width:30px;height:18px;border-radius:999px;background:var(--surface-3);position:relative}
+.sw .tg::after{content:"";position:absolute;left:3px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--bg)}
+.bb{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.q{align-self:flex-end;background:var(--ink);color:var(--bg);padding:9px 13px;border-radius:var(--bub) var(--bub) 4px var(--bub);max-width:80%;font-size:14px}
+.a{align-self:flex-start;background:var(--surface-2);padding:10px 13px;border-radius:var(--bub) var(--bub) var(--bub) 4px;max-width:86%;font-size:14px}
+.a .m{display:flex;gap:8px;align-items:center;margin-top:7px;font-size:12px;font-weight:600}
+.ok{color:var(--live)}.bad{color:var(--err)}
+.a.flagged{background:var(--err-bg);outline:1.5px solid var(--err)}
+.flagbtn{margin-left:auto;font-size:12px;font-weight:600;color:var(--err);border:1px solid currentColor;border-radius:999px;padding:1px 8px}
+.bf{padding:12px;border-top:1px solid var(--border)}
+.comp{display:flex;gap:8px;align-items:center;border:1px solid var(--border);border-radius:var(--r-ctl);padding:6px 6px 6px 12px;background:var(--bg)}
+.comp span{flex:1;color:var(--ink-3);font-size:14px}
+.comp .send{background:var(--ink);color:var(--bg);border-radius:calc(var(--r-ctl) - 2px);padding:7px 14px;font-weight:600;font-size:13px}
+/* ledger bot: flatter transcript */
+.v-ledger .bb{gap:6px;padding:12px}
+.v-ledger .q,.v-ledger .a{max-width:92%;font-size:13.5px}
+/* device bot: phone frame */
+.v-device .botwrap{justify-content:center;align-items:stretch}
+.v-device .bot{max-width:420px;border:11px solid var(--device);border-radius:40px;box-shadow:var(--shadow-2)}
+.v-device .bot .bh{justify-content:center;flex-wrap:wrap;padding-top:14px}
+.v-device .bot .bh .sw{margin-left:0;width:100%;justify-content:center}
+.v-device .devcap{position:absolute}
+
+/* v2 rail */
+.rail{border:1.5px dashed var(--border);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--ink-3)}
+.rail span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:12px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+
+/* decision bar */
+.decide{display:flex;align-items:center;gap:16px;padding:14px 28px;border-top:1px solid var(--border);background:var(--bg)}
+.decide .sum b{display:block;font-size:14px}
+.decide .sum small{color:var(--ink-3);font-size:12px}
+.decide .why{margin-left:auto;max-width:380px;font-size:12px;color:var(--err);background:var(--err-bg);border-radius:8px;padding:7px 10px}
+.decide .why b{font-weight:700}
+
+/* V4 Ledger x Device composite */
+.v-mix{--r:6px;--r-ctl:5px;--pad:16px;--gap:14px;--lift:none;--fs:14px;--bub:14px}
+.wc-mix,.mix-only{display:none}
+.v-mix .wc-mix{display:block}.v-mix .mix-only{display:revert}
+.v-mix .wc{border:1px solid var(--border)}
+.v-mix .wc .hd .sw{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-2);font-weight:600}
+.diff-on .wc .hd .sw .tg{background:var(--live)}
+.diff-on .wc .hd .sw .tg::after{left:15px}
+.wc-mix .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wc-mix .cols .lbl{display:block;margin-bottom:6px}
+.wc-mix .b{border-radius:14px 14px 14px 4px;padding:10px 12px;font-size:14px;line-height:1.55}
+.wc-mix .old .b{background:var(--surface-2);color:var(--ink-2)}
+.wc-mix .new .b{background:var(--bg);border:1px solid var(--border)}
+.wc-mix del,.wc-mix ins{text-decoration:none;background:none;color:inherit}
+.diff-on .wc-mix del{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--ink-3)}
+.diff-on .wc-mix ins{background:var(--live-bg);color:var(--live);border-bottom:1.5px solid var(--live);padding:0 2px}
+.v-mix .ut.done{display:none}
+.v-mix .asked{display:flex;font-size:13px;color:var(--ink-3);gap:6px;padding:4px 0 6px}
+.v-mix .asked b{color:var(--live);font-weight:600}
+.v-mix .botwrap{flex-direction:column;align-items:center;gap:6px}
+.v-mix .botwrap .cv{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+.v-mix .bot{width:100%;max-width:500px;border:6px solid var(--surface-3);border-radius:28px;box-shadow:none}
+.v-mix .q{background:var(--surface-3);color:var(--ink)}
+.v-mix .decide .why{display:none}
+.v-mix .decide .sum{margin-right:auto}
+.v-mix .sum small.mix-only{display:block}
+.v-mix .sum small:not(.mix-only){display:none}
+.v-mix .wc-mix .new .b{font-size:15.5px;color:var(--ink);font-weight:500}
+.v-mix .wc-mix .old .b{font-size:13.5px}
+.sw .tg{border:1px solid var(--ink-3)}
+.sw .tg::after{background:var(--ink-2)!important;top:2px!important}
+.diff-on .wc .hd .sw .tg{border-color:var(--live)}
+.diff-on .wc .hd .sw .tg::after{background:#fff!important}
+.v-mix .nav a .n{background:var(--nav-ink);color:var(--nav)}
+
+.md{display:none;font-size:11.5px;color:var(--ink-3);font-family:var(--font-mono);margin-top:4px}
+.show-md .md{display:block}
+.show-md .bot .bh .sw .tg{background:var(--prelive);border-color:var(--prelive)}
+.show-md .bot .bh .sw .tg::after{left:15px;background:#fff!important}
+.sw{cursor:pointer;user-select:none}
+.a .fl{margin-left:auto;font-size:12px;font-weight:600;color:var(--ink-3);border:1px solid var(--border);border-radius:999px;padding:1px 8px;cursor:pointer;background:none}
+.a.flagged .fl{color:var(--err);border-color:currentColor}
+.ut .ask{cursor:pointer;background:none;border:0;font:inherit;font-size:12px}
+.comp input{flex:1;border:0;background:none;font:inherit;font-size:14px;color:var(--ink);outline:none}
+.comp .send{border:0;cursor:pointer}
+.btn{cursor:pointer}
+.reason{display:none;align-items:center;gap:10px;flex:1;max-width:560px}
+.reason textarea{flex:1;font:inherit;font-size:13px;border:1px solid var(--err);border-radius:6px;padding:8px 10px;background:var(--bg);color:var(--ink);height:56px;resize:none}
+.decide.failing .reason{display:flex}
+.decide.failing .sum{display:none}
+.done-banner{display:none;flex:1;font-weight:600}
+.decide.decided>*{display:none}.decide.decided .done-banner{display:block}
+.typing{color:var(--ink-3);font-style:italic}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style></head>
+<body>
+<script>
+  const p=new URLSearchParams(location.search);
+  document.body.classList.add('v-'+(p.get('v')||'mix'));
+  addEventListener('load',()=>{const bb=document.querySelector('.bb');bb.scrollTop=bb.scrollHeight});
+  if(p.get('diff')==='1')document.body.classList.add('diff-on');
+  if(p.get('theme')==='dark')document.documentElement.classList.add('dark');
+</script>
+<div class="app">
+  <nav class="nav" aria-label="Main">
+    <div class="brand"><span class="mk">IS</span><span><b>Intent Studio</b><small>Knowledge Operations</small></span></div>
+    <a>Dashboard</a>
+    <div class="sec">Build</div><a>Project Settings</a><a>Intent Studio</a>
+    <div class="sec">Govern</div><a>Review</a><a>Approvals</a><a class="on">UAT <span class="n">4</span></a><a>Intent Library</a>
+  </nav>
+  <div class="main">
+    <header class="top">
+      <div class="proj"><i>CP</i><span><b>Cards &amp; Payments</b><small>4 topics</small></span></div>
+      <span class="role">UAT TESTER</span><span class="av">MC</span>
+    </header>
+    <div class="crumbs">
+      <span>UAT</span><span>/</span><span>Release candidate v14</span><span>/</span><b>Intent 1 of 4 to test</b>
+      <span class="rel"><span>7 changed: 2 passed · 1 failed · 4 to test</span><button class="btn ghost">Next intent →</button></span>
+    </div>
+    <div class="work">
+      <section class="col" aria-label="Intent under test">
+        <div>
+          <div class="meta"><span class="pill p-pre">Pre-live</span><span class="pill p-upd">Updated</span><span class="tag">Credit Cards</span><span class="who">Lisa Tan · pre-live approved by Daniel Ong</span></div>
+          <h1>What is the annual fee waiver for the 365 card?</h1>
+        </div>
+        <div class="card wc">
+          <div class="hd"><span class="lbl">What changed for customers</span><span class="sw mix-only">Show changes <span class="tg" aria-hidden="true"></span></span></div>
+          <div class="wc-mix"><div class="cols">
+            <div class="old"><span class="lbl">Customers today</span><div class="b">Annual fee <del>S$192.60</del>, waived for the first <del>year</del>. <del>Call us to request a waiver after that.</del></div></div>
+            <div class="new"><span class="lbl">After release</span><div class="b">Annual fee <ins>S$196.20</ins>, waived for the first <ins>2 years and thereafter with S$10,000 annual spend</ins>.</div></div>
+          </div></div>
+          <div class="wc-ledger">
+            <p>The 365 Card has an annual fee of <del>S$192.60</del> <ins>S$196.20</ins>, waived for the first <del>year</del> <ins>2 years and thereafter with S$10,000 annual spend</ins>. <del>Call us to request a waiver after that.</del></p>
+            <div class="legend"><span><del>removed</del> live today</span><span><ins>added</ins> after release</span></div>
+          </div>
+          <div class="wc-studio"><div class="pair">
+            <div class="side old"><span class="lbl">Live today</span>Annual fee S$192.60, waived for the first year. Call us to request a waiver after that.</div>
+            <div class="side new"><span class="lbl">After release</span>Annual fee S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.</div>
+          </div></div>
+          <div class="wc-device">
+            <div class="cap"><span class="lbl">Customers today</span><span></span><span class="lbl">After release</span></div>
+            <div class="ba"><div class="b old">Annual fee S$192.60, waived for the first year. Call us to request a waiver after that.</div><div class="arrow" aria-hidden="true">→</div><div class="b">Annual fee S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.</div></div>
+          </div>
+        </div>
+        <div class="card ph">
+          <div class="hd"><span class="lbl">Ask it like a customer</span><span class="cnt">3 of 6 phrasings</span></div>
+          <div class="prog"><i></i></div>
+          <div class="asked mix-only"><b>✓ 3 asked</b><span>· show</span></div>
+          <div class="ut done"><span class="bx">✓</span><span>whats the annual fee for 365</span></div>
+          <div class="ut done"><span class="bx">✓</span><span>365 card fee waiver</span></div>
+          <div class="ut"><span class="bx"></span><span>how to get annual fee waived</span><button class="ask">Ask →</button></div>
+          <div class="ut done"><span class="bx">✓</span><span>can the 365 fee be waived after 1st year</span></div>
+          <div class="ut"><span class="bx"></span><span>do i have to pay yearly fee on my 365 card</span><button class="ask">Ask →</button></div>
+          <div class="ut"><span class="bx"></span><span>365 card charges every year?</span><button class="ask">Ask →</button></div>
+          <div class="foot"><button class="btn">Ask it badly</button><span>Your own questions count too, e.g. "annual fee" above.</span></div>
+        </div>
+      </section>
+
+      <section class="botwrap" aria-label="Pre-live chatbot">
+        <span class="cv mix-only">Customer view</span>
+        <div class="bot">
+          <div class="bh"><b>Pre-live bot</b><span class="pill p-pre">live + 7 pre-live</span><span class="sw">Show match details <span class="tg" aria-hidden="true"></span></span></div>
+          <div class="bb">
+            <div class="q">whats the annual fee for 365</div>
+            <div class="a">The 365 Card has an annual fee of S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.<div class="m ok">✓ Answered by this intent<button class="fl">Flag</button></div><div class="md">match 0.91 · runner-up "Card fees — which card?" 0.42</div></div>
+            <div class="q">365 card fee waiver</div>
+            <div class="a">The 365 Card has an annual fee of S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.<div class="m ok">✓ Answered by this intent<button class="fl">Flag</button></div><div class="md">match 0.91 · runner-up "Card fees — which card?" 0.42</div></div>
+            <div class="q">annual fee</div>
+            <div class="a flagged">Which card do you mean: 365, Titanium or Rewards?<div class="m bad">✕ Answered by "Card fees — which card?" <button class="fl">Flagged</button></div><div class="md">match 0.58 · runner-up "365 annual fee waiver" 0.55</div></div>
+            <div class="q">can the 365 fee be waived after 1st year</div>
+            <div class="a">Yes. From the third year, the fee is waived when you spend S$10,000 or more in the year.<div class="m ok">✓ Answered by this intent<button class="fl">Flag</button></div><div class="md">match 0.91 · runner-up "Card fees — which card?" 0.42</div></div>
+          </div>
+          <div class="bf"><form class="comp"><input aria-label="Ask like a customer" placeholder="Ask like a customer…"><button class="send">Send</button></form></div>
+        </div>
+      </section>
+
+      <aside class="rail" aria-label="Current bot, coming in v2"><span>Current bot · coming in v2</span></aside>
+    </div>
+    <footer class="decide">
+      <div class="sum"><b>4 questions · 3 of 6 phrasings · 1 flagged</b><small>Your transcript is attached to the decision.</small><small class="mix-only">Fail sends the flagged answer to the maker.</small></div>
+      <div class="why"><b>Fail reason, pre-filled:</b> "annual fee" was answered by "Card fees — which card?", not this intent.</div>
+      <div class="reason"><textarea aria-label="Fail reason">"annual fee" was answered by "Card fees — which card?", not this intent.</textarea><button class="btn" id="cancelFail">Cancel</button><button class="btn primary" id="confirmFail">Send back</button></div><div class="done-banner"></div>
+      <button class="btn lg" id="pass">Pass · add to release v14</button>
+      <button class="btn lg primary" id="fail">Fail → back to Pending review</button>
+    </footer>
+  </div>
+</div>
+<script>
+const $=q=>document.querySelector(q),$$=q=>[...document.querySelectorAll(q)];
+let questions=4,phr=3;const TOTAL=6;
+const ANS="The 365 Card has an annual fee of S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.";
+function sync(){
+  const flagged=$$('.a.flagged').length;
+  $('.sum b').textContent=`${questions} questions · ${phr} of ${TOTAL} phrasings · ${flagged} flagged`;
+  $('.ph .hd .cnt').textContent=`${phr} of ${TOTAL} phrasings`;
+  $('.prog i').style.width=(phr/TOTAL*100)+'%';
+  $('.asked b').textContent=`✓ ${phr} asked`;
+  const pass=$('#pass'),fail=$('#fail');
+  pass.classList.toggle('primary',!flagged);fail.classList.toggle('primary',!!flagged);
+  $('.sum small.mix-only').textContent=flagged?'Fail sends the flagged answer to the maker.':'No answers flagged. Flag any answer that looks wrong.';
+}
+function ask(text,phrase){
+  const bb=$('.bb');questions++;
+  bb.insertAdjacentHTML('beforeend',`<div class="q"></div><div class="a typing">Pre-live bot is typing…</div>`);
+  bb.lastElementChild.previousElementSibling.textContent=text;bb.scrollTop=bb.scrollHeight;
+  setTimeout(()=>{const a=bb.lastElementChild;a.classList.remove('typing');
+    a.innerHTML=ANS+'<div class="m ok">✓ Answered by this intent<button class="fl">Flag</button></div><div class="md">match 0.88 · runner-up "Card fees — which card?" 0.40</div>';
+    bb.scrollTop=bb.scrollHeight;sync()},700);
+  if(phrase){phr++;phrase.classList.add('done');phrase.querySelector('.bx').textContent='✓';}
+  sync();
+}
+$$('.ut:not(.done) .ask').forEach(b=>b.onclick=()=>ask(b.parentElement.querySelector('span:nth-child(2)').textContent,b.parentElement));
+$('.comp').onsubmit=e=>{e.preventDefault();const i=$('.comp input');if(i.value.trim()){ask(i.value.trim());i.value=''}};
+$('.wc .hd .sw').onclick=()=>document.body.classList.toggle('diff-on');
+$('.bot .bh .sw').onclick=()=>document.body.classList.toggle('show-md');
+$('.bb').addEventListener('click',e=>{const f=e.target.closest('.fl');if(!f)return;const a=f.closest('.a');a.classList.toggle('flagged');f.textContent=a.classList.contains('flagged')?'Flagged':'Flag';
+  const m=a.querySelector('.m');m.classList.toggle('bad',a.classList.contains('flagged'));m.classList.toggle('ok',!a.classList.contains('flagged'));sync()});
+const d=$('.decide');
+$('#fail').onclick=()=>{d.classList.add('failing');$('#fail').style.display='none';$('#pass').style.display='none'};
+$('#cancelFail').onclick=()=>{d.classList.remove('failing');$('#fail').style.display='';$('#pass').style.display=''};
+$('#confirmFail').onclick=()=>{d.classList.remove('failing');d.classList.add('decided');$('.done-banner').textContent='Failed. Sent back to Pending review with your note. Next intent →'};
+$('#pass').onclick=()=>{d.classList.add('decided');$('.done-banner').textContent='Passed. Added to release v14 (3 of 7 passed). Next intent →'};
+sync();
+</script>
+</body></html>

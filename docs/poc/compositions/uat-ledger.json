@@ -1,0 +1,10 @@
+{
+  "id": "uat-ledger",
+  "name": "UAT Ledger",
+  "description": "Dense, flat, hairline instrument; What-changed as an inline redline. Brand bound (adopt, keep): renders with the app's crimson/porcelain tokens and Bricolage + Hanken type; palette/font refs are nearest catalog modules only.",
+  "family": "regulated-domain internal console",
+  "created": "2026-10-05",
+  "refs": { "fonts": "bricolage-instrument", "palette": "exec-warm", "shape": "sharp-flat", "spacing": "compact", "mode": "light-default", "motion": "crisp-default", "layout": "sidebar-wide" },
+  "overrides": { "shape.cardRadius": 6, "spacing.density": 0.85 },
+  "warnings": []
+}

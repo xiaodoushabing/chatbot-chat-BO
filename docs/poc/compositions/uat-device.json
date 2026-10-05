@@ -1,0 +1,10 @@
+{
+  "id": "uat-device",
+  "name": "UAT Device",
+  "description": "Customer's-eye: the pre-live bot in a device frame, medium density; What-changed as before-to-after. Brand bound (adopt, keep): renders with the app's crimson/porcelain tokens and Bricolage + Hanken type; palette/font refs are nearest catalog modules only.",
+  "family": "regulated-domain internal console",
+  "created": "2026-10-05",
+  "refs": { "fonts": "bricolage-instrument", "palette": "exec-warm", "shape": "soft-shadow", "spacing": "compact", "mode": "light-default", "motion": "crisp-default", "layout": "sidebar-wide" },
+  "overrides": { "shape.cardRadius": 12, "spacing.density": 1.1 },
+  "warnings": []
+}

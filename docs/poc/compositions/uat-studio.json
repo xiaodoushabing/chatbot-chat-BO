@@ -1,0 +1,10 @@
+{
+  "id": "uat-studio",
+  "name": "UAT Studio",
+  "description": "The app's own soft-card language, generous; What-changed as stacked before/after cards. Brand bound (adopt, keep): renders with the app's crimson/porcelain tokens and Bricolage + Hanken type; palette/font refs are nearest catalog modules only.",
+  "family": "regulated-domain internal console",
+  "created": "2026-10-05",
+  "refs": { "fonts": "bricolage-instrument", "palette": "exec-warm", "shape": "soft-shadow", "spacing": "generous", "mode": "light-default", "motion": "crisp-default", "layout": "sidebar-wide" },
+  "overrides": { "shape.cardRadius": 18, "spacing.density": 1.0 },
+  "warnings": []
+}

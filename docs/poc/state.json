@@ -7,9 +7,9 @@
     "interaction_model": "Two chatbots (current + pre-live), pre-live built first: changed-intents queue (New/Updated) is the hero -> click an intent -> test in the pre-live bot beside a What-changed card -> Pass/Fail; passed intents are grouped into a versioned release; current bot slot reserved as a v2 rail"
   },
   "tier": "T2",
-  "current_stage": 1,
-  "current_step": "variety-round",
-  "checkpoint": "9db4461",
+  "current_stage": 2,
+  "current_step": "prd-written",
+  "checkpoint": "d545abd",
   "migrated": false,
   "iteration": {
     "number": 1,
@@ -21,8 +21,85 @@
   },
   "design": {
     "k": 3,
-    "candidates": [],
-    "locked": []
+    "candidates": [
+      {
+        "id": 1,
+        "name": "V1 Ledger",
+        "composition": "uat-ledger",
+        "status": "eliminated",
+        "notes": [
+          {
+            "at": "2026-10-05T04:07:54+00:00",
+            "note": "chaotic -> Color & theme, removed text grey strike-through so red stays for the fail path; UX laws: Fitts pass; Von Restorff fail -> red diff competes with flagged turn; Hick pass; Zeigarnik/goal-gradient fail -> counts contradicted (fixed post-review); Miller pass; Generic look pass; Brief checks: precise pass; calm pass; quietly confident pass; signature-emphasis pass; contrast fail -> dark Fail ~3.6:1 (false positive: measured 5.3:1, dark text on coral)",
+            "source": "reviewer",
+            "revision": 0
+          },
+          {
+            "at": "2026-10-05T06:01:37+00:00",
+            "note": "chaotic (owner: good but too much information at a go)",
+            "source": "owner",
+            "revision": 0
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "V2 Studio",
+        "composition": "uat-studio",
+        "status": "eliminated",
+        "notes": [
+          {
+            "at": "2026-10-05T04:07:54+00:00",
+            "note": "flat -> Color & theme, mark the change inside panels, drop crimson stripe; UX laws: Fitts pass; Von Restorff fail -> crimson stripe reuses Fail colour; Hick pass; Zeigarnik/goal-gradient fail -> counts (fixed); Miller pass; Generic look fail -> repeated component recipe (stripe + lift shadow); Brief checks: precise fail; calm pass; quietly confident pass; signature-emphasis pass; contrast fail (false positive, 5.3:1)",
+            "source": "reviewer",
+            "revision": 0
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "V3 Device",
+        "composition": "uat-device",
+        "status": "eliminated",
+        "notes": [
+          {
+            "at": "2026-10-05T04:07:54+00:00",
+            "note": "chaotic -> Shape & form, heavy bezel dominates and clips the flagged turn; hairline frame + wider chat; UX laws: Fitts pass; Von Restorff fail -> bezel outweighs signature; Hick pass; Zeigarnik/goal-gradient fail -> counts (fixed); Miller pass; Generic look fail -> device mockup frame; Brief checks: precise fail; calm fail; quietly confident fail; signature-emphasis fail; contrast fail (false positive, 5.3:1)",
+            "source": "reviewer",
+            "revision": 0
+          },
+          {
+            "at": "2026-10-05T06:01:37+00:00",
+            "note": "keep (owner: quite like the Device screen)",
+            "source": "owner",
+            "revision": 0
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name": "V4 Ledger x Device",
+        "composition": "uat-ledger-device",
+        "status": "locked",
+        "notes": [
+          {
+            "at": "2026-10-05T06:04:01+00:00",
+            "note": "flat with diff off -> Typography & scale, After release one step larger + thinner frame (applied); UX laws: Fitts pass; Von Restorff waived (flagged bubble and Fail share coral as cause and action; nav badge neutralised); Hick pass; Zeigarnik/goal-gradient pass; Miller pass; Generic look pass; Brief checks: precise fail -> counters (fixed: 'Intent 1 of 4 to test', last reply scrolled into view); calm pass; quietly confident pass; signature-emphasis fail -> fixed by type step; contrast fail -> toggle tracks (fixed: 1px border 5.3-6.0:1)",
+            "source": "reviewer",
+            "revision": 0
+          },
+          {
+            "at": "2026-10-05T06:04:01+00:00",
+            "note": "keep (owner: 1a)",
+            "source": "owner",
+            "revision": 0
+          }
+        ]
+      }
+    ],
+    "locked": [
+      4
+    ]
   },
   "concept": {
     "candidates": [
@@ -124,7 +201,7 @@
     {
       "id": 1,
       "name": "Design",
-      "status": "active",
+      "status": "done",
       "artifact": null,
       "sub_skill": "design-jam",
       "steps": [
@@ -144,23 +221,23 @@
         },
         {
           "name": "variety-round",
-          "status": "pending",
+          "status": "done",
           "artifact": null,
-          "dispatched": null,
+          "dispatched": "design-jam",
           "reason": null
         },
         {
           "name": "design-locked",
-          "status": "pending",
-          "artifact": null,
-          "dispatched": null,
+          "status": "done",
+          "artifact": "docs/poc/design-system.md",
+          "dispatched": "design-jam",
           "reason": null
         },
         {
           "name": "proof-screen",
-          "status": "pending",
-          "artifact": null,
-          "dispatched": null,
+          "status": "done",
+          "artifact": "mockups/proof-screen-uat.html",
+          "dispatched": "design-jam",
           "reason": null
         }
       ]
@@ -269,8 +346,10 @@
   ],
   "artifacts": {
     "brief": "docs/poc/brief.md",
-    "design_system": null,
-    "proof_screens": [],
+    "design_system": "docs/poc/design-system.md",
+    "proof_screens": [
+      "mockups/proof-screen-uat.html"
+    ],
     "prd": null,
     "td": null,
     "plans": [],
