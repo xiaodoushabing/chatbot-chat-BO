@@ -1,0 +1,221 @@
+{
+  "poc_forge_state": "v1",
+  "anchor": {
+    "key_ask": "A business user can verify a pre-live intent and make a confident approve/reject call in under 2 minutes, unaided",
+    "demo_audience": "Same client stakeholders who approved earlier backoffice rounds; convinced by approving one and rejecting one intent unaided",
+    "end_user": "UAT testers: anyone except the submitter of the intent for approval",
+    "interaction_model": null
+  },
+  "tier": "T2",
+  "current_stage": 1,
+  "current_step": "concept-round",
+  "checkpoint": "9db4461",
+  "migrated": false,
+  "iteration": {
+    "number": 1,
+    "scope": "",
+    "in": "",
+    "out": "",
+    "proof_moment": "",
+    "path": ""
+  },
+  "design": {
+    "k": 3,
+    "candidates": [],
+    "locked": []
+  },
+  "concept": {
+    "candidates": [],
+    "locked": []
+  },
+  "build_mode": null,
+  "wave": {
+    "status": "idle"
+  },
+  "stages": [
+    {
+      "id": 0,
+      "name": "Kickoff",
+      "status": "done",
+      "artifact": null,
+      "sub_skill": null,
+      "steps": [
+        {
+          "name": "alignment-gate",
+          "status": "done",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        },
+        {
+          "name": "brief-confirmed",
+          "status": "done",
+          "artifact": "docs/poc/brief.md",
+          "dispatched": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Design",
+      "status": "pending",
+      "artifact": null,
+      "sub_skill": "design-jam",
+      "steps": [
+        {
+          "name": "concept-round",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        },
+        {
+          "name": "concept-locked",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        },
+        {
+          "name": "variety-round",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        },
+        {
+          "name": "design-locked",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        },
+        {
+          "name": "proof-screen",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "PRD",
+      "status": "pending",
+      "artifact": null,
+      "sub_skill": "superpowers:brainstorming",
+      "steps": [
+        {
+          "name": "prd-written",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "TD",
+      "status": "pending",
+      "artifact": null,
+      "sub_skill": "tech-design",
+      "steps": [
+        {
+          "name": "td-written",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Plan",
+      "status": "pending",
+      "artifact": null,
+      "sub_skill": "superpowers:writing-plans",
+      "steps": [
+        {
+          "name": "plan-written",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Build",
+      "status": "pending",
+      "artifact": null,
+      "sub_skill": "superpowers:subagent-driven-development",
+      "steps": [
+        {
+          "name": "build-started",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        },
+        {
+          "name": "build-complete",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        },
+        {
+          "name": "fidelity-gate",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        },
+        {
+          "name": "ux-laws-review",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Reflect",
+      "status": "pending",
+      "artifact": null,
+      "sub_skill": null,
+      "steps": [
+        {
+          "name": "reflect-written",
+          "status": "pending",
+          "artifact": null,
+          "dispatched": null,
+          "reason": null
+        }
+      ]
+    }
+  ],
+  "artifacts": {
+    "brief": "docs/poc/brief.md",
+    "design_system": null,
+    "proof_screens": [],
+    "prd": null,
+    "td": null,
+    "plans": [],
+    "reflects": []
+  },
+  "adopt": {
+    "baseline_dir": "docs/poc/baseline",
+    "boot": {
+      "status": "ok",
+      "note": null
+    }
+  }
+}
