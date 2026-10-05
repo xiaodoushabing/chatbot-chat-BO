@@ -25,3 +25,5 @@
 - 2026-10-05T06:05:09+00:00: stage 1 step design-locked dispatched=design-jam
 - 2026-10-05T06:05:09+00:00: stage 1 step proof-screen dispatched=design-jam
 - 2026-10-05T06:20:57+00:00: correction: Owner: the overview/checklist of pending UAT intents must stay visible while testing; 'Next intent' alone loses the overview. Space is tight — find a way (reverses the C4 fix that collapsed the queue).
+- 2026-10-05T07:49:15+00:00: correction: Owner: separation of duties simplified to 'submitter for approval != approver' at each approval gate only. UAT testing has no submitter restriction (drop the locked 'you submitted it' row). Owner's status names: draft -> pending review -> pending approval to UAT -> UAT -> (passed) -> pending approval to live -> live.
+- 2026-10-05T07:53:24+00:00: stage 2 step prd-written dispatched=superpowers:brainstorming

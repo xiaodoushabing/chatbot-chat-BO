@@ -253,7 +253,7 @@
           "name": "prd-written",
           "status": "pending",
           "artifact": null,
-          "dispatched": null,
+          "dispatched": "superpowers:brainstorming",
           "reason": null
         }
       ]

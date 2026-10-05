@@ -9,7 +9,7 @@
 
 | Token | Light | Dark | Why |
 |---|---|---|---|
-| `--prelive` / `--prelive-bg` | `#2c55a8` / `#e2eafa` | `#8fb0f2` / `#1a2440` | New lifecycle state "Pre-live", added to the governance vocabulary (draft grey · pending review amber · pending approval teal · **pre-live blue** · live green · rejected red). Always paired with a label. |
+| `--prelive` / `--prelive-bg` | `#2c55a8` / `#e2eafa` | `#8fb0f2` / `#1a2440` | The lifecycle state "UAT" (labelled UAT, not "Pre-live", to match the real system), added to the governance vocabulary (draft grey · pending review amber · pending approval teal · **UAT blue** · live green · rejected red). Always paired with a label. |
 | `--staged` (text use) | `#84560a` (was `#9a6510`) | unchanged | The existing value fails AA on `--staged-bg` (4.23:1). The new value is 5.42:1. **This applies app-wide**, so fix it in `index.css`. |
 | `--ink-3` | `#566762` (was `#6a7b76`) | `#9a8b88` | Muted text has to pass 4.5:1 on `--surface-2` wells. The new value is 5.01:1. |
 
@@ -31,7 +31,7 @@ The signature is fused to the core mechanic: the tester is verifying a *change*.
 - **New intent (no live equivalent):** the left column reads "No answer today", or shows the current fallback reply in muted text. The right column is unchanged.
 - **Toggle tracks:** 1px `--ink-3` border (5.3–6.0:1 non-text contrast). The on state is `--live` for Show changes and `--prelive` for Show match details.
 
-## Customer view (the pre-live bot)
+## Customer view (the UAT bot)
 
 - A light device frame: 6px `--surface-3` border, 28px radius, max-width 500px, labelled "CUSTOMER VIEW" above it. **Not** a heavy black bezel.
 - A flagged answer gets an `--err-bg` fill, a 1.5px `--err` outline, and a "Flagged" chip.
@@ -42,7 +42,7 @@ The signature is fused to the core mechanic: the tester is verifying a *change*.
 
 - **Layout:** on the UAT tab the main nav collapses to its existing 76px icon mode, using the app's `Shell` collapse. A 288px **checklist panel** sits between the nav and the work area. The nav expands again outside UAT.
 - **Header:** "Release vN checklist", the tally ("2 passed · 1 failed · 4 to test"), a segmented bar (`--live` passed, `--err` failed), and a topic filter.
-- **Rows:** a status disc plus the intent name (13px/600) plus "New|Updated · status" (11.5px, `--ink-3`). Status discs: passed = solid `--live` ✓, failed = solid `--err` ✕, current = `--prelive` ring with a `--prelive-bg` row and a 3px `--prelive` inset bar, to test = empty ring, locked (you submitted it) = dashed ring 🔒, row at 0.75 opacity, `not-allowed`.
+- **Rows:** a status disc plus the intent name (13px/600) plus "New|Updated · status" (11.5px, `--ink-3`). Status discs: passed = solid `--live` ✓, failed = solid `--err` ✕, current = `--prelive` ring with a `--prelive-bg` row and a 3px `--prelive` inset bar, to test = empty ring (no locked rows: testing has no submitter restriction).
 - Decided rows keep their names, in `--ink-2` at weight 500, so the list still reads as a record.
 - The breadcrumb's last item is the current intent's name. "Next untested →" replaces "Next intent".
 - The work area adapts: intent column ≥360px, bot 400–460px, v2 rail 36px. h1 is 24px.
