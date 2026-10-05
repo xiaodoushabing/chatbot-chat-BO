@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UAT Declutter</title>
+<style>
+:root{--bg:#eef1f0;--s:#fff;--b:#dbe4e1;--t1:#16211f;--t3:#566762}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17100f;--s:#221816;--b:#3a2c2a;--t1:#f0e7e5;--t3:#b9a9a6}}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.55 system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--t1);padding:32px 40px 60px}
+h1{font-size:30px}.sub{color:var(--t3);margin:8px 0 28px;max-width:940px}
+.c{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:22px;margin-bottom:28px}
+.c h2{font-size:20px;margin-bottom:6px}.c p{color:var(--t3);max-width:1040px}.c p b{color:var(--t1)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+a.one,.pair a{display:block;border:1px solid var(--b);border-radius:8px;overflow:hidden;margin-top:14px}.pair a{margin-top:0}
+img{display:block;width:100%}
+</style></head><body>
+<h1>Test in UAT: decluttered</h1>
+<p class="sub">Same features, far less on screen. "Ask it like a customer" now lives <b>inside the bot</b>. Click a screenshot to try it: press <b>Tab</b> in the input box, or <b>▶ Run remaining</b>.</p>
+<div class="c"><h2>Lean (recommended)</h2><p>Three columns: <b>checklist · what changed · bot</b>. Removed: the breadcrumb, the extra tags, the phrasing card, the v2 rail, the checklist sub-lines and the "Customer view" label. In the bot: the next phrasing appears as grey text in the input box (Tab fills it), <b>▶ Run remaining</b> asks every untried phrasing for you, <b>✦ Ask it badly</b> writes a messy version, and progress shows as "3/6" in the bot header. Flag only appears when you hover over an answer.</p>
+<div class="pair"><a href="d.html?d=lean"><img src="1-lean.png" alt="Lean light"></a><a href="d.html?d=lean&theme=dark"><img src="1-lean-dark.png" alt="Lean dark"></a></div>
+<a class="one" href="d.html?d=lean"><img src="1-lean-after-run.png" alt="Lean after Run remaining"></a><p style="margin-top:8px">After pressing ▶ Run remaining: 6 of 6 phrasings tried, and "Run remaining" disappears.</p></div>
+<div class="c"><h2>Minimal</h2><p>Two columns: <b>checklist · bot</b>. "What changed" is pinned at the top of the chat. This is the most compact version, but the pinned card takes space away from the conversation.</p>
+<a class="one" href="d.html?d=min"><img src="2-minimal.png" alt="Minimal"></a></div>
+<div class="c"><h2>Before: current proof screen</h2><a class="one" href="d.html"><img src="0-current.png" alt="Current"></a></div>
+</body></html>

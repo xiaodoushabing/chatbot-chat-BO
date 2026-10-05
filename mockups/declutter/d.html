@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UAT Proof Screen</title>
+<title>UAT Declutter</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Hanken+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -319,7 +319,7 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
 <body>
 <script>
   const p=new URLSearchParams(location.search);
-  document.body.classList.add('v-'+(p.get('v')||'mix'),'q-panel','dc');if(p.get('open'))document.body.classList.add('open');
+  document.body.classList.add('v-'+(p.get('v')||'mix'),'q-panel',...(p.get('d')==='lean'?['dc']:p.get('d')==='min'?['dc','dm']:[]));if(p.get('open'))document.body.classList.add('open');
   addEventListener('load',()=>{const bb=document.querySelector('.bb');bb.scrollTop=bb.scrollHeight});
   if(p.get('diff')==='1')document.body.classList.add('diff-on');
   if(p.get('theme')==='dark')document.documentElement.classList.add('dark');
@@ -397,7 +397,7 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
             <div class="q">can the 365 fee be waived after 1st year</div>
             <div class="a">Yes. From the third year, the fee is waived when you spend S$10,000 or more in the year.<div class="m ok">✓ Answered by this intent<button class="fl">Flag</button></div><div class="md">match 0.91 · runner-up "Card fees — which card?" 0.42</div></div>
           </div>
-          <div class="bf"><div class="sugg dc-only" id="pills"></div><form class="comp"><input aria-label="Ask like a customer" placeholder="Ask like a customer…"><button class="send">Send</button></form></div>
+          <div class="bf"><div class="sugg dc-only"><button class="chip run" id="runAll">▶ Run remaining <span id="remN">3</span></button><button class="chip ghost" id="badly">✦ Ask it badly</button><span class="pc">Tab ⇥ fills the next phrasing</span></div><form class="comp"><input aria-label="Ask like a customer" placeholder="Ask like a customer…"><button class="send">Send</button></form></div>
         </div>
       </section>
 
@@ -450,13 +450,15 @@ $('#pass').onclick=()=>{d.classList.add('decided');mark('pass','Passed','✓');$
 function mark(k,t,sym){const c=document.querySelector('.qi.cur');if(!c)return;c.classList.add(k);c.querySelector('.st').textContent=sym;const sm=c.querySelector('small');sm.textContent=sm.textContent.split(' · ')[0]+' · '+t}
 
 const remaining=()=>[...document.querySelectorAll('.ut:not(.done)')];
-function renderPills(){const box=document.getElementById('pills');const r=remaining();
-  box.innerHTML=r.length?'<span class="sl2">Try</span>':'<span class="sl2">All phrasings tried · keep asking your own</span>';
-  r.forEach(u=>{const b=document.createElement('button');b.className='chip';b.textContent=u.querySelector('span:nth-child(2)').textContent;b.onclick=()=>{ask(b.textContent,u);renderPills()};box.appendChild(b)});
-  const bad=document.createElement('button');bad.className='chip ghost';bad.textContent='✦ ask it badly';
-  bad.onclick=()=>{const base=r.length?r[0].querySelector('span:nth-child(2)').textContent:'annual fee waiver';const i=document.querySelector('.comp input');i.value=base.replace(/annual/g,'anual').replace(/\?/g,'')+' pls';i.focus()};box.appendChild(bad);
-  const c=document.getElementById('covN');if(c)c.textContent=phr}
-renderPills();
+const inp=document.querySelector('.comp input');
+function hint(){const r=remaining();inp.placeholder=r.length?r[0].querySelector('span:nth-child(2)').textContent+'   (Tab ⇥)':'Ask like a customer…';
+  const n=document.getElementById('remN');if(n)n.textContent=r.length;const c=document.getElementById('covN');if(c)c.textContent=phr;
+  const run=document.getElementById('runAll');if(run)run.style.display=r.length?'':'none'}
+inp.addEventListener('keydown',e=>{if(e.key==='Tab'&&!inp.value){const r=remaining();if(r.length){e.preventDefault();inp.value=r[0].querySelector('span:nth-child(2)').textContent;inp.dataset.ph=r[0].dataset.i}}});
+document.querySelector('.comp').addEventListener('submit',()=>{const r=remaining();setTimeout(hint,50)},true);
+document.getElementById('runAll').onclick=()=>{remaining().forEach((u,i)=>setTimeout(()=>{ask(u.querySelector('span:nth-child(2)').textContent,u);hint()},i*900))};
+document.getElementById('badly').onclick=()=>{const r=remaining();const base=r.length?r[0].querySelector('span:nth-child(2)').textContent:'annual fee';inp.value=base.replace(/annual/g,'anual').replace(/ the /g,' ').replace(/\?/g,'')+' pls';inp.focus()};
+hint();
 sync();
 const qs=[...document.querySelectorAll('.qi')];
 function go(li){if(li.classList.contains('lock'))return;qs.forEach(x=>x.classList.remove('sel'));

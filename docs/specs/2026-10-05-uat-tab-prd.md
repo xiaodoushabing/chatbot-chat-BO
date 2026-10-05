@@ -87,9 +87,9 @@ APPROVALS       Approvals (badge) → one page, categories: To UAT · To Live ·
 ### 5.1 Test in UAT (new page; nav PRE-LIVE · UAT → Test)
 
 - **Entry:** opens the test view with the first untested intent selected. There is no separate landing page.
-- **Layout:** the main nav collapses to icons on this tab only. Left to right: checklist panel, intent column, UAT bot ("Customer view"), and the "Current bot · coming in v2" rail.
+- **Layout (lean):** the main nav collapses to icons on this page only. Three columns: checklist · intent (title, the Updated or New tag, What changed) · UAT bot. There is no breadcrumb and no v2 rail on screen; the v2 current bot is reserved in code only. Who submitted and approved the intent shows as a tooltip on the title.
 - **Checklist panel**, for the whole release candidate across topics, with a topic filter:
-  - **Rows:** every intent at statuses 4–6, plus intents failed during the current release cycle.
+  - **Rows:** one line each (status disc + name); the header tally reads "2 ✓ 1 ✕ 4 left". Rows show every intent at statuses 4–6, plus intents failed during the current release cycle.
   - **Tag:** New (not in the live artefact) or Updated (same ID in the live artefact with a different answer).
   - **Status:** to test · testing now · passed · in release vN · failed · sent back.
   - Click a row to open it. "Next untested →" jumps to the next untested intent. Testing can happen in any order.
@@ -98,11 +98,11 @@ APPROVALS       Approvals (badge) → one page, categories: To UAT · To Live ·
   - **Customers today** is the intent's answer from the live artefact. For a New intent it reads "No answer today".
   - **After release** is the UAT answer.
   - **Show changes** (off by default) marks removed and added words. The diff is computed at word level in the client.
-- **Ask it like a customer:** the intent's utterances, each with "Ask →". A question counts toward the "X of N phrasings" progress when `matched_intent_id` equals this intent. Phrasings already asked collapse to "✓ N asked". Free-typed questions count as questions but don't tick a phrasing.
+- **Phrasings live inside the bot:** above the input box, every *untried* utterance of this intent appears as a quick pill ("Try"). Tapping one asks it, and the pill disappears once asked. "✦ ask it badly" puts a messy variant in the input for the tester to send or edit. Testers can always type their own question. A question counts toward "X/N phrasings" (shown in the bot header) when `matched_intent_id` equals this intent. Free-typed questions count as questions, not phrasings.
 - **UAT bot:**
   - Each answer shows "✓ Answered by this intent", or "✕ Answered by '<other intent name>'", or "No intent matched".
-  - Any answer can be **Flagged**. A "no match" answer, or an answer by a different intent, is flagged automatically.
-  - **Show match details** (off by default) shows the score and runner-up.
+  - Any answer can be **Flagged**; the Flag control appears on hover, while "Flagged" stays visible. A "no match" answer, or an answer by a different intent, is flagged automatically.
+  - **Match details** (score and runner-up) sit behind the bot's "⋯" menu, off by default.
 - **Decision bar:**
   - **Pass** is enabled once at least one answer has come from this intent.
   - The primary (filled) button is Pass when nothing is flagged and Fail when anything is flagged.

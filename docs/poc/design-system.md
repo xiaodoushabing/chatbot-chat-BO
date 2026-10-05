@@ -64,3 +64,13 @@ The signature is fused to the core mechanic: the tester is verifying a *change*.
 ## Motion
 
 Inherits the base: `--ease-out`, about 150–200ms for state changes, and the bot's "typing…" placeholder. Every animation has a `prefers-reduced-motion` fallback. Nothing decorative.
+
+
+## Lean declutter (owner, 2026-10-05) — supersedes conflicting lines above
+
+- **Test page = three columns:** checklist · intent · UAT bot. Removed from the screen: the breadcrumb, the UAT/topic/submitter tags (who submitted is now a tooltip on the h1), the phrasing card, the "Customer view" label, the artefact pill, the v2 rail (kept in code only), and the checklist sub-lines and segmented bar.
+- **Checklist header:** title plus a one-line tally ("2 ✓ 1 ✕ 4 left"), then the topic select. Rows are one line.
+- **Phrasings in the bot:** a "TRY" row of pills above the composer, one per untried utterance (`--bg` fill, 1px `--border`, 999px radius, 12.5px). "✦ ask it badly" is a `--prelive-bg` pill. Asked pills disappear. Owner: "don't condense … show them as quick pills (proposals) then if user wants, they type in their own".
+- **Bot header:** "UAT bot", then "X/6 phrasings" (X in `--prelive`), then a "⋯" menu holding match details.
+- **Flag:** visible on hover or focus only; "Flagged" is always visible.
+- **Decision bar:** a one-line summary, then Pass / Fail. No sub-text.
