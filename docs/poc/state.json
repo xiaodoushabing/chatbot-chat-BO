@@ -7,9 +7,9 @@
     "interaction_model": "Two chatbots (current + pre-live), pre-live built first: changed-intents queue (New/Updated) is the hero -> click an intent -> test in the pre-live bot beside a What-changed card -> Pass/Fail; passed intents are grouped into a versioned release; current bot slot reserved as a v2 rail"
   },
   "tier": "T2",
-  "current_stage": 2,
-  "current_step": "prd-written",
-  "checkpoint": "d545abd",
+  "current_stage": 3,
+  "current_step": "td-written",
+  "checkpoint": "43f1ab0",
   "migrated": false,
   "iteration": {
     "number": 1,
@@ -245,14 +245,14 @@
     {
       "id": 2,
       "name": "PRD",
-      "status": "pending",
+      "status": "done",
       "artifact": null,
       "sub_skill": "superpowers:brainstorming",
       "steps": [
         {
           "name": "prd-written",
-          "status": "pending",
-          "artifact": null,
+          "status": "done",
+          "artifact": "docs/specs/2026-10-05-uat-tab-prd.md",
           "dispatched": "superpowers:brainstorming",
           "reason": null
         }
@@ -350,7 +350,7 @@
     "proof_screens": [
       "mockups/proof-screen-uat.html"
     ],
-    "prd": null,
+    "prd": "docs/specs/2026-10-05-uat-tab-prd.md",
     "td": null,
     "plans": [],
     "reflects": []

@@ -29,3 +29,4 @@
 - 2026-10-05T07:53:24+00:00: stage 2 step prd-written dispatched=superpowers:brainstorming
 - 2026-10-05T09:56:57+00:00: correction: Owner: nav must show pre-live and live as parallel processes with action names; sections PRE-LIVE · UAT (Review, Test) and LIVE (Review, Library); one Approvals page with categories (To UAT / To Live / History); Review page cloned per stage; release creation lives in 'Review for Live', not in the Test page. Focus on the UAT test page first.
 - 2026-10-05T10:03:14+00:00: correction: Owner: Test page uses the Lean declutter; untried phrasings show as tappable quick pills in the bot (not condensed into 'Run remaining'); tester can type their own.
+- 2026-10-05T10:08:14+00:00: correction: Owner: parking here — Stage 3+ (TD, plan, build, backend connection) moves to the main workstation agent with the real backoffice. Handover package: handover/uat-tab/00-HANDOVER.md.

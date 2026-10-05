@@ -7,9 +7,9 @@ poc_forge_state: v1  (generated -- edit via poc-state.py)
 **End-user:** UAT testers: anyone except the submitter of the intent for approval
 **Adopted:** baseline docs/poc/baseline/ · boot: ok
 
-**Stage:** 2 PRD (pending) | **Tier:** T2 | **Iteration:** 1
-**Current step:** prd-written
-**Next:** 2.prd-written (sub-skill: superpowers:brainstorming)
+**Stage:** 3 TD (pending) | **Tier:** T2 | **Iteration:** 1
+**Current step:** td-written
+**Next:** 3.td-written (sub-skill: tech-design)
 
 ## Design
 k=3 | locked=[4]
@@ -23,4 +23,5 @@ Concept candidates: C1 Workbench (eliminated), C2 Guided test script (eliminated
 - brief: docs/poc/brief.md
 - design-system: docs/poc/design-system.md
 - proof-screen: mockups/proof-screen-uat.html
+- prd: docs/specs/2026-10-05-uat-tab-prd.md
 
