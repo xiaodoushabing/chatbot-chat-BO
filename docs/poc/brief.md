@@ -45,3 +45,9 @@
 2. **Releases (replaces "Not in scope: batch/release-level approval"):** passed intents are grouped into a **release**. Every release is a new versioned **snapshot** of the backoffice intent set (live N + the passed changes). The release is submitted for live approval as one unit; on approval it becomes the live snapshot the orchestrator serves. Rollback = point back to the previous snapshot.
 3. **State mapping:** draft → **pending review** (renamed from "Staged", Review page) → **pending pre-live approval** (was "Pending approval") → **pre-live** (UAT tab) → passed → in **release vN** → **pending live approval** (Approvals) → **live (vN)**. UAT Fail, and a checker reject at either gate → pending review. Segregation of duties ("you can't approve your own submission") applies at every gate.
 4. **Guardrails:** editing an intent after it passes cancels the pass. At live approval, the passed intents' saved test questions are re-run against the release snapshot and any change in match is flagged. The re-run is mocked in this POC.
+
+## Addendum 3 — 2026-10-05 (owner, checklist)
+
+1. While testing, an always-visible **checklist panel** lists every changed intent in the release candidate, including passed and failed, with its status. The main nav collapses to icons on the UAT tab to make room (option A).
+2. Testers can work in **any order**. "Next untested" jumps to the next untested intent.
+3. There is **one checklist per release candidate, across topics**, with a topic filter.

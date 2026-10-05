@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UAT Checklist Options</title>
+<style>
+:root{--bg:#eef1f0;--s:#fff;--b:#dbe4e1;--t1:#16211f;--t3:#566762}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17100f;--s:#221816;--b:#3a2c2a;--t1:#f0e7e5;--t3:#b9a9a6}}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.55 system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--t1);padding:32px 40px 60px}
+h1{font-size:30px}.sub{color:var(--t3);margin:8px 0 28px;max-width:940px}
+.c{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:22px;margin-bottom:28px}
+.c h2{font-size:20px;margin-bottom:6px}.c p{color:var(--t3);max-width:1040px}.c p b{color:var(--t1)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.c a.one,.pair a{display:block;border:1px solid var(--b);border-radius:8px;overflow:hidden;margin-top:14px}
+.pair a{margin-top:0}
+img{display:block;width:100%}
+</style></head><body>
+<h1>Keeping the UAT checklist in view</h1>
+<p class="sub">Three ways to keep all 7 changed intents and their status visible while you test one. Everything else is the locked design. Click a screenshot to open the live page. In C, click the dots to open the list.</p>
+<div class="c"><h2>A · Checklist panel</h2><p>On the UAT tab the <b>main sidebar collapses to icons</b>, using the collapse your app already has. The freed space holds a <b>full checklist</b> with names, status and a pass/fail bar. <b>Always visible, nothing hidden.</b> Cost: the chat and "What changed" are about 130px narrower.</p>
+<a class="one" href="queue.html?q=panel"><img src="a-panel.png" alt="Option A"></a></div>
+<div class="c"><h2>B · Checklist strip</h2><p>A <b>row of chips</b> across the top: ✓ passed, ✕ failed, ● current, ○ to test. It costs no width, only one row of height. Names are shortened, and with more than about 6 intents the strip scrolls sideways.</p>
+<a class="one" href="queue.html?q=strip"><img src="b-strip.png" alt="Option B"></a></div>
+<div class="c"><h2>C · Peek rail</h2><p>A <b>60px column of numbered status dots</b> shows overall progress at a glance. Click it and the full list slides over the page. Cheapest on space, but you have to open it to see names.</p>
+<div class="pair"><a href="queue.html?q=peek"><img src="c-peek.png" alt="Option C closed"></a><a href="queue.html?q=peek&open=1"><img src="c-peek-open.png" alt="Option C open"></a></div></div>
+</body></html>

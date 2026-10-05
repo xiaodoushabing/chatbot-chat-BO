@@ -24,3 +24,4 @@
 - 2026-10-05T06:04:01+00:00: stage 1 step variety-round dispatched=design-jam
 - 2026-10-05T06:05:09+00:00: stage 1 step design-locked dispatched=design-jam
 - 2026-10-05T06:05:09+00:00: stage 1 step proof-screen dispatched=design-jam
+- 2026-10-05T06:20:57+00:00: correction: Owner: the overview/checklist of pending UAT intents must stay visible while testing; 'Next intent' alone loses the overview. Space is tight — find a way (reverses the C4 fix that collapsed the queue).
