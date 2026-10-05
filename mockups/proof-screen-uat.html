@@ -337,7 +337,7 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
         </div>
       </section>
 
-      <section class="botwrap" aria-label="Pre-live chatbot">
+      <section class="botwrap" aria-label="UAT chatbot">
         <span class="cv mix-only">Customer view</span>
         <div class="bot">
           <div class="bh"><b>UAT bot</b><span class="pill p-pre">UAT artefact v15</span><span class="sw">Show match details <span class="tg" aria-hidden="true"></span></span></div>
@@ -382,7 +382,7 @@ function sync(){
 }
 function ask(text,phrase){
   const bb=$('.bb');questions++;
-  bb.insertAdjacentHTML('beforeend',`<div class="q"></div><div class="a typing">Pre-live bot is typing…</div>`);
+  bb.insertAdjacentHTML('beforeend',`<div class="q"></div><div class="a typing">UAT bot is typing…</div>`);
   bb.lastElementChild.previousElementSibling.textContent=text;bb.scrollTop=bb.scrollHeight;
   setTimeout(()=>{const a=bb.lastElementChild;a.classList.remove('typing');
     a.innerHTML=ANS+'<div class="m ok">✓ Answered by this intent<button class="fl">Flag</button></div><div class="md">match 0.88 · runner-up "Card fees — which card?" 0.40</div>';
