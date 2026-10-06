@@ -74,3 +74,5 @@ Inherits the base: `--ease-out`, about 150–200ms for state changes, and the bo
 - **Bot header:** "UAT bot", then "X/6 phrasings" (X in `--prelive`), then a "⋯" menu holding match details.
 - **Flag:** visible on hover or focus only; "Flagged" is always visible.
 - **Decision bar:** a one-line summary, then Pass / Fail. No sub-text.
+
+- **Collapsed nav = the app's own collapsed `Shell` nav** (76px): a 70px brand cell holding the sparkles mark on the crimson gradient; 18px lucide icons (LayoutDashboard, FolderCog, Sparkles, ClipboardCheck ×2, FlaskConical for Test, Library, Inbox); the active item has a `--nav-on` tile, a `--nav-accent` icon and a 3px left bar; section labels are screen-reader only; the collapse toggle (PanelLeftOpen) sits at the bottom. **New:** hairline `--nav-line` dividers between sections, so PRE-LIVE · UAT and LIVE stay visible as groups when collapsed, and count badges (16px pill, `--nav-accent` fill, `--nav` text, 5.9:1).
