@@ -339,6 +339,14 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
 .q-panel .main{grid-template-rows:70px 1fr auto!important}
 .q-panel .top{height:70px}
 @media (prefers-reduced-motion:reduce){.ri,.ri svg,.ri .bar{transition:none}}
+.p-new{color:var(--prelive);background:var(--prelive-bg)}
+.wc-mix .none{font-style:italic;color:var(--ink-3)}
+.dec{display:none;flex:1;font-weight:600;align-items:center;gap:10px}
+.dec .st{width:22px;height:22px}
+.decide.closed>*:not(.dec){display:none!important}.decide.closed .dec{display:flex}
+.dec small{font-weight:400;color:var(--ink-3)}
+.bb .empty{margin:auto;text-align:center;color:var(--ink-3);font-size:13px;max-width:280px}
+.qi.cur.pass .st,.qi.cur.fail .st{color:#fff}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style></head>
 <body>
@@ -370,7 +378,7 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
       <span>Pre-live · UAT</span><span>/</span><span>Test in UAT</span><span>/</span><b id="crumbT">Annual fee waiver — 365 card</b>
       <span class="rel"><span>7 changed: 2 passed · 1 failed · 4 to test</span><button class="btn ghost" id="next">Next untested →</button></span>
     </div>
-    <aside class="queue" aria-label="Release v14 checklist"><div class="qh" data-t="2 ✓  1 ✕  4 left"><b>UAT checklist</b><small>2 passed · 1 failed · 4 to test</small><select class="qt" aria-label="Filter by topic"><option>All topics (7)</option><option>Credit Cards (5)</option><option>Travel Insurance (1)</option><option>Payments (1)</option></select><div class="qbar"><i class="p" style="width:28.6%"></i><i class="f" style="width:14.3%"></i></div></div><ol class="ql"><li class="qi pass" tabindex="0"><span class="st">✓</span><span class="tx"><b>Lost card overseas — replacement</b><small>New · Passed</small></span></li><li class="qi pass" tabindex="0"><span class="st">✓</span><span class="tx"><b>Contactless limit change</b><small>Updated · Passed</small></span></li><li class="qi fail" tabindex="0"><span class="st">✕</span><span class="tx"><b>Overseas transaction fee</b><small>Updated · Failed · sent back</small></span></li><li class="qi cur" tabindex="0"><span class="st">●</span><span class="tx"><b>Annual fee waiver — 365 card</b><small>Updated · Testing now · 3 of 6</small></span></li><li class="qi todo" tabindex="0"><span class="st"></span><span class="tx"><b>Raise credit limit temporarily</b><small>New · To test</small></span></li><li class="qi todo" tabindex="0"><span class="st"></span><span class="tx"><b>Flight cancelled due to weather</b><small>New · To test</small></span></li><li class="qi todo" tabindex="0"><span class="st"></span><span class="tx"><b>Refund timing to card</b><small>New · To test</small></span></li></ol><div class="qf">3 passed · ready in <b>Review for Live →</b></div></aside>
+    <aside class="queue" aria-label="UAT checklist"><div class="qh" data-t="2 ✓  1 ✕  4 left"><b>UAT checklist</b><small>2 passed · 1 failed · 4 to test</small><select class="qt" aria-label="Filter by topic"><option>All topics (7)</option><option>Credit Cards (5)</option><option>Travel Insurance (1)</option><option>Payments (1)</option></select><div class="qbar"><i class="p" style="width:28.6%"></i><i class="f" style="width:14.3%"></i></div></div><ol class="ql"><li class="qi pass" tabindex="0"><span class="st">✓</span><span class="tx"><b>Lost card overseas — replacement</b><small>New · Passed</small></span></li><li class="qi pass" tabindex="0"><span class="st">✓</span><span class="tx"><b>Contactless limit change</b><small>Updated · Passed</small></span></li><li class="qi fail" tabindex="0"><span class="st">✕</span><span class="tx"><b>Overseas transaction fee</b><small>Updated · Failed · sent back</small></span></li><li class="qi cur" tabindex="0"><span class="st">●</span><span class="tx"><b>Annual fee waiver — 365 card</b><small>Updated · Testing now · 3 of 6</small></span></li><li class="qi todo" tabindex="0"><span class="st"></span><span class="tx"><b>Raise credit limit temporarily</b><small>New · To test</small></span></li><li class="qi todo" tabindex="0"><span class="st"></span><span class="tx"><b>Flight cancelled due to weather</b><small>New · To test</small></span></li><li class="qi todo" tabindex="0"><span class="st"></span><span class="tx"><b>Refund timing to card</b><small>New · To test</small></span></li></ol><div class="qf">3 passed · ready in <b>Review for Live →</b></div></aside>
 
     <div class="work">
       <section class="col" aria-label="Intent under test">
@@ -434,7 +442,7 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
     <footer class="decide">
       <div class="sum"><b>4 questions · 3 of 6 phrasings · 1 flagged</b><small>Your transcript is attached to the decision.</small><small class="mix-only">Fail sends the flagged answer to the maker.</small></div>
       <div class="why"><b>Fail reason, pre-filled:</b> "annual fee" was answered by "Card fees — which card?", not this intent.</div>
-      <div class="reason"><textarea aria-label="Fail reason">"annual fee" was answered by "Card fees — which card?", not this intent.</textarea><button class="btn" id="cancelFail">Cancel</button><button class="btn primary" id="confirmFail">Send back</button></div><div class="done-banner"></div>
+      <div class="dec"></div><div class="reason"><textarea aria-label="Fail reason">"annual fee" was answered by "Card fees — which card?", not this intent.</textarea><button class="btn" id="cancelFail">Cancel</button><button class="btn primary" id="confirmFail">Send back</button></div><div class="done-banner"></div>
       <button class="btn lg" id="pass">Pass</button>
       <button class="btn lg primary" id="fail">Fail → back to Pending review</button>
     </footer>
@@ -493,5 +501,107 @@ function go(li){if(li.classList.contains('lock'))return;qs.forEach(x=>x.classLis
   document.querySelector('h1').textContent=t;document.querySelector('#crumbT').textContent=t;li.scrollIntoView({block:'nearest'})}
 qs.forEach(li=>{li.onclick=()=>go(li);li.onkeydown=e=>{if(e.key==='Enter')go(li)}});
 document.querySelector('#next').onclick=()=>{const i=qs.findIndex(x=>x.classList.contains('cur'));const n=qs.slice(i+1).concat(qs.slice(0,i)).find(x=>x.classList.contains('todo'));if(n)go(n)};
+</script>
+<script>
+/* ---- Data-driven demo: every checklist intent has its own content ---- */
+const OK="✓ Answered by this intent";
+const D=[
+ {t:"Lost card overseas — replacement",c:"New",st:"pass",today:null,
+  after:"Lock your card in the app under Cards › Lock, then call +65 6363 3333 (24h). We'll courier an emergency card to you overseas within 2 business days, free of charge.",
+  ut:["lost my card overseas","card stolen on holiday","emergency card while travelling","replace card abroad","lost wallet in another country"],
+  trap:{k:"stolen",o:"Report a stolen card"},asked:[0,1,2,3],by:"Mei Chen · 5 Oct, 10:42"},
+ {t:"Contactless limit change",c:"Updated",st:"pass",
+  today:"The contactless limit is <del>S$200</del> per transaction.",
+  after:"The contactless limit is <ins>S$250</ins> per transaction. <ins>You can lower it anytime in the app under Cards › Limits.</ins>",
+  ut:["what is my contactless limit","tap to pay limit","paywave max amount","can i change contactless limit","contactless limit per transaction"],
+  trap:{k:"atm",o:"ATM withdrawal limit"},asked:[0,1,3],by:"Arjun Rao · 5 Oct, 11:05"},
+ {t:"Overseas transaction fee",c:"Updated",st:"fail",
+  today:"Overseas transactions incur a 3.25% fee.",
+  after:"Overseas transactions incur a 3.25% fee<ins>, waived for Premier customers</ins>.",
+  ut:["overseas transaction fee","fee for spending abroad","foreign currency charge","is there a fee when i pay in usd","premier overseas fee waiver"],
+  trap:{k:"premier",o:"Premier banking benefits"},asked:[0,1],
+  extra:[{q:"fx fee for premier",m:"other",o:"Premier banking benefits",a:"As a Premier customer you enjoy priority service, a dedicated relationship manager and preferential FX rates.",flagged:true}],
+  reason:'"fx fee for premier" was answered by "Premier banking benefits", not this intent.',by:"Mei Chen · 5 Oct, 11:31"},
+ {t:"Annual fee waiver — 365 card",c:"Updated",st:"todo",
+  today:"Annual fee <del>S$192.60</del>, waived for the first <del>year</del>. <del>Call us to request a waiver after that.</del>",
+  after:"Annual fee <ins>S$196.20</ins>, waived for the first <ins>2 years and thereafter with S$10,000 annual spend</ins>.",
+  ut:["whats the annual fee for 365","365 card fee waiver","can the 365 fee be waived after 1st year","how to get annual fee waived","do i have to pay yearly fee on my 365 card","365 card charges every year?"],
+  trap:{k:"annual fee",o:"Card fees — which card?",a:"Which card do you mean: 365, Titanium or Rewards?",exact:true},asked:[]},
+ {t:"Raise credit limit temporarily",c:"New",st:"todo",today:null,
+  after:"You can request a temporary limit increase for up to 30 days in the app under Cards › Credit limit › Temporary increase. Most requests are decided instantly.",
+  ut:["increase my credit limit for a trip","temporary credit limit increase","can i raise my limit for one month","need higher limit this month","how to get a temp limit increase"],
+  trap:{k:"permanent",o:"Permanent credit limit review"},asked:[]},
+ {t:"Flight cancelled due to weather",c:"New",st:"todo",today:null,
+  after:"If your flight is cancelled because of bad weather, you can claim up to S$500 for extra accommodation and transport. Submit the airline's cancellation letter with your claim.",
+  ut:["flight cancelled due to storm","is weather cancellation covered","claim for cancelled flight","typhoon cancelled my flight","bad weather flight cancellation claim"],
+  trap:{k:"delay",o:"Flight delay cover"},asked:[]},
+ {t:"Refund timing to card",c:"New",st:"todo",today:null,
+  after:"Refunds usually reach your card within 7–14 business days after the merchant processes them. You'll see them under Card transactions.",
+  ut:["when will my refund come","refund not received yet","how long for refund to card","merchant refund timing","refund pending how many days"],
+  trap:{k:"annual fee",o:"Annual fee waiver — 365 card"},asked:[]}
+];
+// seed transcripts
+D.forEach(d=>{d.turns=d.asked.map(i=>({q:d.ut[i],m:"this",a:d.after.replace(/<[^>]+>/g,''),sc:(0.86+Math.random()*0.1).toFixed(2)}));if(d.extra)d.turns.push(...d.extra)});
+D[3].turns=[{q:D[3].ut[0],m:"this",a:"The 365 Card has an annual fee of S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.",sc:"0.91"},
+ {q:D[3].ut[1],m:"this",a:"The 365 Card has an annual fee of S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.",sc:"0.89"},
+ {q:"annual fee",m:"other",o:"Card fees — which card?",a:"Which card do you mean: 365, Titanium or Rewards?",flagged:true},
+ {q:D[3].ut[2],m:"this",a:"Yes. From the third year, the fee is waived when you spend S$10,000 or more in the year.",sc:"0.87"}];
+D[3].asked=[0,1,2];
+let cur=3;
+const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function turnHTML(x,i){
+  if(x.m==="this")return `<div class="q">${esc(x.q)}</div><div class="a${x.flagged?' flagged':''}" data-i="${i}">${esc(x.a)}<div class="m ${x.flagged?'bad':'ok'}">${OK}<button class="fl">${x.flagged?'Flagged':'Flag'}</button></div><div class="md">match ${x.sc} · runner-up below 0.45</div></div>`;
+  if(x.m==="other")return `<div class="q">${esc(x.q)}</div><div class="a${x.flagged?' flagged':''}" data-i="${i}">${esc(x.a)}<div class="m bad">✕ Answered by "${esc(x.o)}"<button class="fl">${x.flagged?'Flagged':'Flag'}</button></div><div class="md">match 0.58 · runner-up "${esc(D[cur].t)}" 0.55</div></div>`;
+  return `<div class="q">${esc(x.q)}</div><div class="a${x.flagged?' flagged':''}" data-i="${i}">Sorry, I didn't get that. Could you rephrase?<div class="m bad">✕ No intent matched<button class="fl">${x.flagged?'Flagged':'Flag'}</button></div></div>`;
+}
+function rowState(i){const li=qs[i],d=D[i],sel=i===cur;li.className='qi '+(d.st==='todo'?(sel?'cur':'todo'):d.st)+(sel&&d.st!=='todo'?' cur':'');
+  li.querySelector('.st').textContent=d.st==='pass'?'✓':d.st==='fail'?'✕':sel?'●':''}
+function tally(){const p=D.filter(d=>d.st==='pass').length,f=D.filter(d=>d.st==='fail').length,l=D.length-p-f;
+  document.querySelector('.qh').dataset.t=`${p} ✓  ${f} ✕  ${l} left`;
+  document.querySelector('.qf').innerHTML=`${p} passed · ready in <b>Review for Live →</b>`}
+function render(){
+  const d=D[cur];
+  document.querySelector('h1').textContent=d.t;
+  const tag=document.querySelector('.meta .pill.p-upd, .meta .pill.p-new');tag.textContent=d.c;tag.className='pill '+(d.c==='New'?'p-new':'p-upd');
+  document.querySelector('.wc-mix .old .b').innerHTML=d.today?d.today:'<span class="none">No answer today. This is a new intent.</span>';
+  document.querySelector('.wc-mix .new .b').innerHTML=d.after;
+  const bb=document.querySelector('.bb');
+  bb.innerHTML=d.turns.length?d.turns.map(turnHTML).join(''):`<div class="empty">Tap a phrasing below, or ask like a customer would.</div>`;
+  bb.scrollTop=bb.scrollHeight;
+  questions=d.turns.length;phr=d.asked.length;
+  document.querySelectorAll('.bot .bh .cov').forEach(c=>c.innerHTML=`<b id="covN">${phr}</b>/${d.ut.length} phrasings`);
+  renderPills();
+  const dec=document.querySelector('.decide');dec.classList.remove('failing','decided','closed');
+  if(d.st!=='todo'){dec.classList.add('closed');document.querySelector('.dec').innerHTML=`<span class="st ${d.st}" style="${d.st==='pass'?'background:var(--live);border-color:var(--live);color:#fff':'background:var(--err);border-color:var(--err);color:#fff'}">${d.st==='pass'?'✓':'✕'}</span>${d.st==='pass'?'Passed':'Failed · sent back to Pending review'} <small>${d.by||''}${d.reason?' · '+esc(d.reason):''}</small>${D.some(x=>x.st==='todo')?'<button class="btn" id="nextDec" style="margin-left:auto">Next untested →</button>':''}`;const nb=document.getElementById('nextDec');if(nb)nb.onclick=()=>$('#next').click()}
+  else{$('#fail').style.display='';$('#pass').style.display=''}
+  qs.forEach((_,i)=>rowState(i));tally();sync();
+  const sumB=document.querySelector('.sum b');sumB.textContent=`${questions} questions · ${phr} of ${d.ut.length} phrasings · ${d.turns.filter(t=>t.flagged).length} flagged`;
+}
+renderPills=function(){const box=document.getElementById('pills'),d=D[cur];if(d.st!=='todo'){box.innerHTML='';box.style.display='none';return}box.style.display='';
+  const r=d.ut.map((u,i)=>({u,i})).filter(x=>!d.asked.includes(x.i));
+  box.innerHTML=r.length?'<span class="sl2">Try</span>':'<span class="sl2">All phrasings tried · keep asking your own</span>';
+  r.forEach(x=>{const b=document.createElement('button');b.className='chip';b.textContent=x.u;b.onclick=()=>ask(x.u);box.appendChild(b)});
+  const bad=document.createElement('button');bad.className='chip ghost';bad.textContent='✦ ask it badly';
+  bad.onclick=()=>{const base=r.length?r[0].u:d.ut[0];const i=document.querySelector('.comp input');i.value=base.replace(/annual/g,'anual').replace(/credit/g,'credt').replace(/\?/g,'')+' pls';i.focus()};box.appendChild(bad)};
+ask=function(text){const d=D[cur];if(d.st!=='todo')return;
+  const low=text.toLowerCase().trim(),ui=d.ut.findIndex(u=>u.toLowerCase()===low);let t;
+  const words=low.split(/\W+/).filter(w=>w.length>3),hit=d.ut.some(u=>words.filter(w=>u.toLowerCase().includes(w)).length>=2);
+  if(ui>=0){t={q:text,m:'this',a:d.after.replace(/<[^>]+>/g,''),sc:'0.9'+Math.floor(Math.random()*9)};if(!d.asked.includes(ui))d.asked.push(ui)}
+  else if(d.trap&&(d.trap.exact?low===d.trap.k:low.includes(d.trap.k)))t={q:text,m:'other',o:d.trap.o,a:d.trap.a||`Here's what I found about ${d.trap.o.toLowerCase()}.`,flagged:true};
+  else if(hit)t={q:text,m:'this',a:d.after.replace(/<[^>]+>/g,''),sc:'0.7'+Math.floor(Math.random()*9)};
+  else t={q:text,m:'none',flagged:true};
+  d.turns.push(t);
+  const bb=document.querySelector('.bb');if(bb.querySelector('.empty'))bb.innerHTML='';
+  bb.insertAdjacentHTML('beforeend',`<div class="q">${esc(text)}</div><div class="a typing">UAT bot is typing…</div>`);bb.scrollTop=bb.scrollHeight;
+  setTimeout(render,650)};
+document.querySelector('.bb').addEventListener('click',e=>{const a=e.target.closest('.a[data-i]');if(!a||!e.target.closest('.fl'))return;D[cur].turns[+a.dataset.i].flagged=a.classList.contains('flagged');setTimeout(render,0)});
+qs.forEach((li,i)=>{li.onclick=()=>{cur=i;render()};li.onkeydown=e=>{if(e.key==='Enter'){cur=i;render()}}});
+$('#next').onclick=()=>{const n=[...D.keys()].slice(cur+1).concat([...D.keys()].slice(0,cur)).find(i=>D[i].st==='todo');if(n!==undefined){cur=n;render()}};
+$('#fail').onclick=()=>{const f=D[cur].turns.find(t=>t.flagged);const ta=document.querySelector('.reason textarea');
+  ta.value=f?(f.m==='other'?`"${f.q}" was answered by "${f.o}", not this intent.`:f.m==='none'?`"${f.q}" got no answer.`:`The answer to "${f.q}" is wrong.`):'';
+  document.querySelector('.decide').classList.add('failing');$('#fail').style.display='none';$('#pass').style.display='none'};
+$('#confirmFail').onclick=()=>{const d=D[cur];d.st='fail';d.reason=document.querySelector('.reason textarea').value;d.by='Mei Chen · just now';render()};
+$('#pass').onclick=()=>{const d=D[cur];d.st='pass';d.by='Mei Chen · just now';render()};
+render();
 </script>
 </body></html>
