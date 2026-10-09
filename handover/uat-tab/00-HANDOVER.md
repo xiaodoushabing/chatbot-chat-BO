@@ -10,7 +10,7 @@
 > **Read, in this order, everything in `handover/uat-tab/`:**
 > 1. `01-prd.md`: the product spec, written as a delta against the real backoffice. **Phase 1 only** (see §5.0 "Phasing"). Phase 2 (Review for Live, releases, the To Live approval, Library versions and rollback) is out of scope. Read it for context only.
 > 2. `02-design-system.md`: the visual spec, written as a delta against the app's existing tokens. The **"Lean declutter" section at the end overrides earlier lines** where they conflict.
-> 3. `03-proof-screen.html`: open it in a browser and click around. It is the look and behaviour reference: checklist, What changed + Show changes toggle, UAT bot with "Try" phrasing pills (one per line), flagging, and Pass / Fail with the inline reason. **Port its tokens and behaviour into our stack. Do not copy its markup**; it is a standalone mock with fake data.
+> 3. `03-proof-screen.html` (**iteration 1 behaviour.** For the intent review, bot verdicts and evidence card, `01-prd.md` §5.1 wins): open it in a browser and click around. It is the look and behaviour reference: checklist, What changed + Show changes toggle, UAT bot with "Try" phrasing pills (one per line), flagging, and Pass / Fail with the inline reason. **Port its tokens and behaviour into our stack. Do not copy its markup**; it is a standalone mock with fake data.
 > 4. `reference/`: the owner's decisions and addenda (`decisions-brief.md`), the workflow-parity table, light and dark screenshots, and the baseline critique.
 >
 > **Before writing any code, verify these assumptions against our real code and backend, and report any that are false:**

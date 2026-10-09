@@ -7,7 +7,7 @@ poc_forge_state: v1  (generated -- edit via poc-state.py)
 **End-user:** UAT testers: anyone except the submitter of the intent for approval
 **Adopted:** baseline docs/poc/baseline/ · boot: ok
 
-**Stage:** 3 TD (pending) | **Tier:** T2 | **Iteration:** 1
+**Stage:** 3 TD (pending) | **Tier:** T2 | **Iteration:** 2 (screen) [direct-build]
 **Current step:** td-written
 **Next:** 3.td-written (sub-skill: tech-design)
 

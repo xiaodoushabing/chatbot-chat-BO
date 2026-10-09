@@ -12,12 +12,12 @@
   "checkpoint": "43f1ab0",
   "migrated": false,
   "iteration": {
-    "number": 1,
-    "scope": "",
-    "in": "",
-    "out": "",
-    "proof_moment": "",
-    "path": ""
+    "number": 2,
+    "scope": "screen",
+    "in": "PRD: manual review primary (fixed-skeleton changed sections), bot complementary with per-answer verdict + editable reason chips, per-field comments, consolidated Test evidence card travelling to maker/approver",
+    "out": "statuses R1-R5, engine contract, nav, phasing, visual system; mock not updated (real backoffice is a different repo)",
+    "proof_moment": "Tester sees changed sections in template order, unfolds unchanged in place without confusion, comments a field, marks bot answers, evidence card suggests Fail, confirmed; maker/approver see same card; <2 min",
+    "path": "direct-build"
   },
   "design": {
     "k": 3,
