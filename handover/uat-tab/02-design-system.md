@@ -33,7 +33,7 @@ The signature is fused to the core mechanic: the tester is verifying a *change*.
 
 ## Customer view (the UAT bot)
 
-- A light device frame: 6px `--surface-3` border, 28px radius, max-width 500px, labelled "CUSTOMER VIEW" above it. **Not** a heavy black bezel.
+- ~~A light device frame: 6px `--surface-3` border, 28px radius, max-width 500px.~~ **Superseded 2026-10-09: a phone frame, see "Polish pass" at the end.**
 - A flagged answer gets an `--err-bg` fill, a 1.5px `--err` outline, and a "Flagged" chip.
 - **Show match details** (idea 1, off by default) reveals a mono line under each answer: the match score and the runner-up intent.
 - **v2 slot:** a 44px dashed rail on the right, labelled "Current bot · coming in v2". It stays in the layout and expands into the live bot later.
@@ -76,3 +76,34 @@ Inherits the base: `--ease-out`, about 150–200ms for state changes, and the bo
 - **Decision bar:** a one-line summary, then Pass / Fail. No sub-text.
 
 - **Collapsed nav = the app's own collapsed `Shell` nav** (76px): a 70px brand cell holding the sparkles mark on the crimson gradient; 18px lucide icons (LayoutDashboard, FolderCog, Sparkles, ClipboardCheck ×2, FlaskConical for Test, Library, Inbox); the active item has a `--nav-on` tile, a `--nav-accent` icon and a 3px left bar; section labels are screen-reader only; the collapse toggle (PanelLeftOpen) sits at the bottom. **New:** hairline `--nav-line` dividers between sections, so PRE-LIVE · UAT and LIVE stay visible as groups when collapsed, and count badges (16px pill, `--nav-accent` fill, `--nav` text, 5.9:1).
+
+
+## Polish pass (owner, 2026-10-09). Supersedes conflicting lines above
+
+Visual quality only. Layout, copy and behaviour are unchanged.
+
+- **Phone frame for the UAT bot.** Owner: "make the UAT bot look more mobile, esp the border". Max width 392px, an 11px bezel, 52px outer radius, plus a 1.5px rim (`--phone-edge`) and a 3px outer ring. Inside the frame: a status bar (time, camera island, signal, wifi, battery), volume buttons on the left, a power button on the right, and a home indicator. The composer and the Send button are fully rounded.
+- **Frame colour (`--phone`).**
+  - Method: the palette was measured with the style-forge formulas (`palette.py --measure`).
+    - Light mode is F1 Tinted triad at h≈182, with a complementary crimson accent at h≈22.
+    - Dark mode is F1 seeded from the crimson, with polarity flipped.
+  - Candidates were ink black, graphite, deep teal, UAT navy, oxblood and titanium, then three darker oxbloods.
+  - **Light: black cherry `#2E0A0F`.** This is the nav hue (OKLCH 0.21 / 0.059 / 15.6), 15.8:1 on the canvas. It reads as black and is still red. At this lightness it does not compete with the crimson Fail button or the flagged answers.
+  - **Dark: `--device` `#0B0706`.** It is about 1:1 on the dark canvas, so the silhouette comes from a lighter rim, `#5A4744`.
+  - Mock-only review switch: `?frame=<hex>` sets a different frame colour.
+- **Top bar:** shows the page title, with the eyebrow "PRE-LIVE · UAT" in `--prelive` above "Test in UAT". This restores orientation without the removed breadcrumb.
+- **What changed card:** each label gets a 7px dot. "Customers today" uses `--live` (it is what is live). "After release" uses `--prelive` (it is in UAT). The diff highlight is a soft `--live-bg` with an underline offset of 3px.
+- **Bot:**
+  - A header icon (sparkles on `--prelive-bg`).
+  - The phrasing count sits in a pill.
+  - Each answer separates the "Answered by" line with a hairline.
+  - Typing shows three dots instead of text.
+  - The top of the transcript fades with a mask.
+  - The empty state has an icon.
+  - The composer gets a `--prelive` focus ring.
+  - "Try" pills hover in `--prelive`.
+- **Decision bar:** counts show as numbers in the display face, and the flagged count turns `--err` when above 0. Pass gets a tick icon. Buttons have hover and press states.
+- **Motion:**
+  - New turns rise in over 240ms with `--ease-out` `cubic-bezier(.22,1,.36,1)`.
+  - Toggles and hovers take 150–200ms.
+  - Under `prefers-reduced-motion`, all animation and transition is off.

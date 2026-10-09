@@ -348,6 +348,139 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
 .bb .empty{margin:auto;text-align:center;color:var(--ink-3);font-size:13px;max-width:280px}
 .qi.cur.pass .st,.qi.cur.fail .st{color:#fff}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* ===== Polish pass (2026-10-09): visual quality only. Layout, copy and behaviour unchanged. ===== */
+:root{--ease-out:cubic-bezier(.22,1,.36,1)}
+body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+*{scrollbar-width:thin;scrollbar-color:var(--surface-3) transparent}
+/* top bar: page title for orientation (replaces the removed breadcrumb, one line) */
+.top{padding:0 24px;gap:16px;background:var(--bg)}
+.proj{border-radius:10px;transition:border-color .15s}
+.proj:hover{border-color:var(--ink-3)}
+.ttl{display:flex;flex-direction:column;line-height:1.15;padding-left:16px;border-left:1px solid var(--border)}
+.ttl small{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--prelive)}
+.ttl b{font:650 18px var(--font-display);letter-spacing:-.015em}
+.dc .av{margin-left:auto;background:var(--accent-wash);color:var(--accent)}
+/* checklist */
+.qh{padding:18px 16px 14px}
+.qh b{font-size:16px;letter-spacing:-.01em}
+.dc .qh::after{font-size:12px;font-weight:600;color:var(--ink-2);word-spacing:2px}
+.qt{appearance:none;-webkit-appearance:none;cursor:pointer;font-weight:500;padding:7px 30px 7px 10px!important;border-radius:6px;background:var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23566762' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;border-color:transparent;transition:border-color .15s}
+.qt:hover{border-color:var(--border)}
+.ql{padding:10px}
+.qi{border-radius:7px;transition:background-color .15s var(--ease-out)}
+.qi+.qi{margin-top:2px}
+.qi .tx b{font-weight:550}
+.qi.todo .st{border-color:color-mix(in srgb,var(--ink-3) 45%,transparent)}
+.qi.cur .tx b{color:var(--ink);font-weight:650}
+.qi.cur:not(.pass):not(.fail) .st{border-width:2px;font-size:8px;box-shadow:0 0 0 3px color-mix(in srgb,var(--prelive) 18%,transparent)}
+.st{font-size:10.5px}
+.qf{padding:14px 16px;font-size:12.5px}
+.qf b{color:var(--ink);cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:3px;transition:text-decoration-color .15s}
+.qf b:hover{text-decoration-color:currentColor}
+/* intent column */
+.dc .work{padding:28px 28px 24px;column-gap:28px}
+.q-panel h1{font-size:27px;line-height:1.15;letter-spacing:-.022em;margin-top:10px}
+.v-mix .wc{padding:18px 18px 20px}
+.wc .hd{padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--border-soft)}
+.wc-mix .cols{gap:14px}
+.wc-mix .cols .lbl{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.wc-mix .cols .lbl::before{content:"";width:7px;height:7px;border-radius:50%}
+.wc-mix .old .lbl::before{background:var(--live)}        /* today = Live green */
+.wc-mix .new .lbl::before{background:var(--prelive)}     /* after release = UAT blue */
+.wc-mix .b{padding:12px 14px}
+.wc-mix .new .b{box-shadow:0 1px 0 var(--border-soft),0 6px 16px -10px rgba(16,40,38,.18)}
+.diff-on .wc-mix ins{border-bottom:0;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;border-radius:3px;padding:1px 3px}
+.diff-on .wc-mix del{text-decoration-color:color-mix(in srgb,var(--ink-3) 70%,transparent)}
+.wc-mix del,.wc-mix ins{transition:background-color .2s var(--ease-out),color .2s var(--ease-out)}
+.sw .tg,.sw .tg::after{transition:background-color .2s var(--ease-out),left .2s var(--ease-out),border-color .2s}
+/* UAT bot: lighter device frame */
+.v-mix .bot{border:1px solid var(--border);border-radius:22px;box-shadow:0 0 0 6px var(--surface-2),0 18px 40px -24px rgba(16,40,38,.35)}
+.dark .v-mix .bot{box-shadow:0 0 0 6px var(--surface-2),0 18px 40px -20px rgba(0,0,0,.7)}
+.bot .bh{padding:14px 18px;gap:10px}
+.bav{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--prelive-bg);color:var(--prelive);flex:none}
+.bot .bh b{font-size:16px;letter-spacing:-.01em}
+.dc .bot .bh .cov{background:var(--surface-2);border-radius:999px;padding:3px 10px;font-weight:600}
+.dc .bot .bh .more{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;line-height:1;transition:background-color .15s}
+.dc .bot .bh .more:hover{background:var(--surface-2)}
+.bb{padding:18px;gap:8px}
+.v-ledger .bb,.v-mix .bb{padding:18px 18px 14px}
+.q{margin-top:6px;border-radius:16px 16px 4px 16px!important;padding:9px 14px}
+.a{border-radius:16px 16px 16px 4px!important;padding:11px 14px;line-height:1.55;border:1px solid transparent}
+.a .m{margin-top:9px;padding-top:8px;border-top:1px solid color-mix(in srgb,var(--ink-3) 18%,transparent);font-size:11.5px}
+.a.flagged{outline:0;border-color:var(--err)}
+.a.flagged .m{border-top-color:color-mix(in srgb,var(--err) 30%,transparent)}
+.a .fl{transition:color .15s,border-color .15s,background-color .15s}
+.a .fl:hover{color:var(--err);border-color:var(--err)}
+.a.flagged .fl{background:var(--bg)}
+.bb>.q:nth-last-child(2),.bb>.a:last-child{animation:rise .24s var(--ease-out) both}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.a.typing{font-size:0;padding:15px 16px}
+.a.typing::after{content:"";display:block;width:30px;height:6px;background:radial-gradient(circle,var(--ink-3) 2.6px,transparent 3.2px) 0 0/10px 6px repeat-x;animation:dots 1s ease-in-out infinite}
+@keyframes dots{50%{opacity:.35}}
+.bb .empty{display:flex;flex-direction:column;align-items:center;gap:10px;line-height:1.5}
+.bb .empty::before{content:"";width:40px;height:40px;border-radius:12px;background:var(--prelive-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%232c55a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.9 20A9 9 0 1 0 4 16.1L2 22Z'/%3E%3C/svg%3E") no-repeat center}
+.bf{padding:12px 14px 14px;border-top-color:var(--border-soft)}
+.sl2{margin-bottom:2px}
+.chip{padding:6px 12px;line-height:1.35;transition:border-color .15s var(--ease-out),background-color .15s var(--ease-out),color .15s}
+.chip:not(.ghost):hover{border-color:var(--prelive);color:var(--prelive)}
+.chip.ghost:hover{border-color:var(--prelive)}
+.chip:active,.btn:active{transform:scale(.98)}
+.comp{border-radius:14px;padding:5px 5px 5px 14px;transition:border-color .15s,box-shadow .15s}
+.comp:focus-within{border-color:var(--prelive);box-shadow:0 0 0 3px var(--prelive-bg)}
+.comp .send{width:34px;height:34px;padding:0;border-radius:10px;display:grid;place-items:center;transition:opacity .15s}
+.comp:has(input:placeholder-shown) .send{opacity:.45}
+.comp input::placeholder{color:var(--ink-3)}
+/* decision bar */
+.decide{padding:14px 24px;border-top-color:var(--border);box-shadow:0 -10px 24px -22px rgba(16,40,38,.35)}
+.sum b{display:flex!important;gap:18px;font-weight:500;color:var(--ink-2)}
+.sum .k{display:inline-flex;align-items:baseline;gap:5px}
+.sum .k i{font-style:normal;font:650 17px var(--font-display);color:var(--ink)}
+.sum .k.bad,.sum .k.bad i{color:var(--err)}
+.btn{transition:background-color .15s var(--ease-out),border-color .15s,color .15s,transform .1s}
+.btn:not(.primary):hover{background:var(--surface-2)}
+.btn.primary:hover{background:var(--accent-press);border-color:var(--accent-press)}
+.btn.lg{border-radius:8px;padding:11px 20px}
+.btn.primary.lg{box-shadow:0 6px 16px -8px color-mix(in srgb,var(--accent) 70%,transparent)}
+.reason textarea{border-radius:8px;padding:9px 12px;line-height:1.45}
+.reason textarea:focus{outline:0;box-shadow:0 0 0 3px var(--err-bg)}
+.dec{font-size:14.5px}
+.dc .work{grid-template-columns:minmax(380px,1fr) minmax(420px,500px)}
+.v-mix .bb{-webkit-mask-image:linear-gradient(transparent,#000 22px);mask-image:linear-gradient(transparent,#000 22px)}
+.dc .bot .bh .cov{gap:0}
+.dc .bot .bh .cov b{margin-right:1px}
+
+/* ---- Phone frame (owner 2026-10-09: "make the UAT bot look more mobile, esp the border") ---- */
+/* Frame = the palette's own black: the F1 ink slot, already the app token --device.
+   Light #16211F (OKLCH .237 .016 182.5, 14.5:1 on canvas). Dark #0B0706 (.134 .008 37) is ~1:1 on the dark
+   canvas, so the silhouette comes from a lighter rim (--phone-edge), the way a real phone reads in a dark room. */
+/* Light: owner pick 2026-10-09 "black cherry" #2E0A0F = the nav hue (OKLCH h 15.6) at L .21, C .059; 15.8:1 on canvas. */
+:root{--phone:#2E0A0F;--phone-edge:color-mix(in srgb,#2E0A0F 78%,#fff)}
+.dark{--phone:var(--device);--phone-edge:#5a4744}
+.v-mix .botwrap{position:relative}
+.v-mix .bot{max-width:392px;border:11px solid var(--phone);border-radius:52px;
+  box-shadow:0 0 0 1.5px var(--phone-edge),0 0 0 3px var(--phone),0 30px 60px -30px rgba(16,40,38,.55),0 12px 24px -16px rgba(16,40,38,.3)}
+.dark .v-mix .bot{box-shadow:0 0 0 1.5px var(--phone-edge),0 0 0 3px #1b1312,0 30px 60px -24px rgba(0,0,0,.85)}
+.sbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:40px;padding:6px 26px 0;flex:none;font:650 14px var(--font-sans);color:var(--ink);letter-spacing:-.01em}
+.sbar .isl{width:96px;height:27px;border-radius:999px;background:#000}
+.sbar .sic{justify-self:end;display:flex;gap:6px;align-items:center}
+.bat{width:24px;height:12px;border:1.3px solid currentColor;border-radius:4px;padding:1.5px;position:relative;opacity:.9}
+.bat::after{content:"";position:absolute;right:-3.5px;top:3.5px;width:1.8px;height:4px;border-radius:0 1px 1px 0;background:currentColor}
+.bat i{display:block;height:100%;width:78%;background:currentColor;border-radius:1.5px}
+.v-mix .bot .bh{padding-top:8px}
+.home{width:120px;height:5px;border-radius:999px;background:var(--ink);opacity:.85;margin:12px auto 0}
+.v-mix .bf{padding-bottom:9px}
+.v-mix .bot .comp{border-radius:22px}
+.v-mix .bot .comp .send{border-radius:50%}
+.frame-light{--phone:#dfe6e4;--phone-edge:#c5d0cd}
+.dark.frame-light{--phone:#4a3a37;--phone-edge:#64514d}
+.frame-light .v-mix .bot{box-shadow:0 0 0 1.5px var(--phone-edge),0 0 0 3px var(--phone),0 24px 50px -28px rgba(16,40,38,.35)}
+.dark.frame-light .v-mix .bot{box-shadow:0 0 0 1.5px var(--phone-edge),0 0 0 3px var(--phone),0 30px 60px -24px rgba(0,0,0,.85)}
+/* side buttons: volume (left), power (right) */
+.v-mix .botwrap::before,.v-mix .botwrap::after{content:"";position:absolute;width:4px;background:var(--phone-edge)}
+.v-mix .botwrap::before{left:calc(50% - 196px - 7px);top:130px;height:30px;border-radius:2px 0 0 2px;box-shadow:0 46px 0 var(--phone-edge),0 92px 0 var(--phone-edge)}
+.v-mix .botwrap::after{right:calc(50% - 196px - 7px);top:170px;height:64px;border-radius:0 2px 2px 0}
+.v-mix .botwrap>.bot+*{display:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style></head>
 <body>
 <script>
@@ -356,6 +489,8 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
   addEventListener('load',()=>{const bb=document.querySelector('.bb');bb.scrollTop=bb.scrollHeight});
   if(p.get('diff')==='1')document.body.classList.add('diff-on');
   if(p.get('theme')==='dark')document.documentElement.classList.add('dark');
+  if(p.get('frame')==='light')document.documentElement.classList.add('frame-light');
+  else if(/^[0-9a-f]{6}$/i.test(p.get('frame')||'')){const r=document.documentElement.style;r.setProperty('--phone','#'+p.get('frame'));r.setProperty('--phone-edge','color-mix(in srgb,#'+p.get('frame')+' 78%,#fff)')}
 </script>
 <div class="app">
   <nav class="rnav" aria-label="Primary">
@@ -372,7 +507,7 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
   <div class="main">
     <header class="top">
       <div class="proj"><i>CP</i><span><b>Cards &amp; Payments</b><small>4 topics</small></span></div>
-      <span class="role">TESTER</span><span class="av">MC</span>
+      <div class="ttl"><small>Pre-live · UAT</small><b>Test in UAT</b></div><span class="role">TESTER</span><span class="av">MC</span>
     </header>
     <div class="crumbs">
       <span>Pre-live · UAT</span><span>/</span><span>Test in UAT</span><span>/</span><b id="crumbT">Annual fee waiver — 365 card</b>
@@ -422,7 +557,7 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
       <section class="botwrap" aria-label="UAT chatbot">
         <span class="cv mix-only">Customer view</span>
         <div class="bot">
-          <div class="bh"><b>UAT bot</b><span class="pill p-pre">UAT artefact v15</span><span class="cov dc-only"><b id="covN">3</b>/6 phrasings</span><button class="more dc-only" aria-label="More options">⋯</button><span class="sw">Show match details <span class="tg" aria-hidden="true"></span></span></div>
+          <div class="sbar" aria-hidden="true"><span class="tm">9:41</span><span class="isl"></span><span class="sic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor"><path d="M7.5 2.2c2.1 0 4 .8 5.5 2.1l1.1-1.1A9.3 9.3 0 0 0 7.5.6 9.3 9.3 0 0 0 .9 3.2L2 4.3a7.8 7.8 0 0 1 5.5-2.1Zm0 3.2c1.2 0 2.3.4 3.2 1.2l1.1-1.1a6.3 6.3 0 0 0-8.6 0l1.1 1.1c.9-.8 2-1.2 3.2-1.2Zm0 3.2c.4 0 .8.1 1 .4L7.5 10.1 6.5 9c.2-.3.6-.4 1-.4Z"/></svg><span class="bat"><i></i></span></span></div><div class="bh"><span class="bav"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/></svg></span><b>UAT bot</b><span class="pill p-pre">UAT artefact v15</span><span class="cov dc-only"><b id="covN">3</b>/6 phrasings</span><button class="more dc-only" aria-label="More options">⋯</button><span class="sw">Show match details <span class="tg" aria-hidden="true"></span></span></div>
           <div class="pin"><div class="meta"><span class="pill p-upd">Updated</span><span class="sw" style="margin-left:auto;font-size:12px;color:var(--ink-2);font-weight:600">Show changes <span class="tg"></span></span></div><h2>What is the annual fee waiver for the 365 card?</h2><div class="two"><div><span class="lbl">Customers today</span>Annual fee S$192.60, waived for the first year. Call us to request a waiver after that.</div><div><span class="lbl">After release</span>Annual fee S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.</div></div></div><div class="bb">
             <div class="q">whats the annual fee for 365</div>
             <div class="a">The 365 Card has an annual fee of S$196.20, waived for the first 2 years and thereafter with S$10,000 annual spend.<div class="m ok">✓ Answered by this intent<button class="fl">Flag</button></div><div class="md">match 0.91 · runner-up "Card fees — which card?" 0.42</div></div>
@@ -433,7 +568,7 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
             <div class="q">can the 365 fee be waived after 1st year</div>
             <div class="a">Yes. From the third year, the fee is waived when you spend S$10,000 or more in the year.<div class="m ok">✓ Answered by this intent<button class="fl">Flag</button></div><div class="md">match 0.91 · runner-up "Card fees — which card?" 0.42</div></div>
           </div>
-          <div class="bf"><div class="sugg dc-only" id="pills"></div><form class="comp"><input aria-label="Ask like a customer" placeholder="Ask like a customer…"><button class="send">Send</button></form></div>
+          <div class="bf"><div class="sugg dc-only" id="pills"></div><form class="comp"><input aria-label="Ask like a customer" placeholder="Ask like a customer…"><button class="send" aria-label="Send"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button></form><div class="home" aria-hidden="true"></div></div>
         </div>
       </section>
 
@@ -443,7 +578,7 @@ h1{font-size:28px;line-height:1.18;margin-top:10px}
       <div class="sum"><b>4 questions · 3 of 6 phrasings · 1 flagged</b><small>Your transcript is attached to the decision.</small><small class="mix-only">Fail sends the flagged answer to the maker.</small></div>
       <div class="why"><b>Fail reason, pre-filled:</b> "annual fee" was answered by "Card fees — which card?", not this intent.</div>
       <div class="dec"></div><div class="reason"><textarea aria-label="Fail reason">"annual fee" was answered by "Card fees — which card?", not this intent.</textarea><button class="btn" id="cancelFail">Cancel</button><button class="btn primary" id="confirmFail">Send back</button></div><div class="done-banner"></div>
-      <button class="btn lg" id="pass">Pass</button>
+      <button class="btn lg" id="pass"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Pass</button>
       <button class="btn lg primary" id="fail">Fail → back to Pending review</button>
     </footer>
   </div>
@@ -575,7 +710,7 @@ function render(){
   if(d.st!=='todo'){dec.classList.add('closed');document.querySelector('.dec').innerHTML=`<span class="st ${d.st}" style="${d.st==='pass'?'background:var(--live);border-color:var(--live);color:#fff':'background:var(--err);border-color:var(--err);color:#fff'}">${d.st==='pass'?'✓':'✕'}</span>${d.st==='pass'?'Passed':'Failed · sent back to Pending review'} <small>${d.by||''}${d.reason?' · '+esc(d.reason):''}</small>${D.some(x=>x.st==='todo')?'<button class="btn" id="nextDec" style="margin-left:auto">Next untested →</button>':''}`;const nb=document.getElementById('nextDec');if(nb)nb.onclick=()=>$('#next').click()}
   else{$('#fail').style.display='';$('#pass').style.display=''}
   qs.forEach((_,i)=>rowState(i));tally();sync();
-  const sumB=document.querySelector('.sum b');sumB.textContent=`${questions} questions · ${phr} of ${d.ut.length} phrasings · ${d.turns.filter(t=>t.flagged).length} flagged`;
+  const sumB=document.querySelector('.sum b'),nf=d.turns.filter(t=>t.flagged).length;sumB.innerHTML=`<span class="k"><i>${questions}</i> questions</span><span class="k"><i>${phr}</i> of ${d.ut.length} phrasings</span><span class="k${nf?' bad':''}"><i>${nf}</i> flagged</span>`;
 }
 renderPills=function(){const box=document.getElementById('pills'),d=D[cur];if(d.st!=='todo'){box.innerHTML='';box.style.display='none';return}box.style.display='';
   const r=d.ut.map((u,i)=>({u,i})).filter(x=>!d.asked.includes(x.i));
